@@ -24,7 +24,6 @@ export class Batch {
       `INSERT INTO batch (workoutid, note) VALUES (?, ?);`,
       [workoutid, note]
     );
-    console.log('lastInsertRowId', result.lastInsertRowId);
     return new Batch(result.lastInsertRowId, workoutid, note);
   }
 
@@ -39,8 +38,6 @@ export class Batch {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
     const rows = await db.getAllAsync('SELECT * FROM batch WHERE workoutid = ?', [workoutId]) as BatchRow[];
-    console.log(rows);
-    console.log('workoutId', workoutId);
     return rows.map(row => new Batch(row.id, row.workoutid, row.note));
   }
 

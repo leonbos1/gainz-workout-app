@@ -4,19 +4,10 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { Text } from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-import { Workout } from '@/models/Workout';
-import { Exercise } from '@/models/Exercise';
-import { MuscleGroup } from '@/models/MuscleGroup';
-import { Set } from '@/models/Set';
-import { Batch } from '@/models/Batch';
-
 import { createTables } from '@/database/database';
-
-import * as SQLite from 'expo-sqlite';
 
 SplashScreen.preventAutoHideAsync();
 

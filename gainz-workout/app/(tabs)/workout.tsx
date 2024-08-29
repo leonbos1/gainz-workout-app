@@ -1,91 +1,163 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, ScrollView, Button } from 'react-native';
-
+import React, { useState, useCallback } from 'react';
+import { View, StyleSheet, Button } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useFocusEffect } from '@react-navigation/native';
 
-import { Batch } from '@/models/Batch';
-import { Set } from '@/models/Set';
-import { Workout } from '@/models/Workout';
 import { Exercise } from '@/models/Exercise';
-import { MuscleGroup } from '@/models/MuscleGroup';
+import { Workout } from '@/models/Workout';
+import { Set } from '@/models/Set';
 
-import { dropTables, createTables } from '@/database/database';
+import { StartWorkoutButton } from '@/components/workout/StartWorkoutButton';
+import { ExerciseDropdown } from '@/components/workout/ExerciseDropdown';
+import { BatchList } from '@/components/workout/BatchList';
+import { EndWorkoutButton } from '@/components/workout/EndWorkoutButton';
 
-export default function ProfileScreen() {
-  const handleClearBatches = () => {
-    Batch.removeAll();
+export default function WorkoutScreen() {
+  const [workoutStarted, setWorkoutStarted] = useState(false);
+  const [workoutId, setWorkoutId] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
+  const [exercises, setExercises] = useState<Array<{ label: string, value: string }>>([]);
+
+  // Fetch exercises from the database
+  const fetchExercises = async () => {
+    try {
+      const fetchedExercises = await Exercise.findAll();
+      const formattedExercises = fetchedExercises.map(exercise => ({
+        label: exercise.name,
+        value: exercise.name,
+      }));
+      setExercises(formattedExercises);
+    } catch (error) {
+      console.error('Error fetching exercises:', error);
+    }
+  };
+
+  // useFocusEffect to reload data every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchExercises();
+      setOpen(false);
+    }, [])
+  );
+
+  // Function to handle starting a workout
+  const handleStartWorkout = async () => {
+    try {
+      // Create a new workout in the database
+      const newWorkout = await Workout.create({
+        start: new Date().toISOString(),
+        end: '',
+      });
+
+      // Set workout ID and mark workout as started
+      setWorkoutId(newWorkout.id);
+      setWorkoutStarted(true);
+    } catch (error) {
+      console.error('Error starting workout:', error);
+    }
+  };
+
+  const handleEndWorkout = async () => {
+    try {
+      // Update the workout in the database
+      await Workout.endWorkout(workoutId!, new Date().toISOString());
+
+      // Reset state
+      setWorkoutId(null);
+      setWorkoutStarted(false);
+      setBatches([]);
+    } catch (error) {
+      console.error('Error ending workout:', error);
+    }
   }
 
-  const handleClearSets = () => {
-    Set.removeAll();
-  }
+  const handleAddExercise = () => {
+    if (selectedExercise) {
+      const newBatch = {
+        id: batches.length + 1,
+        name: selectedExercise,
+        sets: [],
+        reps: '',
+        weight: '',
+        rpe: '',
+      };
+      setBatches([...batches, newBatch]);
+      setSelectedExercise(null);
+    }
+  };
 
-  const handleClearWorkouts = () => {
-    Workout.removeAll();
-  }
+  const handleAddSet = (batchId: number) => {
+    setBatches(batches.map(batch => {
+      if (batch.id === batchId) {
+        const newSet = new Set(
+          batch.sets.length + 1,
+          0,  // Assuming exerciseId is not needed here
+          parseInt(batch.reps),
+          parseFloat(batch.weight),
+          parseFloat(batch.rpe),
+          batchId
+        );
+        return { ...batch, sets: [...batch.sets, newSet], reps: '', weight: '', rpe: '' };
+      }
+      return batch;
+    }));
+  };
 
-  const handleClearExercises = () => {
-    Exercise.removeAll();
-  }
-
-  const handleClearAll = async () => {
-    await Batch.removeAll();
-    await Set.removeAll();
-    await Workout.removeAll();
-    await Exercise.removeAll
-  }
-
-  const handleDropTables = async () => {
-    await dropTables();
-  }
-
-  const insertDummyData = async () => {
-    const workout = await Workout.create('2021-09-01T12:00:00', '2021-09-01T13:00:00');
-
-    const batch1 = await Batch.create(workout.id, 'sample note');
-    const chest = await MuscleGroup.create('Chest');
-    const benchPress = await Exercise.create('Bench Press', 'The pressing of the chest', chest.id);
-    const set1 = await Set.create(benchPress.id, 5, 100, 9, batch1.id);
-    const set2 = await Set.create(benchPress.id, 5, 105, 9, batch1.id);
-    const set3 = await Set.create(benchPress.id, 5, 110, 9, batch1.id);
-
-    const batch2 = await Batch.create(workout.id, 'sample note');
-    const legs = await MuscleGroup.create('Legs');
-    const squat = await Exercise.create('Squat', 'The squatting of the legs', legs.id);
-    const set4 = await Set.create(squat.id, 5, 100, 9, batch2.id);
-    const set5 = await Set.create(squat.id, 5, 105, 9, batch2.id);
-    const set6 = await Set.create(squat.id, 5, 110, 9, batch2.id);
-  }
-
+  const handleInputChange = (batchId: number, field: string, value: string) => {
+    setBatches(batches.map(batch => {
+      if (batch.id === batchId) {
+        return { ...batch, [field]: value };
+      }
+      return batch;
+    }));
+  };
 
   return (
-    <ScrollView>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Workout</ThemedText>
-        <Ionicons name="person-circle" size={24} style={styles.headerImage} />
-      </ThemedView>
-      <Button title="Clear batches" onPress={handleClearBatches} />
-      <Button title="Clear sets" onPress={handleClearSets} />
-      <Button title="Clear workouts" onPress={handleClearWorkouts} />
-      <Button title="Clear exercises" onPress={handleClearExercises} />
-      <Button title="Clear all" onPress={handleClearAll} />
-      <Button title="Insert dummy data" onPress={insertDummyData} />
-      <Button title="Drop tables" onPress={handleDropTables} color={'red'} />
-      <Button title="Create tables" onPress={createTables} />
-    </ScrollView>
+    <View style={styles.contentContainer}>
+      {!workoutStarted ? (
+        <StartWorkoutButton onStartWorkout={handleStartWorkout} />
+      ) : (
+        <>
+          <ThemedView style={styles.titleContainer}>
+            <ThemedText type="title" style={styles.screenTitle}>Log Workout</ThemedText>
+          </ThemedView>
+
+          <ExerciseDropdown
+            open={open}
+            setOpen={setOpen}
+            selectedExercise={selectedExercise}
+            setSelectedExercise={setSelectedExercise}
+            exercises={exercises}
+          />
+
+          <Button title="Add Exercise" onPress={handleAddExercise} disabled={!selectedExercise} />
+
+          <BatchList
+            batches={batches}
+            onAddSet={handleAddSet}
+            onInputChange={handleInputChange}
+          />
+          <EndWorkoutButton onEndWorkout={handleEndWorkout} />
+        </>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  contentContainer: {
+    flex: 1,
+    padding: 20,
+    marginTop: 30,
   },
   titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+    marginBottom: 20,
+  },
+  screenTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });

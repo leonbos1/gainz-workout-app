@@ -4,41 +4,39 @@ import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
 import { ThemedView } from '@/components/ThemedView';
 import { Set } from '@/models/Set';
+import { HistoryWorkoutViewmodel } from '@/viewmodels/HistoryWorkoutViewmodel';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 interface HistoryWorkoutProps {
-    sets: Array<Set>;
-    date: Date;
-    title: string;
-    durationSeconds: number;
+    viewmodel: HistoryWorkoutViewmodel;
 }
 
-export function HistoryWorkout({ sets, date, title, durationSeconds }: HistoryWorkoutProps): JSX.Element {
+export function HistoryWorkout({ viewmodel }: HistoryWorkoutProps): JSX.Element {
     const heaviestSets = Object.values(
-        sets.reduce((acc, set) => {
-            const existingSet = acc[set.batchid];
-
-            if (!existingSet || set.weight > existingSet.weight) {
-                acc[set.batchid] = set;
-            }
-
+        viewmodel.exerciseBatches.reduce((acc, batch) => {
+            const sets = batch.sets;
+            sets.forEach(set => {
+                if (!acc[set.batchid] || acc[set.batchid].weight < set.weight) {
+                    acc[set.batchid] = set;
+                }
+            });
             return acc;
-        }, {} as Record<number, Set>)
+        }, {} as { [batchid: number]: Set })
     );
 
     return (
         <ThemedView style={styles.Container}>
             <View style={styles.Header}>
-                <ThemedText style={styles.Title}>{title}</ThemedText>
-                <ThemedText style={styles.Date}>{date.toDateString()}</ThemedText>
-                <ThemedText style={styles.Date}>{`Duration: ${durationSeconds} seconds`}</ThemedText>
+                <ThemedText style={styles.Title}>{viewmodel.title}</ThemedText>
+                <ThemedText style={styles.Date}>{viewmodel.date.toDateString()}</ThemedText>
+                <ThemedText style={styles.Date}>{`Duration: ${viewmodel.durationSeconds} seconds`}</ThemedText>
             </View>
             {heaviestSets.map((set, index) => (
                 <View key={index} style={styles.SetContainer}>
                     <ThemedText style={styles.SetText}>
-                        {`Batch ID: ${set.batchid}, Reps: ${set.amount}, Weight: ${set.weight} kg, RPE: ${set.rpe}`}
+                        {`Exercise: ${set.exerciseName}, Reps: ${set.amount}, Weight: ${set.weight} kg, RPE: ${set.rpe}`}
                     </ThemedText>
                 </View>
             ))}

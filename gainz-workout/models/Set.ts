@@ -17,6 +17,7 @@ export class Set {
   weight: number;
   rpe: number;
   batchid: number;
+  exerciseName: string | undefined;
 
   constructor(id: number, exerciseid: number, amount: number, weight: number, rpe: number, batchid: number) {
     this.id = id;
@@ -48,9 +49,6 @@ export class Set {
     try {
       const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
       const rows = await db.getAllAsync('SELECT * FROM exerciseset WHERE batchid = ?', [batchId]) as SetRow[];
-      console.log('found-rows', rows);
-      const allRows = await db.getAllAsync('SELECT * FROM exerciseset') as SetRow[];
-      console.log('all-rows', allRows);
       return rows.map(row => new Set(row.id, row.exerciseid, row.amount, row.weight, row.rpe, row.batchid));
     }
     catch (error) {
@@ -66,4 +64,18 @@ export class Set {
 
     return true;
   }
+
+  async getExerciseName() {
+    try {
+      const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+      const result = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [this.exerciseid]) as { name: string };
+      this.exerciseName = result.name;
+      return result.name;
+    }
+    catch (error) {
+      console.error('Failed to get exercise name:', error);
+      return '';
+    }
+  }
+
 }

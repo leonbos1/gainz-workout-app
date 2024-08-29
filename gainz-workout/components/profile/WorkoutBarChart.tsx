@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
-import { ThemedText } from './ThemedText';
+import { ThemedText } from '../ThemedText';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

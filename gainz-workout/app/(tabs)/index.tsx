@@ -4,8 +4,8 @@ import { StyleSheet, Dimensions, ScrollView } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Chart, ChartDataset } from '@/components/Chart';
-import { WorkoutBarChart } from '@/components/WorkoutBarChart';
+import { Chart, ChartDataset } from '@/components/profile/Chart';
+import { WorkoutBarChart } from '@/components/profile/WorkoutBarChart';
 import { Colors } from '@/constants/Colors';
 
 const screenWidth = Dimensions.get('window').width;

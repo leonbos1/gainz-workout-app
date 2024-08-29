@@ -23,6 +23,12 @@ type ExerciseRow = {
     static async create(name: string, description: string, musclegroupid: number) {
       const db = await SQLite.openDatabaseAsync('gainz.db', {useNewConnection: true});
 
+      const existingExercise = await db.getFirstAsync('SELECT * FROM exercise WHERE name = ?', [name]);
+
+      if (existingExercise) {
+        throw new Error('Exercise with the same name already exists');
+      }
+
       const result = await db.runAsync(
         `INSERT INTO exercise (name, description, musclegroupid) VALUES (?, ?, ?);`,
         [name, description, musclegroupid]
