@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-type BatchRow = {
+export type BatchRow = {
   id: number;
   workoutid: number;
   note: string;

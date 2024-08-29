@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
 import { Set } from '@/models/Set';
 
@@ -6,38 +6,53 @@ interface BatchItemProps {
   batch: { id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string };
   onAddSet: (batchId: number) => void;
   onInputChange: (batchId: number, field: string, value: string) => void;
+  onFinishExercise: (batchId: number) => void;
 }
 
-export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputChange }) => {
+export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputChange, onFinishExercise }) => {
+  const [isExerciseFinished, setIsExerciseFinished] = useState(false);
   const isAddEnabled = batch.reps.trim() !== '' && batch.weight.trim() !== '';
+
+  const handleFinishExercise = () => {
+    setIsExerciseFinished(true);
+    onFinishExercise(batch.id);
+  };
 
   return (
     <View style={styles.batchContainer}>
       <Text style={styles.batchTitle}>{batch.name}</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Reps"
-        value={batch.reps}
-        keyboardType="numeric"
-        onChangeText={(value) => onInputChange(batch.id, 'reps', value)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Weight (kg)"
-        value={batch.weight}
-        keyboardType="numeric"
-        onChangeText={(value) => onInputChange(batch.id, 'weight', value)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="RPE"
-        value={batch.rpe}
-        keyboardType="numeric"
-        onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
-      />
+      {!isExerciseFinished && (
+        <>
+          <TextInput
+            style={styles.input}
+            placeholder="Reps"
+            value={batch.reps}
+            keyboardType="numeric"
+            onChangeText={(value) => onInputChange(batch.id, 'reps', value)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Weight (kg)"
+            value={batch.weight}
+            keyboardType="numeric"
+            onChangeText={(value) => onInputChange(batch.id, 'weight', value)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="RPE"
+            value={batch.rpe}
+            keyboardType="numeric"
+            onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
+          />
 
-      <Button title="Add Set" onPress={() => onAddSet(batch.id)} disabled={!isAddEnabled} />
+          <Button title="Add Set" onPress={() => onAddSet(batch.id)} disabled={!isAddEnabled} />
+          <Button title="Finish Exercise" onPress={handleFinishExercise} />
+        </>
+      )}
+      {isExerciseFinished && (
+        <Button title='Continue Exercise' onPress={() => setIsExerciseFinished(false)} />
+      )}
 
       <FlatList
         data={batch.sets}

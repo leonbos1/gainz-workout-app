@@ -28,6 +28,15 @@ export class MuscleGroup {
     const db = await SQLite.openDatabaseAsync('gainz.db', {useNewConnection: true});
 
     const rows = await db.getAllAsync('SELECT * FROM musclegroup') as MuscleGroupRow[];
+    console.log('rows:', rows);
     return rows.map(row => new MuscleGroup(row.id, row.name));
+  }
+
+  static async removeAll() {
+    const db = await SQLite.openDatabaseAsync('gainz.db', {useNewConnection: true});
+
+    await db.runAsync('DELETE FROM musclegroup');
+
+    return true;
   }
 }

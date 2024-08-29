@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, Button } from 'react-native';
+import { View, StyleSheet, Button, Dimensions, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,11 +7,18 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
 import { Set } from '@/models/Set';
+import { Batch } from '@/models/Batch';
 
 import { StartWorkoutButton } from '@/components/workout/StartWorkoutButton';
 import { ExerciseDropdown } from '@/components/workout/ExerciseDropdown';
 import { BatchList } from '@/components/workout/BatchList';
 import { EndWorkoutButton } from '@/components/workout/EndWorkoutButton';
+
+import { Colors } from '@/constants/Colors';
+import TextButton from '@/components/TextButton';
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 export default function WorkoutScreen() {
   const [workoutStarted, setWorkoutStarted] = useState(false);
@@ -47,10 +54,7 @@ export default function WorkoutScreen() {
   const handleStartWorkout = async () => {
     try {
       // Create a new workout in the database
-      const newWorkout = await Workout.create({
-        start: new Date().toISOString(),
-        end: '',
-      });
+      const newWorkout = await Workout.create(new Date().toISOString(), '');
 
       // Set workout ID and mark workout as started
       setWorkoutId(newWorkout.id);
@@ -74,36 +78,68 @@ export default function WorkoutScreen() {
     }
   }
 
-  const handleAddExercise = () => {
-    if (selectedExercise) {
-      const newBatch = {
-        id: batches.length + 1,
-        name: selectedExercise,
-        sets: [],
-        reps: '',
-        weight: '',
-        rpe: '',
-      };
-      setBatches([...batches, newBatch]);
-      setSelectedExercise(null);
+  const handleAddExercise = async () => {
+    if (selectedExercise && workoutId) {
+      try {
+        const newBatch = await Batch.create(workoutId, '');
+
+        const updatedBatch = {
+          id: newBatch.id,
+          name: selectedExercise,
+          sets: [],
+          reps: '',
+          weight: '',
+          rpe: '',
+        };
+
+        setBatches([...batches, updatedBatch]);
+        setSelectedExercise(null);
+      } catch (error) {
+        console.error('Error adding batch:', error);
+      }
     }
   };
 
-  const handleAddSet = (batchId: number) => {
-    setBatches(batches.map(batch => {
-      if (batch.id === batchId) {
-        const newSet = new Set(
-          batch.sets.length + 1,
-          0,  // Assuming exerciseId is not needed here
+  const handleCancelWorkout = async () => {
+    try {
+      await Workout.delete(workoutId!);
+      setWorkoutId(null);
+      setWorkoutStarted(false);
+      setBatches([]);
+    } catch (error) {
+      console.error('Error canceling workout:', error);
+    }
+  }
+
+  const handleAddSet = async (batchId: number) => {
+    const batch = batches.find(b => b.id === batchId);
+    const exercise = exercises.find(e => e.value === batch?.name);
+    const exerciseId = await Exercise.findIdByName(exercise?.value || '');
+
+    if (batch && exercise) {
+      try {
+        // Assuming you have a method in the Set model to create a set in the database
+        const newSet = await Set.create(
+          exerciseId,
           parseInt(batch.reps),
           parseFloat(batch.weight),
           parseFloat(batch.rpe),
           batchId
         );
-        return { ...batch, sets: [...batch.sets, newSet], reps: '', weight: '', rpe: '' };
+
+        const updatedBatch = {
+          ...batch,
+          sets: [...batch.sets, newSet], // Add the new set to the batch's set list
+          reps: '',
+          weight: '',
+          rpe: '',
+        };
+
+        setBatches(batches.map(b => (b.id === batchId ? updatedBatch : b)));
+      } catch (error) {
+        console.error('Error adding set:', error);
       }
-      return batch;
-    }));
+    }
   };
 
   const handleInputChange = (batchId: number, field: string, value: string) => {
@@ -115,15 +151,25 @@ export default function WorkoutScreen() {
     }));
   };
 
+  const handleFinishExercise = (batchId: number) => {
+    
+  }
+
   return (
     <View style={styles.contentContainer}>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title" style={styles.screenTitle}>Workout</ThemedText>
+      </ThemedView>
       {!workoutStarted ? (
         <StartWorkoutButton onStartWorkout={handleStartWorkout} />
       ) : (
         <>
-          <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title" style={styles.screenTitle}>Log Workout</ThemedText>
-          </ThemedView>
+          <BatchList
+            batches={batches}
+            onAddSet={handleAddSet}
+            onInputChange={handleInputChange}
+            onFinishExercise={handleFinishExercise}
+          />
 
           <ExerciseDropdown
             open={open}
@@ -133,13 +179,11 @@ export default function WorkoutScreen() {
             exercises={exercises}
           />
 
-          <Button title="Add Exercise" onPress={handleAddExercise} disabled={!selectedExercise} />
+          <ThemedView style={styles.buttonContainer}>
+            <TextButton onPress={handleAddExercise} title="Add Exercise" />
+            <TextButton onPress={handleCancelWorkout} title="Cancel Workout" />
+          </ThemedView>
 
-          <BatchList
-            batches={batches}
-            onAddSet={handleAddSet}
-            onInputChange={handleInputChange}
-          />
           <EndWorkoutButton onEndWorkout={handleEndWorkout} />
         </>
       )}
@@ -149,15 +193,28 @@ export default function WorkoutScreen() {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    flex: 1,
-    padding: 20,
-    marginTop: 30,
+    paddingTop: 20,
+    paddingHorizontal: 5,
+    paddingBottom: 40,
+    backgroundColor: Colors.light.background,
+    width: screenWidth,
+    height: '100%',
   },
   titleContainer: {
-    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   screenTitle: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: Colors.light.text,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 20,
   },
 });

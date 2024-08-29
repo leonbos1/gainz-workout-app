@@ -7,9 +7,10 @@ interface BatchListProps {
   batches: Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>;
   onAddSet: (batchId: number) => void;
   onInputChange: (batchId: number, field: string, value: string) => void;
+  onFinishExercise: (batchId: number) => void;
 }
 
-export const BatchList: React.FC<BatchListProps> = ({ batches, onAddSet, onInputChange }) => {
+export const BatchList: React.FC<BatchListProps> = ({ batches, onAddSet, onInputChange, onFinishExercise }) => {
   return (
     <FlatList
       data={batches}
@@ -19,6 +20,7 @@ export const BatchList: React.FC<BatchListProps> = ({ batches, onAddSet, onInput
           batch={item}
           onAddSet={onAddSet}
           onInputChange={onInputChange}
+          onFinishExercise={onFinishExercise}
         />
       )}
     />

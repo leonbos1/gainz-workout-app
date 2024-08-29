@@ -33,7 +33,7 @@ export default function HistoryScreen() {
 
   const fetchAndPrepareData = async () => {
     try {
-      const fetchedWorkouts = await Workout.findAll();
+      const fetchedWorkouts = await Workout.findAllFinished();
 
       const historyWorkoutViewmodels = await Promise.all(
         fetchedWorkouts.map(async (workout) => {
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10,
+    padding: 20,
   },
   screenTitle: {
     fontSize: 24,

@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
 // Define a type for the Set row returned by the database
-type SetRow = {
+export type SetRow = {
   id: number;
   exerciseid: number;
   amount: number;

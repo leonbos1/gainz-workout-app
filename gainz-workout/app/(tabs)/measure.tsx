@@ -33,7 +33,8 @@ export default function MeasureScreen() {
     await Batch.removeAll();
     await Set.removeAll();
     await Workout.removeAll();
-    await Exercise.removeAll
+    await Exercise.removeAll();
+    await MuscleGroup.removeAll();
   }
 
   const handleDropTables = async () => {
@@ -42,6 +43,19 @@ export default function MeasureScreen() {
 
   const handleAddDumbbellPress = async () => {
     await Exercise.create('Dumbbell Press', 'The pressing of the chest', 1);
+  }
+
+  const insertExercises = async () => {
+    await MuscleGroup.create('Chest');
+    await MuscleGroup.create('Legs');
+    await MuscleGroup.create('Back');
+    await MuscleGroup.create('Shoulders');
+    await MuscleGroup.create('Arms');
+    await Exercise.create('Bench Press', 'The pressing of the chest', 1);
+    await Exercise.create('Squat', 'The squatting of the legs', 2);
+    await Exercise.create('Deadlift', 'The lifting of the back', 3);
+    await Exercise.create('Shoulder Press', 'The pressing of the shoulders', 4);
+    await Exercise.create('Bicep Curl', 'The curling of the biceps', 5);
   }
 
   const insertDummyData = async () => {
@@ -102,6 +116,7 @@ export default function MeasureScreen() {
       <Button title="Drop tables" onPress={handleDropTables} color={'red'} />
       <Button title="Create tables" onPress={createTables} />
       <Button title="Add Dumbbell Press" onPress={handleAddDumbbellPress} />
+      <Button title="Insert exercises" onPress={insertExercises} />
     </ScrollView>
   );
 }

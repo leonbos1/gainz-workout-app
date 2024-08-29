@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-type WorkoutRow = {
+export type WorkoutRow = {
   id: number;
   starttime: string;
   endtime: string;
@@ -58,6 +58,27 @@ export class Workout {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
     await db.runAsync('UPDATE workout SET endtime = ? WHERE id = ?', [endtime, id]);
+
+    return true;
+  }
+
+  static async findAllFinished(): Promise<Workout[]> {
+    try {
+      const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+      const rows = await db.getAllAsync('SELECT * FROM workout WHERE endtime IS NOT NULL') as WorkoutRow[];
+      return rows.map(row => new Workout(row.id, "sample title", row.starttime, row.endtime));
+    }
+    catch (error) {
+      console.error('Failed to find all finished workouts:', error);
+      return [];
+    }
+  }
+
+  static async delete(id: number) {
+    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+    await db.runAsync('DELETE FROM workout WHERE id = ?', [id]);
 
     return true;
   }
