@@ -10,14 +10,16 @@ export const Colors = {
   light: {
     text: '#b8b8b8',
     background: '#0e0f26',
-    backgroundSecondary: '#1a1b3a',
+    backgroundSecondary: '#111227',
     secundary: '#3b018c',
     tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
     card: '#1a1b3a',
-    textButton: '#102bc6',
+    textButton: '#0055ff',
+    dangerButton: '#c61010',
+    input: '#292938',
   },
   dark: {
     text: '#ECEDEE',

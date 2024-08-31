@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
 import { Set } from '@/models/Set';
+import { Colors } from '@/constants/Colors';
+import TextButton from '../TextButton';
+import { ThemedView } from '../ThemedView';
 
 interface BatchItemProps {
   batch: { id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string };
@@ -24,30 +27,31 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
 
       {!isExerciseFinished && (
         <>
+          <Text style={styles.label}>Reps</Text>
           <TextInput
             style={styles.input}
-            placeholder="Reps"
             value={batch.reps}
             keyboardType="numeric"
             onChangeText={(value) => onInputChange(batch.id, 'reps', value)}
           />
+          <Text style={styles.label}>Weight (kg)</Text>
           <TextInput
             style={styles.input}
-            placeholder="Weight (kg)"
             value={batch.weight}
             keyboardType="numeric"
             onChangeText={(value) => onInputChange(batch.id, 'weight', value)}
           />
+          <Text style={styles.label}>RPE</Text>
           <TextInput
             style={styles.input}
-            placeholder="RPE"
             value={batch.rpe}
             keyboardType="numeric"
             onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
           />
-
-          <Button title="Add Set" onPress={() => onAddSet(batch.id)} disabled={!isAddEnabled} />
-          <Button title="Finish Exercise" onPress={handleFinishExercise} />
+          <ThemedView style={styles.buttonContainer}>
+            <TextButton title="Add Set" onPress={() => onAddSet(batch.id)} disabled={!isAddEnabled} />
+            <TextButton title='Finish Exercise' onPress={handleFinishExercise} disabled={false} />
+          </ThemedView>
         </>
       )}
       {isExerciseFinished && (
@@ -71,7 +75,8 @@ const styles = StyleSheet.create({
   batchContainer: {
     marginBottom: 20,
     padding: 15,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: Colors.light.backgroundSecondary,
+    color: Colors.light.text,
     borderRadius: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -83,6 +88,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: Colors.light.text,
   },
   input: {
     borderColor: '#ccc',
@@ -91,9 +97,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 4,
     fontSize: 16,
+    color: Colors.light.text,
+    backgroundColor: Colors.light.input,
   },
   setText: {
     fontSize: 16,
     marginTop: 5,
+    color: Colors.light.text,
+  },
+  label: {
+    fontSize: 16,
+    color: Colors.light.text,
+    marginBottom: 5,
+  },
+  buttonContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 20,
   },
 });

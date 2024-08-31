@@ -30,7 +30,7 @@ export const createTables = async () => {
 
     CREATE TABLE IF NOT EXISTS exercise (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
+      name TEXT NOT NULL UNIQUE,
       description TEXT,
       musclegroupid INTEGER,
       FOREIGN KEY (musclegroupid) REFERENCES musclegroup(id)

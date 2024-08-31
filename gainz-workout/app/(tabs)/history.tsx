@@ -72,7 +72,7 @@ export default function HistoryScreen() {
 
   useEffect(() => {
     fetchAndPrepareData();
-  }, []); // Empty dependency array ensures this runs once on component mount
+  }, []);
 
   return (
     <View style={styles.contentContainer}>

@@ -2,15 +2,14 @@ import React from 'react';
 import { Text, Pressable, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
-interface TextButtonProps {
+interface DangerTextButtonProps {
     title: string;
     onPress: () => void;
-    disabled?: boolean;
 }
 
-export default function TextButton({ title, onPress, disabled }: TextButtonProps) {
+export default function DangerTextButton({ title, onPress }: DangerTextButtonProps) {
     return (
-        <Pressable disabled={disabled} onPress={onPress} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1.0 }]}>
+        <Pressable onPress={onPress} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1.0 }]}>
             <Text style={styles.text}>{title}</Text>
         </Pressable>
     );
@@ -18,7 +17,7 @@ export default function TextButton({ title, onPress, disabled }: TextButtonProps
 
 const styles = StyleSheet.create({
     text: {
-        color: Colors.light.textButton,
+        color: Colors.light.dangerButton,
         fontSize: 16,
     },
 });

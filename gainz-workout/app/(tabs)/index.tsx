@@ -1,16 +1,26 @@
 import React from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Dimensions, ScrollView } from 'react-native';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Chart, ChartDataset } from '@/components/profile/Chart';
-import { WorkoutBarChart } from '@/components/profile/WorkoutBarChart';
+// import { WorkoutBarChart } from '@/components/profile/WorkoutBarChart';
 import { Colors } from '@/constants/Colors';
+import { Workout } from '@/models/Workout';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function ProfileScreen() {
+export default async function ProfileScreen() {
+  // const workoutData = {
+  //   title: 'Workouts Per Week',
+  //   labels: ['7/15', '7/22', '7/29', '8/5', '8/12', '8/19', '8/26'],
+  //   datasets: [
+  //     {
+  //       data: [3, 3, 4, 3, 5, 3, 2],
+  //     },
+  //   ],
+  // };
+
+  // const workoutData = await Workout.getWorkoutsPerWeek(8);
   const workoutData = {
     title: 'Workouts Per Week',
     labels: ['7/15', '7/22', '7/29', '8/5', '8/12', '8/19', '8/26'],
@@ -42,7 +52,7 @@ export default function ProfileScreen() {
         <ThemedText type="title" style={styles.screenTitle}>Profile</ThemedText>
       </ThemedView>
 
-      <WorkoutBarChart data={workoutData} />
+      {/* <WorkoutBarChart workoutWeekData={workoutData} /> */}
       <Chart data={benchPressData} title="Estimated Bench Press 1RM" />
       <Chart data={squatData} title="Estimated Squat 1RM" />
     </ScrollView>

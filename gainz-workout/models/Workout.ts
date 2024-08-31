@@ -6,6 +6,18 @@ export type WorkoutRow = {
   endtime: string;
 };
 
+export class WorkoutWeekData {
+  constructor(title: string, labels: string[], datasets: { data: number[] }[]) {
+    this.title = title;
+    this.labels = labels;
+    this.datasets = datasets
+  }
+
+  title: string = '';
+  labels: string[] = [];
+  datasets: { data: number[]; }[] = [];
+}
+
 export class Workout {
   id: number;
   title: string;
@@ -66,7 +78,7 @@ export class Workout {
     try {
       const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
-      const rows = await db.getAllAsync('SELECT * FROM workout WHERE endtime IS NOT NULL') as WorkoutRow[];
+      const rows = await db.getAllAsync('SELECT * FROM workout WHERE endtime IS NOT NULL AND endtime != ""') as WorkoutRow[];
       return rows.map(row => new Workout(row.id, "sample title", row.starttime, row.endtime));
     }
     catch (error) {
@@ -81,5 +93,46 @@ export class Workout {
     await db.runAsync('DELETE FROM workout WHERE id = ?', [id]);
 
     return true;
+  }
+
+  static async getWorkoutsPerWeek(weeks: number): Promise<WorkoutWeekData> {
+    // returns something like:
+    // const workoutData = {
+    // title: 'Workouts Per Week',
+    // labels: ['7/15', '7/22', '7/29', '8/5', '8/12', '8/19', '8/26'],
+    // datasets: [
+    //   {
+    //     data: [3, 3, 4, 3, 5, 3, 2],
+    //   },
+    // ],
+    // };
+    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+    const rows = await db.getAllAsync(`
+        SELECT strftime('%W', starttime) as week, COUNT(*) as count
+        FROM workout
+        WHERE endtime IS NOT NULL
+        GROUP BY week
+        ORDER BY week DESC
+        LIMIT ?
+      `, [weeks],) as { week: string, count: number }[];
+
+    const data: number[] = [];
+    for (let i = 0; i < weeks; i++) {
+      data.push(0);
+    }
+
+    for (const row of rows) {
+      data[weeks - parseInt(row.week)] = row.count;
+    }
+
+    const labels = [];
+    for (let i = weeks - 1; i >= 0; i--) {
+      labels.push(new Date(new Date().setDate(new Date().getDate() - i * 7)).toLocaleDateString());
+    }
+
+    const workoutData = new WorkoutWeekData('Workouts Per Week', labels, [{ data }]);
+
+    return workoutData;
   }
 }

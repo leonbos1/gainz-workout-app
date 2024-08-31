@@ -4,26 +4,17 @@ import { BarChart } from 'react-native-chart-kit';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { ThemedText } from '../ThemedText';
+import { WorkoutWeekData } from '@/models/Workout';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-interface WorkoutBarChartProps {
-  data: {
-    title: string;
-    labels: string[];
-    datasets: {
-      data: number[];
-    }[];
-  };
-}
-
-export const WorkoutBarChart: React.FC<WorkoutBarChartProps> = ({ data }) => {
+export const WorkoutBarChart: React.FC<{ workoutWeekData: WorkoutWeekData }> = ({ workoutWeekData }) => {
   return (
     <ThemedView style={styles.chartContainer}>
-      <ThemedText style={styles.chartTitle}>{data.title}</ThemedText>
+      <ThemedText style={styles.chartTitle}>{workoutWeekData.title}</ThemedText>
       <BarChart
-        data={data}
+        data={workoutWeekData}
         width={screenWidth - 20}
         height={screenHeight / 4}
         yAxisLabel=""

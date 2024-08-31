@@ -2,6 +2,7 @@ import React from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import { Exercise } from '@/models/Exercise';
 
 interface ExerciseDropdownProps {
   open: boolean;
@@ -9,6 +10,7 @@ interface ExerciseDropdownProps {
   selectedExercise: string | null;
   setSelectedExercise: React.Dispatch<React.SetStateAction<string | null>>;  // Updated type
   exercises: Array<{ label: string, value: string }>;
+  addExercise: () => void;
 }
 
 export const ExerciseDropdown: React.FC<ExerciseDropdownProps> = ({
@@ -17,12 +19,14 @@ export const ExerciseDropdown: React.FC<ExerciseDropdownProps> = ({
   selectedExercise,
   setSelectedExercise,
   exercises,
+  addExercise,
 }) => {
   return (
     <DropDownPicker
       open={open}
       value={selectedExercise}
       items={exercises}
+      onChangeValue={addExercise}
       setOpen={setOpen}
       setValue={setSelectedExercise}
       searchable={true}

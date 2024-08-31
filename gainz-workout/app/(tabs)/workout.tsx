@@ -16,6 +16,8 @@ import { EndWorkoutButton } from '@/components/workout/EndWorkoutButton';
 
 import { Colors } from '@/constants/Colors';
 import TextButton from '@/components/TextButton';
+import DangerTextButton from '@/components/DangerTextButton';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -28,7 +30,6 @@ export default function WorkoutScreen() {
   const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
   const [exercises, setExercises] = useState<Array<{ label: string, value: string }>>([]);
 
-  // Fetch exercises from the database
   const fetchExercises = async () => {
     try {
       const fetchedExercises = await Exercise.findAll();
@@ -42,7 +43,6 @@ export default function WorkoutScreen() {
     }
   };
 
-  // useFocusEffect to reload data every time the screen comes into focus
   useFocusEffect(
     useCallback(() => {
       fetchExercises();
@@ -50,13 +50,10 @@ export default function WorkoutScreen() {
     }, [])
   );
 
-  // Function to handle starting a workout
   const handleStartWorkout = async () => {
     try {
-      // Create a new workout in the database
       const newWorkout = await Workout.create(new Date().toISOString(), '');
 
-      // Set workout ID and mark workout as started
       setWorkoutId(newWorkout.id);
       setWorkoutStarted(true);
     } catch (error) {
@@ -66,10 +63,8 @@ export default function WorkoutScreen() {
 
   const handleEndWorkout = async () => {
     try {
-      // Update the workout in the database
       await Workout.endWorkout(workoutId!, new Date().toISOString());
 
-      // Reset state
       setWorkoutId(null);
       setWorkoutStarted(false);
       setBatches([]);
@@ -118,7 +113,6 @@ export default function WorkoutScreen() {
 
     if (batch && exercise) {
       try {
-        // Assuming you have a method in the Set model to create a set in the database
         const newSet = await Set.create(
           exerciseId,
           parseInt(batch.reps),
@@ -129,7 +123,7 @@ export default function WorkoutScreen() {
 
         const updatedBatch = {
           ...batch,
-          sets: [...batch.sets, newSet], // Add the new set to the batch's set list
+          sets: [...batch.sets, newSet],
           reps: '',
           weight: '',
           rpe: '',
@@ -152,7 +146,7 @@ export default function WorkoutScreen() {
   };
 
   const handleFinishExercise = (batchId: number) => {
-    
+
   }
 
   return (
@@ -177,11 +171,11 @@ export default function WorkoutScreen() {
             selectedExercise={selectedExercise}
             setSelectedExercise={setSelectedExercise}
             exercises={exercises}
+            addExercise={handleAddExercise}
           />
 
           <ThemedView style={styles.buttonContainer}>
-            <TextButton onPress={handleAddExercise} title="Add Exercise" />
-            <TextButton onPress={handleCancelWorkout} title="Cancel Workout" />
+            <DangerTextButton onPress={handleCancelWorkout} title="Cancel Workout" />
           </ThemedView>
 
           <EndWorkoutButton onEndWorkout={handleEndWorkout} />

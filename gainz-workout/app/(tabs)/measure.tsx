@@ -97,7 +97,6 @@ export default function MeasureScreen() {
     const set13 = await Set.create(bicepCurl.id, 5, 100, 9, batch5.id);
     const set14 = await Set.create(bicepCurl.id, 5, 105, 9, batch5.id);
     const set15 = await Set.create(bicepCurl.id, 5, 110, 9, batch5.id);
-
   }
 
 

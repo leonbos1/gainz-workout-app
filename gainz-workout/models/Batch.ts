@@ -36,7 +36,6 @@ export class Batch {
 
   static async findByWorkoutId(workoutId: number): Promise<Batch[]> {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
-
     const rows = await db.getAllAsync('SELECT * FROM batch WHERE workoutid = ?', [workoutId]) as BatchRow[];
     return rows.map(row => new Batch(row.id, row.workoutid, row.note));
   }

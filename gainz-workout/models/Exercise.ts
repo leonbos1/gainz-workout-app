@@ -1,7 +1,4 @@
 import * as SQLite from 'expo-sqlite';
-import { WorkoutRow } from './Workout';
-import { BatchRow } from './Batch';
-import { SetRow } from './Set';
 
 export type ExerciseRow = {
   id: number;
