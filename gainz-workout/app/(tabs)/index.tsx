@@ -1,35 +1,30 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Chart, ChartDataset } from '@/components/profile/Chart';
-// import { WorkoutBarChart } from '@/components/profile/WorkoutBarChart';
+import { WorkoutBarChart } from '@/components/profile/WorkoutBarChart';
 import { Colors } from '@/constants/Colors';
-import { Workout } from '@/models/Workout';
+import { Workout, WorkoutWeekData } from '@/models/Workout';
+import { useFocusEffect } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default async function ProfileScreen() {
-  // const workoutData = {
-  //   title: 'Workouts Per Week',
-  //   labels: ['7/15', '7/22', '7/29', '8/5', '8/12', '8/19', '8/26'],
-  //   datasets: [
-  //     {
-  //       data: [3, 3, 4, 3, 5, 3, 2],
-  //     },
-  //   ],
-  // };
+export default function ProfileScreen() {
+  const [workoutData, setWorkoutData] = useState<WorkoutWeekData | null>(null);
 
-  // const workoutData = await Workout.getWorkoutsPerWeek(8);
-  const workoutData = {
-    title: 'Workouts Per Week',
-    labels: ['7/15', '7/22', '7/29', '8/5', '8/12', '8/19', '8/26'],
-    datasets: [
-      {
-        data: [3, 3, 4, 3, 5, 3, 2],
-      },
-    ],
-  };
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchWorkoutData() {
+        const data = await Workout.getWorkoutsPerWeek(8);
+        setWorkoutData(data);
+      }
+
+      fetchWorkoutData();
+      return () => {
+      };
+    }, [])
+  );
 
   const benchPressData = new ChartDataset(
     [100, 100, 105, 110, 115, 120, 125, 130, 135],
@@ -47,12 +42,11 @@ export default async function ProfileScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title" style={styles.screenTitle}>Profile</ThemedText>
       </ThemedView>
 
-      {/* <WorkoutBarChart workoutWeekData={workoutData} /> */}
+      {workoutData && <WorkoutBarChart workoutWeekData={workoutData} />}
       <Chart data={benchPressData} title="Estimated Bench Press 1RM" />
       <Chart data={squatData} title="Estimated Squat 1RM" />
     </ScrollView>

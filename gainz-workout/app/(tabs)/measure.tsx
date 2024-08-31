@@ -99,6 +99,47 @@ export default function MeasureScreen() {
     const set15 = await Set.create(bicepCurl.id, 5, 110, 9, batch5.id);
   }
 
+  const insertWorkouts = async () => {
+    const currentWeek = new Date();
+    const lastWeek = new Date();
+    lastWeek.setDate(currentWeek.getDate() - 7);
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(currentWeek.getDate() - 14);
+    const threeWeeksAgo = new Date();
+    threeWeeksAgo.setDate(currentWeek.getDate() - 21);
+    const fourWeeksAgo = new Date();
+    fourWeeksAgo.setDate(currentWeek.getDate() - 28);
+    const fiveWeeksAgo = new Date();
+    fiveWeeksAgo.setDate(currentWeek.getDate() - 35);
+    const sixWeeksAgo = new Date();
+    sixWeeksAgo.setDate(currentWeek.getDate() - 42);
+    const sevenWeeksAgo = new Date();
+    sevenWeeksAgo.setDate(currentWeek.getDate() - 49);
+    const eightWeeksAgo = new Date();
+    eightWeeksAgo.setDate(currentWeek.getDate() - 56);
+    const nineWeeksAgo = new Date();
+    nineWeeksAgo.setDate(currentWeek.getDate() - 63);
+    const tenWeeksAgo = new Date();
+    tenWeeksAgo.setDate(currentWeek.getDate() - 70);
+    const elevenWeeksAgo = new Date();
+    elevenWeeksAgo.setDate(currentWeek.getDate() - 77);
+    const twelveWeeksAgo = new Date();
+    twelveWeeksAgo.setDate(currentWeek.getDate() - 84);
+
+    const workout1 = await Workout.create(currentWeek.toISOString(), currentWeek.toISOString());
+    const workout2 = await Workout.create(lastWeek.toISOString(), lastWeek.toISOString());
+    const workout3 = await Workout.create(twoWeeksAgo.toISOString(), twoWeeksAgo.toISOString());
+    const workout4 = await Workout.create(threeWeeksAgo.toISOString(), threeWeeksAgo.toISOString());
+    const workout5 = await Workout.create(fourWeeksAgo.toISOString(), fourWeeksAgo.toISOString());
+    const workout6 = await Workout.create(fiveWeeksAgo.toISOString(), fiveWeeksAgo.toISOString());
+    const workout7 = await Workout.create(sixWeeksAgo.toISOString(), sixWeeksAgo.toISOString());
+    const workout8 = await Workout.create(sevenWeeksAgo.toISOString(), sevenWeeksAgo.toISOString());
+    const workout9 = await Workout.create(eightWeeksAgo.toISOString(), eightWeeksAgo.toISOString());
+    const workout10 = await Workout.create(nineWeeksAgo.toISOString(), nineWeeksAgo.toISOString());
+    const workout11 = await Workout.create(tenWeeksAgo.toISOString(), tenWeeksAgo.toISOString());
+    const workout12 = await Workout.create(elevenWeeksAgo.toISOString(), elevenWeeksAgo.toISOString());
+  }
+
 
   return (
     <ScrollView>
@@ -116,6 +157,7 @@ export default function MeasureScreen() {
       <Button title="Create tables" onPress={createTables} />
       <Button title="Add Dumbbell Press" onPress={handleAddDumbbellPress} />
       <Button title="Insert exercises" onPress={insertExercises} />
+      <Button title="Insert workouts" onPress={insertWorkouts} />
     </ScrollView>
   );
 }

@@ -96,39 +96,36 @@ export class Workout {
   }
 
   static async getWorkoutsPerWeek(weeks: number): Promise<WorkoutWeekData> {
-    // returns something like:
-    // const workoutData = {
-    // title: 'Workouts Per Week',
-    // labels: ['7/15', '7/22', '7/29', '8/5', '8/12', '8/19', '8/26'],
-    // datasets: [
-    //   {
-    //     data: [3, 3, 4, 3, 5, 3, 2],
-    //   },
-    // ],
-    // };
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
     const rows = await db.getAllAsync(`
-        SELECT strftime('%W', starttime) as week, COUNT(*) as count
-        FROM workout
-        WHERE endtime IS NOT NULL
-        GROUP BY week
-        ORDER BY week DESC
-        LIMIT ?
-      `, [weeks],) as { week: string, count: number }[];
+      SELECT strftime('%W', starttime) as week, COUNT(*) as count
+      FROM workout
+      WHERE endtime IS NOT NULL and endtime != ''
+      GROUP BY week
+      ORDER BY week DESC
+      LIMIT ?
+    `, [weeks]) as { week: string, count: number }[];
 
-    const data: number[] = [];
-    for (let i = 0; i < weeks; i++) {
-      data.push(0);
-    }
+    const data: number[] = new Array(weeks).fill(0);
+
+    const currentWeek = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
 
     for (const row of rows) {
-      data[weeks - parseInt(row.week)] = row.count;
+      const week = parseInt(row.week);
+      const count = row.count;
+
+      const index = weeks - (currentWeek - week) - 1;
+      if (index >= 0 && index < weeks) {
+        data[index] = count;
+      }
     }
 
     const labels = [];
     for (let i = weeks - 1; i >= 0; i--) {
-      labels.push(new Date(new Date().setDate(new Date().getDate() - i * 7)).toLocaleDateString());
+      const date = new Date();
+      date.setDate(date.getDate() - i * 7);
+      labels.push(date.toLocaleDateString());
     }
 
     const workoutData = new WorkoutWeekData('Workouts Per Week', labels, [{ data }]);
