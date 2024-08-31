@@ -19,6 +19,8 @@ export const WorkoutBarChart: React.FC<{ workoutWeekData: WorkoutWeekData }> = (
         height={screenHeight / 4}
         yAxisLabel=""
         yAxisSuffix=""
+        yAxisInterval={1}
+        showBarTops={true}
         fromZero={true}
         chartConfig={{
           backgroundGradientFrom: Colors.light.background,

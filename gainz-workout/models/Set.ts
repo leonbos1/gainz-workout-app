@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { ChartDataset } from './ChartDataset';
 
 // Define a type for the Set row returned by the database
 export type SetRow = {
@@ -78,4 +79,34 @@ export class Set {
     }
   }
 
+  static async getEstimated1RM(exerciseId: number): Promise<ChartDataset> {
+    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+    const rows = await db.getAllAsync(`
+      SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, SUM(weight * amount * 0.0333 + weight) as total
+      FROM exerciseset es
+      JOIN batch b ON es.batchid = b.id
+      JOIN workout w ON b.workoutid = w.id
+      WHERE es.exerciseid = ?
+      GROUP BY monday
+      ORDER BY monday DESC
+      LIMIT 9
+    `, [exerciseId]) as { monday: string, total: number }[];
+
+    const data: number[] = new Array(9).fill(0);
+    const labels: string[] = new Array(9).fill('');
+
+    rows.forEach((row, index) => {
+      data[index] = row.total;
+      const date = new Date(row.monday);
+      labels[index] = `${date.getMonth() + 1}/${date.getDate()}`;
+    });
+
+    data.reverse();
+    labels.reverse();
+
+    const exerciseName = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };
+
+    return new ChartDataset(data, labels, exerciseName.name);
+  }
 }

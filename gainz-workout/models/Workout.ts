@@ -125,7 +125,7 @@ export class Workout {
     for (let i = weeks - 1; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i * 7);
-      labels.push(date.toLocaleDateString());
+      labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
     }
 
     const workoutData = new WorkoutWeekData('Workouts Per Week', labels, [{ data }]);
