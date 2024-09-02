@@ -11,16 +11,16 @@ export class Exercise {
   id: number;
   name: string;
   description: string;
-  musclegroupid: number;
+  musclegroupid: number | null;
 
-  constructor(id: number, name: string, description: string, musclegroupid: number) {
+  constructor(id: number, name: string, description: string, musclegroupid: number | null) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.musclegroupid = musclegroupid;
   }
 
-  static async create(name: string, description: string, musclegroupid: number) {
+  static async create(name: string, description: string, musclegroupid: number | null) {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
     const existingExercise = await db.getFirstAsync('SELECT * FROM exercise WHERE name = ?', [name]);
@@ -33,6 +33,11 @@ export class Exercise {
       `INSERT INTO exercise (name, description, musclegroupid) VALUES (?, ?, ?);`,
       [name, description, musclegroupid]
     );
+
+    if (!musclegroupid) {
+      return new Exercise(result.lastInsertRowId, name, description, null);
+    }
+
     return new Exercise(result.lastInsertRowId, name, description, musclegroupid);
   }
 
@@ -51,7 +56,7 @@ export class Exercise {
     return true;
   }
 
-  static async findIdByName(name: string): Promise<number> {
+  static async findIdByName(name: string): Promise<number | null> {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
     const result = await db.getFirstAsync('SELECT id FROM exercise WHERE name = ?', [name]) as { id: number };

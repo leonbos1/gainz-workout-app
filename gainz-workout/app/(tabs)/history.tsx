@@ -33,7 +33,7 @@ export default function HistoryScreen() {
 
   const fetchAndPrepareData = async () => {
     try {
-      const fetchedWorkouts = await Workout.findAllFinished();
+      const fetchedWorkouts = await Workout.findAllFinished(10);
 
       const historyWorkoutViewmodels = await Promise.all(
         fetchedWorkouts.map(async (workout) => {

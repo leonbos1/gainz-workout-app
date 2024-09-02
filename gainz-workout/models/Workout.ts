@@ -74,11 +74,11 @@ export class Workout {
     return true;
   }
 
-  static async findAllFinished(): Promise<Workout[]> {
+  static async findAllFinished(limit: number): Promise<Workout[]> {
     try {
       const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
-      const rows = await db.getAllAsync('SELECT * FROM workout WHERE endtime IS NOT NULL AND endtime != ""') as WorkoutRow[];
+      const rows = await db.getAllAsync('SELECT * FROM workout WHERE endtime IS NOT NULL AND endtime != "" ORDER BY starttime DESC LIMIT ?', [limit]) as WorkoutRow[];
       return rows.map(row => new Workout(row.id, "sample title", row.starttime, row.endtime));
     }
     catch (error) {
