@@ -79,25 +79,26 @@ export class Set {
     }
   }
 
-  static async getEstimated1RM(exerciseId: number): Promise<ChartDataset> {
+  static async getEstimated1RM(exerciseName: string, weeks: number): Promise<ChartDataset> {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
     const rows = await db.getAllAsync(`
-      SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, SUM(weight * amount * 0.0333 + weight) as total
+      SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 
+             MAX(es.weight * (1 + (es.amount * 0.0333))) as estimated1RM
       FROM exerciseset es
       JOIN batch b ON es.batchid = b.id
       JOIN workout w ON b.workoutid = w.id
-      WHERE es.exerciseid = ?
+      WHERE es.exerciseid = (SELECT id FROM exercise WHERE name = ?)
       GROUP BY monday
       ORDER BY monday DESC
-      LIMIT 9
-    `, [exerciseId]) as { monday: string, total: number }[];
+      LIMIT ?
+    `, [exerciseName, weeks]) as { monday: string, estimated1RM: number }[];
 
     const data: number[] = new Array(9).fill(0);
     const labels: string[] = new Array(9).fill('');
 
     rows.forEach((row, index) => {
-      data[index] = row.total;
+      data[index] = row.estimated1RM;
       const date = new Date(row.monday);
       labels[index] = `${date.getMonth() + 1}/${date.getDate()}`;
     });
@@ -105,8 +106,13 @@ export class Set {
     data.reverse();
     labels.reverse();
 
-    const exerciseName = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };
+    // make sure 3/4 of the labels are empty strings
+    for (let i = 0; i < labels.length; i++) {
+      if (i % 4 !== 0) {
+        labels[i] = '';
+      }
+    }
 
-    return new ChartDataset(data, labels, exerciseName.name);
+    return new ChartDataset(data, labels, exerciseName);
   }
 }

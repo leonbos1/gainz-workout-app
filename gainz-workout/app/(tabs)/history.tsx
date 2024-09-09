@@ -50,6 +50,9 @@ export default function HistoryScreen() {
 
           const exerciseBatches = await Promise.all(
             heaviestSets.map(async (set) => {
+              if (!set) {
+                return { batchId: 0, sets: [], exercisename: '' };
+              }
               const exerciseName = await set.getExerciseName();
               return { batchId: set.batchid, sets: [set], exercisename: exerciseName };
             })

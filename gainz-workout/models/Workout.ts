@@ -132,4 +132,12 @@ export class Workout {
 
     return workoutData;
   }
+
+  static async getById(id: number): Promise<Workout> {
+    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+    const row = await db.getFirstAsync('SELECT * FROM workout WHERE id = ?', [id]) as WorkoutRow;
+
+    return new Workout(row.id, "", row.starttime, row.endtime);
+  }
 }

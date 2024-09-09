@@ -25,11 +25,11 @@ export default function ExercisesScreen() {
     try {
       // Fetch exercises and sort them
       const fetchedExercises = await Exercise.findAll();
-      const recentExercises = await Exercise.findRecent(10);
+      // const recentExercises = await Exercise.findRecent(10);
 
       const remainingExercises = fetchedExercises.sort((a, b) => a.name.localeCompare(b.name));
       
-      setExercises([...recentExercises, ...remainingExercises]);
+      setExercises([...remainingExercises]);
     } catch (error) {
       console.error('Error fetching exercises:', error);
     }

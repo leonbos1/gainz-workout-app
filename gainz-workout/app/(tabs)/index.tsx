@@ -28,12 +28,12 @@ export default function ProfileScreen() {
       }
 
       async function fetchBenchPress1RM() {
-        const benchPressSets = await Set.getEstimated1RM(1);
+        const benchPressSets = await Set.getEstimated1RM('Bench Press (Barbell)', 30);
         setEstimatedBenchPress1RM(benchPressSets);
       }
 
       async function fetchSquat1RM() {
-        const squatSets = await Set.getEstimated1RM(2);
+        const squatSets = await Set.getEstimated1RM('Squat (Barbell)', 30);
         setEstimatedSquat1RM(squatSets);
       }
 
