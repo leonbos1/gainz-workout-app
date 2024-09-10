@@ -1,3 +1,5 @@
+import { RmCalculator } from '@/components/RmCalculator';
+import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { Link } from 'expo-router';
 import { View, Text, StyleSheet, Button, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
@@ -6,11 +8,14 @@ export default function ToolsScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity>
-        <Link href="./databaseManagement">
-          <Text style={styles.text}>Database Management</Text>
-        </Link>
-      </TouchableOpacity>
+      <ThemedView>
+        <TouchableOpacity>
+          <Link href="./databaseManagement">
+            <Text style={styles.text}>Database Management</Text>
+          </Link>
+        </TouchableOpacity>
+      </ThemedView>
+      <RmCalculator />
     </View>
   );
 }
