@@ -4,6 +4,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Colors } from '@/constants/Colors';
+import { Feather } from '@expo/vector-icons';
 
 export default function TabLayout() {
   return (
@@ -23,21 +24,21 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <AntDesign name="user" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Feather name="user" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
           title: 'History',
-          tabBarIcon: ({ color }) => <AntDesign name="clockcircleo" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="clockcircle" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="workout"
         options={{
           title: 'Workout',
-          tabBarIcon: ({ color }) => <AntDesign name="pluscircleo" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="pluscircle" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -48,10 +49,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="measure"
+        name="tools"
         options={{
-          title: 'Measure',
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="tape-measure" size={24} color={color} />,
+          title: 'Tools',
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="tools" size={24} color={color} />,
         }}
       />
     </Tabs>

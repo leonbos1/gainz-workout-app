@@ -68,17 +68,20 @@ const styles = StyleSheet.create({
     bottom: -90,
     left: -35,
     position: 'absolute',
+    backgroundColor: Colors.light.background,
   },
   titleContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Adjust to align the settings icon
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: Colors.light.background,
   },
   screenTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: Colors.light.text,
+    backgroundColor: Colors.light.background,
   },
   contentContainer: {
     paddingTop: 20,
@@ -94,5 +97,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     marginTop: 10,
+    backgroundColor: Colors.light.background,
   },
 });

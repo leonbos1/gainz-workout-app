@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     chartContainer: {
       alignItems: 'center',
       marginVertical: 16,
+      backgroundColor: Colors.light.background,
     },
     chart: {
       borderRadius: 16,

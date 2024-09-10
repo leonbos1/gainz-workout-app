@@ -12,7 +12,7 @@ import { MuscleGroup } from '@/models/MuscleGroup';
 
 import { dropTables, createTables } from '@/database/database';
 
-export default function MeasureScreen() {
+export default function DatabaseManagementScreen() {
   const handleClearBatches = () => {
     Batch.removeAll();
   }
