@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View, TouchableOpacity, Button } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from './ThemedView';
 import { Colors } from '@/constants/Colors';
@@ -9,7 +9,7 @@ export function RmCalculator() {
   const [reps, setReps] = useState('');
   const [estimated1RM, setEstimated1RM] = useState(0);
 
-  useEffect(() => {
+  const calculate1RM = () => {
     const weightNum = parseFloat(weight);
     const repsNum = parseFloat(reps);
 
@@ -19,12 +19,12 @@ export function RmCalculator() {
     } else {
       setEstimated1RM(0);
     }
-  }, [weight, reps]);
+  };
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>RM Calculator</ThemedText>
-      
+
       <View style={styles.inputContainer}>
         <ThemedText style={styles.label}>Weight</ThemedText>
         <TextInput
@@ -33,9 +33,10 @@ export function RmCalculator() {
           keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
+          placeholderTextColor={Colors.light.text}
         />
       </View>
-      
+
       <View style={styles.inputContainer}>
         <ThemedText style={styles.label}>Reps</ThemedText>
         <TextInput
@@ -44,9 +45,12 @@ export function RmCalculator() {
           keyboardType="numeric"
           value={reps}
           onChangeText={setReps}
+          placeholderTextColor={Colors.light.text}
         />
       </View>
-      
+
+      <Button title="Calculate" onPress={calculate1RM} />
+
       <ThemedText style={styles.result}>
         Estimated 1RM: <ThemedText style={styles.resultValue}>{estimated1RM.toFixed(2)}</ThemedText>
       </ThemedText>
@@ -56,36 +60,60 @@ export function RmCalculator() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+      padding: 40,
+      backgroundColor: Colors.light.background,
+      borderRadius: 10,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 5 },
+      shadowOpacity: 0.1,
+      shadowRadius: 10,
+      elevation: 5,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: Colors.light.text,
+      fontSize: 28,
+      fontWeight: 'bold',
+      marginBottom: 30,
+      color: Colors.light.text,
+      textAlign: 'center',
   },
   inputContainer: {
-    marginBottom: 20,
+      marginBottom: 20,
   },
   label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: Colors.light.text,
+      fontSize: 16,
+      marginBottom: 10,
+      color: Colors.light.text,
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    color: Colors.light.text,
+      height: 50,
+      borderColor: 'gray',
+      borderWidth: 1,
+      paddingHorizontal: 15,
+      borderRadius: 10,
+      color: Colors.light.text,
+      backgroundColor: Colors.light.background,
+  },
+  button: {
+      backgroundColor: Colors.light.textButton,
+      paddingVertical: 15,
+      borderRadius: 10,
+      alignItems: 'center',
+      marginTop: 20,
+  },
+  buttonText: {
+      fontSize: 18,
+      color: 'white',
+      fontWeight: 'bold',
   },
   result: {
-    fontSize: 18,
-    marginTop: 20,
-    color: Colors.light.text,
+      fontSize: 20,
+      marginTop: 30,
+      color: Colors.light.text,
+      textAlign: 'center',
   },
   resultValue: {
-    fontWeight: 'bold',
-    color: Colors.light.text,
+      fontWeight: 'bold',
+      fontSize: 24,
+      color: Colors.light.text,
   },
 });

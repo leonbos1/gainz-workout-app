@@ -1,33 +1,38 @@
 import { RmCalculator } from '@/components/RmCalculator';
+import { RpeCalculator } from '@/components/RPECalculator';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { Link } from 'expo-router';
-import { View, Text, StyleSheet, Button, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 export default function ToolsScreen() {
 
   return (
-    <View style={styles.container}>
-      <ThemedView>
+    <ScrollView style={styles.container}>
+      <ThemedView style={styles.subContainer}>
         <TouchableOpacity>
-          <Link href="./databaseManagement">
+          <Link href="/databaseManagement">
             <Text style={styles.text}>Database Management</Text>
           </Link>
         </TouchableOpacity>
       </ThemedView>
-      <RmCalculator />
-    </View>
+      <ThemedView>
+        <RmCalculator />
+        <RpeCalculator />
+      </ThemedView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: Colors.light.background,
-    height: '100%',
-    width: '100%',
+    padding: 10,
+  },
+  subContainer: {
+    backgroundColor: Colors.light.background,
+    padding: 10,
+    marginBottom: 10,
   },
   text: {
     color: Colors.light.text,

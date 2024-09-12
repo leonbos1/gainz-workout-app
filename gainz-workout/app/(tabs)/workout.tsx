@@ -107,34 +107,34 @@ export default function WorkoutScreen() {
   }
 
   const handleAddSet = async (batchId: number) => {
-    const batch = batches.find(b => b.id === batchId);
-    const exercise = exercises.find(e => e.value === batch?.name);
-    const exerciseId = await Exercise.findIdByName(exercise?.value || '');
-
-    if (batch && exercise) {
-      try {
-        const newSet = await Set.create(
-          exerciseId,
-          parseInt(batch.reps),
-          parseFloat(batch.weight),
-          parseFloat(batch.rpe),
-          batchId
-        );
-
-        const updatedBatch = {
-          ...batch,
-          sets: [...batch.sets, newSet],
-          reps: '',
-          weight: '',
-          rpe: '',
-        };
-
-        setBatches(batches.map(b => (b.id === batchId ? updatedBatch : b)));
-      } catch (error) {
-        console.error('Error adding set:', error);
+      const batch = batches.find(b => b.id === batchId);
+      const exercise = exercises.find(e => e.value === batch?.name);
+      const exerciseId = await Exercise.findIdByName(exercise?.value || '');
+  
+      if (batch && exercise && exerciseId !== null) {
+        try {
+          const newSet = await Set.create(
+            exerciseId,
+            parseInt(batch.reps),
+            parseFloat(batch.weight),
+            parseFloat(batch.rpe),
+            batchId
+          );
+  
+          const updatedBatch = {
+            ...batch,
+            sets: [...batch.sets, newSet],
+            reps: '',
+            weight: '',
+            rpe: '',
+          };
+  
+          setBatches(batches.map(b => (b.id === batchId ? updatedBatch : b)));
+        } catch (error) {
+          console.error('Error adding set:', error);
+        }
       }
-    }
-  };
+    };
 
   const handleInputChange = (batchId: number, field: string, value: string) => {
     setBatches(batches.map(batch => {
