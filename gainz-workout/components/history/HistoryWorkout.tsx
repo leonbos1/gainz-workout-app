@@ -30,8 +30,8 @@ export function HistoryWorkout({ viewmodel }: HistoryWorkoutProps): JSX.Element 
         <ThemedView style={styles.Container}>
             <View style={styles.Header}>
                 <ThemedText style={styles.Title}>{viewmodel.title}</ThemedText>
-                <ThemedText style={styles.Date}>{viewmodel.date.toDateString()}</ThemedText>
-                <ThemedText style={styles.Date}>{`Duration: ${viewmodel.durationSeconds} seconds`}</ThemedText>
+                <ThemedText style={styles.Date}>{viewmodel.startTime.toLocaleDateString()}</ThemedText>
+                <ThemedText style={styles.Date}>{`Duration: ${viewmodel.duration} seconds`}</ThemedText>
             </View>
             {heaviestSets.map((set, index) => (
                 <View key={index} style={styles.SetContainer}>

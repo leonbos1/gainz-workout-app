@@ -1,5 +1,5 @@
 import { RmCalculator } from '@/components/RmCalculator';
-import { RpeCalculator } from '@/components/RPECalculator';
+import { RpeCalculator } from '@/components/RpeCalculator';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { Link } from 'expo-router';
