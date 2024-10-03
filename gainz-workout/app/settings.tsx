@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';
+import { Colors } from '@/constants/Colors';
 
 interface CSVRow {
   Date: string;
@@ -79,26 +80,48 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Settings</Text>
-      {loading ? ( // Conditionally render ActivityIndicator when loading
-        <ActivityIndicator size="large" color="#0000ff" animating={true} />
-      ) : (
-        <Button title="Import Data" onPress={importCSV} />
-      )}
-      <Button title="Export Data" onPress={() => alert('Exporting data')} />
+      <Text style={styles.title}>Settings</Text>
+      <Text style={styles.description}>
+        Use the button below to import a CSV file from the Strong app.
+      </Text>
+      <TouchableOpacity style={styles.button} onPress={importCSV} disabled={loading}>
+        <Text style={styles.buttonText}>Import CSV</Text>
+      </TouchableOpacity>
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    padding: 20,
+    backgroundColor: Colors.light.background,
   },
-  text: {
-    fontSize: 20,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: Colors.light.text,
+  },
+  description: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+    color: Colors.light.text,
+  },
+  button: {
+    backgroundColor: Colors.light.textButton,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: Colors.white,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

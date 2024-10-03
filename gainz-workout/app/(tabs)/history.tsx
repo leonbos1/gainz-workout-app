@@ -69,10 +69,9 @@ export default function HistoryScreen() {
               uniqueExercises[exerciseName] = true;
 
               // Find the best set (heaviest)
-              const bestSet = sets.reduce(
-                (maxSet, set) => (set.weight > maxSet.weight ? set : maxSet),
-                sets[0]
-              );
+              var bestSet = sets.reduce((prev, current) => {
+                return (prev.weight > current.weight) ? prev : current;
+              });
 
               const numSets = sets.length;
 
@@ -94,6 +93,8 @@ export default function HistoryScreen() {
             startTime: startTime,
             endTime: endTime,
             exerciseBatches: filteredExerciseBatches,
+            title: workout.title,
+            duration: (endTime.getTime() - startTime.getTime()) / 1000,
           };
         })
       );
@@ -101,7 +102,7 @@ export default function HistoryScreen() {
       // Filter out null values from the historyWorkoutViewmodels array
       const filteredHistoryWorkoutViewmodels = historyWorkoutViewmodels.filter(viewmodel => viewmodel !== null);
 
-      // Do something with filteredHistoryWorkoutViewmodels
+      setHistoryWorkoutViewmodels(filteredHistoryWorkoutViewmodels);
     } catch (error) {
       console.error('Error fetching workouts:', error);
     }
@@ -113,30 +114,30 @@ export default function HistoryScreen() {
   }, []);
 
   return (
-    <View style={styles.contentContainer}>
+    <ScrollView contentContainerStyle={styles.contentContainer}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title" style={styles.screenTitle}>History</ThemedText>
       </ThemedView>
-      <ScrollView>
-        {historyWorkoutViewmodels.map((viewmodel, index) => (
-          <HistoryWorkout key={index} viewmodel={viewmodel} />
-        ))}
-      </ScrollView>
-    </View>
+      {historyWorkoutViewmodels.map((viewmodel, index) => (
+        <HistoryWorkout key={index} viewmodel={viewmodel} />
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: Colors.light.background,
   },
   screenTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: Colors.light.text,
+    backgroundColor: Colors.light.background,
   },
   contentContainer: {
     paddingTop: 20,
@@ -144,6 +145,5 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     backgroundColor: Colors.light.background,
     width: screenWidth,
-    height: '100%',
   },
 });
