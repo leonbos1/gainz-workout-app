@@ -20,6 +20,7 @@ export const Colors = {
     textButton: '#0055ff',
     dangerButton: '#c61010',
     input: '#292938',
+    trinairy: '#434698'
   },
   dark: {
     text: '#ECEDEE',

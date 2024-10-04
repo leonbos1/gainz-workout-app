@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Set } from '@/models/Set';
 import { Colors } from '@/constants/Colors';
-import TextButton from '../TextButton';
 import { ThemedView } from '../ThemedView';
 
 interface BatchItemProps {
@@ -43,19 +42,38 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
           />
           <Text style={styles.label}>RPE</Text>
           <TextInput
-            style={styles.input}
+            style={styles.rpeinput}
             value={batch.rpe}
             keyboardType="numeric"
             onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
           />
-          <ThemedView style={styles.buttonContainer}>
-            <TextButton title="Add Set" onPress={() => onAddSet(batch.id)} disabled={!isAddEnabled} />
-            <TextButton title='Finish Exercise' onPress={handleFinishExercise} disabled={false} />
-          </ThemedView>
+            <ThemedView style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, !isAddEnabled && styles.buttonDisabled]}
+                onPress={() => onAddSet(batch.id)}
+                disabled={!isAddEnabled}
+              >
+                <Text style={styles.buttonText}>Add Set</Text>
+              </TouchableOpacity>
+            </ThemedView>
+            <ThemedView style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleFinishExercise}
+              >
+                <Text style={styles.buttonText}>Finish Exercise</Text>
+              </TouchableOpacity>
+            </ThemedView>
+
         </>
       )}
       {isExerciseFinished && (
-        <Button title='Continue Exercise' onPress={() => setIsExerciseFinished(false)} />
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setIsExerciseFinished(false)}
+        >
+          <Text style={styles.buttonText}>Continue Exercise</Text>
+        </TouchableOpacity>
       )}
 
       <FlatList
@@ -91,7 +109,6 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   input: {
-    borderColor: '#ccc',
     borderWidth: 1,
     padding: 10,
     marginBottom: 10,
@@ -112,8 +129,32 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'column',
-    justifyContent: 'space-around',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
+  },
+  button: {
+    marginVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  buttonDisabled: {
+    marginVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: Colors.light.background,
+  },
+  buttonText: {
+    color: Colors.light.trinairy,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  rpeinput: {
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 50,
+    borderRadius: 4,
+    fontSize: 16,
+    color: Colors.light.text,
+    backgroundColor: Colors.light.input,
   },
 });
