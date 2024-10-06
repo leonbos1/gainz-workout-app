@@ -43,14 +43,12 @@ export default function HistoryScreen() {
           const startTime = new Date(workout.starttimeDate);
           const endTime = new Date(workout.endtimeDate);
 
-          // Check if parsing was successful
           if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
             console.error(`Invalid startTime or endTime for workout ID ${workout.id}`);
-            return null; // Skip this workout or handle appropriately
+            return null;
           }
 
           const batches = await Batch.findByWorkoutId(workout.id);
-
           const uniqueExercises: { [key: string]: boolean } = {};
 
           const exerciseBatches: ExerciseBatchViewmodel[] = (await Promise.all(
@@ -67,31 +65,24 @@ export default function HistoryScreen() {
                 };
               }
 
-              // Assuming all sets in a batch are for the same exercise
               const exerciseName = await sets[0].getExerciseName();
-
-              // Skip if the exercise name is already in the object
               if (uniqueExercises[exerciseName]) {
                 return null;
               }
 
-              // Add the exercise name to the object
               uniqueExercises[exerciseName] = true;
 
-              // Find the best set (heaviest)
               const bestSet = sets.reduce(
                 (maxSet, set) => (set.weight > maxSet.weight ? set : maxSet),
                 sets[0]
               );
-
-              const numSets = sets.length;
 
               return {
                 batchId: batch.id,
                 sets: sets,
                 bestSet: bestSet,
                 exercisename: exerciseName,
-                numSets: numSets,
+                numSets: sets.length,
               };
             })
           )).filter(batch => batch !== null) as ExerciseBatchViewmodel[];
@@ -107,15 +98,19 @@ export default function HistoryScreen() {
         })
       );
 
-      // Filter out null values from the newHistoryWorkoutViewmodels array
       const filteredNewHistoryWorkoutViewmodels = newHistoryWorkoutViewmodels.filter(viewmodel => viewmodel !== null);
-
       setHistoryWorkoutViewmodels(prev => [...prev, ...filteredNewHistoryWorkoutViewmodels]);
     } catch (error) {
       console.error('Error fetching workouts:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeleteWorkout = (workoutId: number) => {
+    setHistoryWorkoutViewmodels(prevViewmodels =>
+      prevViewmodels.filter(viewmodel => viewmodel.workoutId !== workoutId)
+    );
   };
 
   const loadMoreData = () => {
@@ -133,7 +128,7 @@ export default function HistoryScreen() {
       <FlatList
         data={historyWorkoutViewmodels}
         keyExtractor={(item, index) => item.workoutId.toString() + index}
-        renderItem={({ item }) => <HistoryWorkout viewmodel={item} />}
+        renderItem={({ item }) => <HistoryWorkout viewmodel={item} onDelete={handleDeleteWorkout} />}
         contentContainerStyle={styles.contentContainer}
         ListHeaderComponent={
           <ThemedView style={styles.titleContainer}>

@@ -108,7 +108,7 @@ export class Set {
 
     // make sure 3/4 of the labels are empty strings
     for (let i = 0; i < labels.length; i++) {
-      if (i % 4 !== 0) {
+      if (i % 10 !== 0) {
         labels[i] = '';
       }
     }

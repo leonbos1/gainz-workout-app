@@ -1,20 +1,22 @@
 import React from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
 import { ThemedView } from '@/components/ThemedView';
 import { Set } from '@/models/Set';
 import { HistoryWorkoutViewmodel } from '@/viewmodels/HistoryWorkoutViewmodel';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Workout } from '@/models/Workout';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 interface HistoryWorkoutProps {
   viewmodel: HistoryWorkoutViewmodel;
+  onDelete: (workoutId: number) => void;
 }
 
-export function HistoryWorkout({ viewmodel }: HistoryWorkoutProps): JSX.Element {
+export function HistoryWorkout({ viewmodel, onDelete }: HistoryWorkoutProps): JSX.Element {
   const heaviestSets = Object.values(
     viewmodel.exerciseBatches.reduce((acc, batch) => {
       const sets = batch.sets;
@@ -27,8 +29,33 @@ export function HistoryWorkout({ viewmodel }: HistoryWorkoutProps): JSX.Element 
     }, {} as { [batchid: number]: Set })
   );
 
+  const deleteWorkout = async () => {
+    console.log('Delete workout:', viewmodel);
+    // show confirmation dialog
+    Alert.alert("Are you sure you want to delete this workout?", "This action cannot be undone.", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: async () => {
+          try {
+            await Workout.deleteFullWorkout(viewmodel.workoutId);
+            onDelete(viewmodel.workoutId);
+          } catch (error) {
+            console.error('Failed to delete workout:', error);
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <ThemedView style={styles.container}>
+      <TouchableOpacity onPress={deleteWorkout} style={ styles.deleteButton }>
+        <FontAwesome name="trash" size={24} color={Colors.light.text} />
+      </TouchableOpacity>
       <View style={styles.header}>
         <ThemedText style={styles.title}>{viewmodel.title}</ThemedText>
         <ThemedText style={styles.date}>
@@ -112,5 +139,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.text,
     marginBottom: 5,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    height: 40,
+    width: 40,
+    zIndex: 1,
   },
 });

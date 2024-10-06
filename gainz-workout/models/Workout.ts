@@ -160,4 +160,22 @@ export class Workout {
 
     return new Workout(row.id, "", row.starttime, row.endtime);
   }
+
+  static async deleteFullWorkout(workoutId: number) {
+    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+    // first delete all batches and sets, then delete the workout
+    const batchIds = await db.getAllAsync('SELECT id FROM batch WHERE workoutid = ?', [workoutId]) as { id: number }[];
+
+    const setIds = await Promise.all(batchIds.map(async (batch) => {
+      return await db.getAllAsync('SELECT id FROM exerciseset WHERE batchid = ?', [batch.id]) as { id: number }[];
+    }));
+
+    const setIdList = setIds.flat().map(set => set.id).join(',');
+    await db.runAsync(`DELETE FROM exerciseset WHERE batchid IN (${setIdList})`);
+    await db.runAsync('DELETE FROM batch WHERE workoutid = ?', [workoutId]);
+    await db.runAsync('DELETE FROM workout WHERE id = ?', [workoutId]);
+
+    return true;
+  }
 }
