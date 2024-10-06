@@ -49,7 +49,7 @@ export default function ProfileScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title" style={styles.screenTitle}>Profile</ThemedText>
         <TouchableOpacity>
-          <Link href="./settings">
+          <Link href="./Settings">
             <Ionicons name="settings-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
           </Link>
         </TouchableOpacity>

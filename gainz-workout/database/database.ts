@@ -46,6 +46,10 @@ export const createTables = async () => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       workoutid INTEGER NOT NULL,
       note TEXT,
+      equipmentid INTEGER,
+      attachmentid INTEGER,
+      FOREIGN KEY (equipmentid) REFERENCES equipment(id),
+      FOREIGN KEY (attachmentid) REFERENCES attachment(id),
       FOREIGN KEY (workoutid) REFERENCES workout(id)
     );
 
@@ -58,6 +62,16 @@ export const createTables = async () => {
       batchid INTEGER NOT NULL,
       FOREIGN KEY (exerciseid) REFERENCES exercise(id),
       FOREIGN KEY (batchid) REFERENCES batch(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS attachment (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS equipment (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL
     );
   `);
 };

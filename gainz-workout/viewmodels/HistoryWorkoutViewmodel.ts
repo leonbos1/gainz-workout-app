@@ -14,6 +14,7 @@ export class HistoryWorkoutViewmodel {
     public exerciseBatches: ExerciseBatchViewmodel[],
     public title: string,
     public duration: number,
-    public startTime: Date
+    public startTime: Date,
+    public workoutId: number
   ) {}
 }

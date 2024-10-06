@@ -74,14 +74,18 @@ export class Workout {
     return true;
   }
 
-  static async findAllFinished(limit: number): Promise<Workout[]> {
+  static async findAllFinished(limit: number, page: number): Promise<Workout[]> {
     try {
       const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
-      const rows = await db.getAllAsync('SELECT * FROM workout WHERE endtime IS NOT NULL AND endtime != "" ORDER BY starttime DESC LIMIT ?', [limit]) as WorkoutRow[];
+      const offset = (page - 1) * limit;
+      const rows = await db.getAllAsync(
+        'SELECT * FROM workout WHERE endtime IS NOT NULL AND endtime != "" ORDER BY starttime DESC LIMIT ? OFFSET ?',
+        [limit, offset]
+      ) as WorkoutRow[];
+
       return rows.map(row => new Workout(row.id, "sample title", row.starttime, row.endtime));
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Failed to find all finished workouts:', error);
       return [];
     }
@@ -98,6 +102,7 @@ export class Workout {
   static async getWorkoutsPerWeek(weeks: number): Promise<WorkoutWeekData> {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
+    // Fetch workout counts grouped by week
     const rows = await db.getAllAsync(`
       SELECT strftime('%W', starttime) as week, COUNT(*) as count
       FROM workout
@@ -107,31 +112,46 @@ export class Workout {
       LIMIT ?
     `, [weeks]) as { week: string, count: number }[];
 
+    // Initialize an array for workout counts, filling with zeros
     const data: number[] = new Array(weeks).fill(0);
 
+    // Get the current week of the year
     const currentWeek = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
 
+    // Loop through the rows and fill the correct index in the data array
     for (const row of rows) {
-      const week = parseInt(row.week);
+      const week = parseInt(row.week, 10);
       const count = row.count;
 
       const index = weeks - (currentWeek - week) - 1;
+
+      // Ensure index is within bounds before updating data array
       if (index >= 0 && index < weeks) {
         data[index] = count;
       }
     }
 
-    const labels = [];
+    // Generate labels for the last 'weeks' number of weeks
+    const labels: string[] = [];
     for (let i = weeks - 1; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i * 7);
       labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
     }
 
+    // Ensure labels and data arrays have the same length
+    if (labels.length !== data.length) {
+      throw new Error("Labels and data arrays have different lengths.");
+    }
+
+    // Create the workout data object to return
     const workoutData = new WorkoutWeekData('Workouts Per Week', labels, [{ data }]);
+
+    console.log(workoutData);
 
     return workoutData;
   }
+
 
   static async getById(id: number): Promise<Workout> {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });

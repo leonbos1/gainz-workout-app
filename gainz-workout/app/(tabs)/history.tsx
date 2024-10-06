@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Dimensions, ScrollView, View } from 'react-native';
+import { StyleSheet, Dimensions, View, ActivityIndicator, FlatList } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -16,18 +16,29 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function HistoryScreen() {
   const [historyWorkoutViewmodels, setHistoryWorkoutViewmodels] = useState<HistoryWorkoutViewmodel[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
-      fetchAndPrepareData();
-    }, [])
+      fetchAndPrepareData(page);
+    }, [page])
   );
 
-  const fetchAndPrepareData = async () => {
-    try {
-      const fetchedWorkouts = await Workout.findAllFinished(10);
+  const fetchAndPrepareData = async (page: number) => {
+    if (loading) return;
+    setLoading(true);
 
-      const historyWorkoutViewmodels = await Promise.all(
+    try {
+      const fetchedWorkouts = await Workout.findAllFinished(10, page);
+
+      if (fetchedWorkouts.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      const newHistoryWorkoutViewmodels = await Promise.all(
         fetchedWorkouts.map(async (workout) => {
           const startTime = new Date(workout.starttimeDate);
           const endTime = new Date(workout.endtimeDate);
@@ -40,7 +51,6 @@ export default function HistoryScreen() {
 
           const batches = await Batch.findByWorkoutId(workout.id);
 
-          // Rest of your code remains the same
           const uniqueExercises: { [key: string]: boolean } = {};
 
           const exerciseBatches: ExerciseBatchViewmodel[] = (await Promise.all(
@@ -69,9 +79,10 @@ export default function HistoryScreen() {
               uniqueExercises[exerciseName] = true;
 
               // Find the best set (heaviest)
-              var bestSet = sets.reduce((prev, current) => {
-                return (prev.weight > current.weight) ? prev : current;
-              });
+              const bestSet = sets.reduce(
+                (maxSet, set) => (set.weight > maxSet.weight ? set : maxSet),
+                sets[0]
+              );
 
               const numSets = sets.length;
 
@@ -85,43 +96,55 @@ export default function HistoryScreen() {
             })
           )).filter(batch => batch !== null) as ExerciseBatchViewmodel[];
 
-          // Filter out null values
-          const filteredExerciseBatches = exerciseBatches.filter(batch => batch !== null);
-
           return {
             workoutId: workout.id,
             startTime: startTime,
             endTime: endTime,
-            exerciseBatches: filteredExerciseBatches,
+            exerciseBatches: exerciseBatches,
             title: workout.title,
             duration: (endTime.getTime() - startTime.getTime()) / 1000,
           };
         })
       );
 
-      // Filter out null values from the historyWorkoutViewmodels array
-      const filteredHistoryWorkoutViewmodels = historyWorkoutViewmodels.filter(viewmodel => viewmodel !== null);
+      // Filter out null values from the newHistoryWorkoutViewmodels array
+      const filteredNewHistoryWorkoutViewmodels = newHistoryWorkoutViewmodels.filter(viewmodel => viewmodel !== null);
 
-      setHistoryWorkoutViewmodels(filteredHistoryWorkoutViewmodels);
+      setHistoryWorkoutViewmodels(prev => [...prev, ...filteredNewHistoryWorkoutViewmodels]);
     } catch (error) {
       console.error('Error fetching workouts:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const loadMoreData = () => {
+    if (hasMore && !loading) {
+      setPage(prevPage => prevPage + 1);
+    }
+  };
 
   useEffect(() => {
-    fetchAndPrepareData();
+    fetchAndPrepareData(page);
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title" style={styles.screenTitle}>History</ThemedText>
-      </ThemedView>
-      {historyWorkoutViewmodels.map((viewmodel, index) => (
-        <HistoryWorkout key={index} viewmodel={viewmodel} />
-      ))}
-    </ScrollView>
+    <View style={styles.container}>
+      <FlatList
+        data={historyWorkoutViewmodels}
+        keyExtractor={(item, index) => item.workoutId.toString() + index}
+        renderItem={({ item }) => <HistoryWorkout viewmodel={item} />}
+        contentContainerStyle={styles.contentContainer}
+        ListHeaderComponent={
+          <ThemedView style={styles.titleContainer}>
+            <ThemedText type="title" style={styles.screenTitle}>History</ThemedText>
+          </ThemedView>
+        }
+        ListFooterComponent={loading ? <ActivityIndicator size="large" color="#0000ff" /> : null}
+        onEndReached={loadMoreData}
+        onEndReachedThreshold={0.5}
+      />
+    </View>
   );
 }
 
@@ -146,4 +169,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
     width: screenWidth,
   },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+  }
 });

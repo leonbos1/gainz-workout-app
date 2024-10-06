@@ -4,17 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';
 import { Colors } from '@/constants/Colors';
-
-interface CSVRow {
-  Date: string;
-  'Workout Name': string;
-  'Exercise Name': string;
-  'Set Order': string;
-  Weight: string;
-  Reps: string;
-  RPE: string;
-  Notes: string;
-}
+import { processCSVRow, CSVRow } from '@/helpers/csvHelper';
 
 export default function SettingsScreen() {
   const [loading, setLoading] = useState(false);  // New state for loading
@@ -30,7 +20,7 @@ export default function SettingsScreen() {
 
       if (result && !result.canceled && result.assets && result.assets.length > 0) {
         const fileUri = result.assets[0].uri;
-        console.log('File URI:', fileUri);
+        // console.log('File URI:', fileUri);
 
         // Delay processing to ensure ActivityIndicator is displayed
         setTimeout(async () => {
@@ -53,7 +43,7 @@ export default function SettingsScreen() {
               return record;
             });
 
-            console.log('Parsed CSV Data:', records);
+            // console.log('Parsed CSV Data:', records);
 
             for (const record of records) {
               await processCSVRow(db, record);
@@ -126,78 +116,4 @@ const styles = StyleSheet.create({
   },
 });
 
-async function processCSVRow(db: SQLite.SQLiteDatabase, row: CSVRow) {
-  try {
-    const workoutId = await getOrCreateWorkout(db, row.Date);
-    const exerciseId = await getOrCreateExercise(db, row['Exercise Name']);
 
-    const batchStatement = await db.prepareAsync(
-      'INSERT INTO batch (workoutid, note) VALUES (?, ?)'
-    );
-
-    const batchResult: any = await batchStatement.executeAsync([workoutId, row.Notes || '']);
-    const batchId = batchResult.lastInsertRowId;
-
-    const setStatement = await db.prepareAsync(
-      'INSERT INTO exerciseset (exerciseid, amount, weight, rpe, batchid) VALUES (?, ?, ?, ?, ?)'
-    );
-
-    if (row.Reps === undefined || row.Weight === undefined || row.RPE === undefined) {
-      console.log('Skipping row with missing data:', row);
-      return;
-    }
-
-    await setStatement.executeAsync([
-      exerciseId,
-      parseInt(row.Reps),
-      parseFloat(row.Weight),
-      parseFloat(row.RPE),
-      batchId
-    ]);
-
-  } catch (error) {
-    console.error('Transaction error:', error);
-  }
-}
-
-async function getOrCreateWorkout(db: SQLite.SQLiteDatabase, date: string): Promise<number> {
-  const workoutStatement = await db.prepareAsync(
-    'SELECT id FROM workout WHERE starttime = ?'
-  );
-  const workoutResult = await workoutStatement.executeAsync([date]);
-
-  const workoutRows = await workoutResult.getAllAsync() as { id: number, starttime: string }[];
-
-  if (workoutRows.length > 0) {
-    return workoutRows[0].id;
-  }
-
-  const insertStatement = await db.prepareAsync(
-    'INSERT INTO workout (starttime, endtime) VALUES (?, ?)'
-  );
-
-  const insertResult = await insertStatement.executeAsync([date, date]);
-  return insertResult.lastInsertRowId;
-}
-
-async function getOrCreateExercise(db: SQLite.SQLiteDatabase, name: string): Promise<number> {
-  const exerciseStatement = await db.prepareAsync(
-    'SELECT id FROM exercise WHERE name = ?'
-  );
-
-  const exerciseResult = await exerciseStatement.executeAsync([name]);
-
-  const exerciseRows = await exerciseResult.getAllAsync() as { id: number }[];
-
-  if (exerciseRows.length > 0) {
-    return exerciseRows[0].id;
-  }
-
-  const insertStatement = await db.prepareAsync(
-    'INSERT INTO exercise (name) VALUES (?)'
-  );
-
-  const insertResult = await insertStatement.executeAsync([name]);
-
-  return insertResult.lastInsertRowId;
-}
