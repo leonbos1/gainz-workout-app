@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 import { createTables } from '@/database/database';
+import { SQLiteDatabase } from 'expo-sqlite';
 
 SplashScreen.preventAutoHideAsync();
 
