@@ -3,7 +3,11 @@ import { StyleSheet } from 'react-native';
 import { ThemedView } from './ThemedView';
 import { ThemedText } from './ThemedText';
 
-export function Timer() {
+interface TimerProps {
+    onReset?: () => void;
+}
+
+export function Timer({ onReset }: TimerProps) {
     const [seconds, setSeconds] = useState(0);
 
     useEffect(() => {
@@ -19,6 +23,13 @@ export function Timer() {
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const resetTimer = () => {
+        setSeconds(0);
+        if (onReset) {
+            onReset();
+        }
     };
 
     return (

@@ -15,9 +15,9 @@ import { BatchList } from '@/components/workout/BatchList';
 import { EndWorkoutButton } from '@/components/workout/EndWorkoutButton';
 
 import { Colors } from '@/constants/Colors';
-import TextButton from '@/components/TextButton';
 import DangerTextButton from '@/components/DangerTextButton';
-import { ScrollView } from 'react-native-gesture-handler';
+
+import { Timer } from '@/components/Timer';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -29,6 +29,12 @@ export default function WorkoutScreen() {
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
   const [exercises, setExercises] = useState<Array<{ label: string, value: string }>>([]);
+  const timerRef = React.useRef<{ resetTimer: () => void } | null>(null);
+
+  const handleReset = () => {
+      if (timerRef.current) {
+      }
+  };
 
   const fetchExercises = async () => {
     try {
@@ -76,7 +82,7 @@ export default function WorkoutScreen() {
   const handleAddExercise = async () => {
     if (selectedExercise && workoutId) {
       try {
-        const newBatch = await Batch.create(workoutId, '');
+        const newBatch = await Batch.create(workoutId, '', 1, 1); //TODO equipmentid en attachmentid implementeren
 
         const updatedBatch = {
           id: newBatch.id,
@@ -107,34 +113,34 @@ export default function WorkoutScreen() {
   }
 
   const handleAddSet = async (batchId: number) => {
-      const batch = batches.find(b => b.id === batchId);
-      const exercise = exercises.find(e => e.value === batch?.name);
-      const exerciseId = await Exercise.findIdByName(exercise?.value || '');
-  
-      if (batch && exercise && exerciseId !== null) {
-        try {
-          const newSet = await Set.create(
-            exerciseId,
-            parseInt(batch.reps),
-            parseFloat(batch.weight),
-            parseFloat(batch.rpe),
-            batchId
-          );
-  
-          const updatedBatch = {
-            ...batch,
-            sets: [...batch.sets, newSet],
-            reps: '',
-            weight: '',
-            rpe: '',
-          };
-  
-          setBatches(batches.map(b => (b.id === batchId ? updatedBatch : b)));
-        } catch (error) {
-          console.error('Error adding set:', error);
-        }
+    const batch = batches.find(b => b.id === batchId);
+    const exercise = exercises.find(e => e.value === batch?.name);
+    const exerciseId = await Exercise.findIdByName(exercise?.value || '');
+
+    if (batch && exercise && exerciseId !== null) {
+      try {
+        const newSet = await Set.create(
+          exerciseId,
+          parseInt(batch.reps),
+          parseFloat(batch.weight),
+          parseFloat(batch.rpe),
+          batchId
+        );
+
+        const updatedBatch = {
+          ...batch,
+          sets: [...batch.sets, newSet],
+          reps: '',
+          weight: '',
+          rpe: '',
+        };
+
+        setBatches(batches.map(b => (b.id === batchId ? updatedBatch : b)));
+      } catch (error) {
+        console.error('Error adding set:', error);
       }
-    };
+    }
+  };
 
   const handleInputChange = (batchId: number, field: string, value: string) => {
     setBatches(batches.map(batch => {
@@ -158,6 +164,7 @@ export default function WorkoutScreen() {
         <StartWorkoutButton onStartWorkout={handleStartWorkout} />
       ) : (
         <>
+          <Timer onReset={() => timerRef.current?.resetTimer()} />
           <BatchList
             batches={batches}
             onAddSet={handleAddSet}
