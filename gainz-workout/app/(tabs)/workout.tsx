@@ -18,6 +18,12 @@ import { Colors } from '@/constants/Colors';
 import DangerTextButton from '@/components/DangerTextButton';
 
 import { Timer } from '@/components/Timer';
+import TextButton from '@/components/TextButton';
+import { Icon } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
+
+import { Link } from 'expo-router';
+
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -32,8 +38,8 @@ export default function WorkoutScreen() {
   const timerRef = React.useRef<{ resetTimer: () => void } | null>(null);
 
   const handleReset = () => {
-      if (timerRef.current) {
-      }
+    if (timerRef.current) {
+    }
   };
 
   const fetchExercises = async () => {
@@ -80,25 +86,25 @@ export default function WorkoutScreen() {
   }
 
   const handleAddExercise = async () => {
-    if (selectedExercise && workoutId) {
-      try {
-        const newBatch = await Batch.create(workoutId, '', 1, 1); //TODO equipmentid en attachmentid implementeren
+    // if (selectedExercise && workoutId) {
+    //   try {
+    //     const newBatch = await Batch.create(workoutId, '', 1, 1); //TODO equipmentid en attachmentid implementeren
 
-        const updatedBatch = {
-          id: newBatch.id,
-          name: selectedExercise,
-          sets: [],
-          reps: '',
-          weight: '',
-          rpe: '',
-        };
+    //     const updatedBatch = {
+    //       id: newBatch.id,
+    //       name: selectedExercise,
+    //       sets: [],
+    //       reps: '',
+    //       weight: '',
+    //       rpe: '',
+    //     };
 
-        setBatches([...batches, updatedBatch]);
-        setSelectedExercise(null);
-      } catch (error) {
-        console.error('Error adding batch:', error);
-      }
-    }
+    //     setBatches([...batches, updatedBatch]);
+    //     setSelectedExercise(null);
+    //   } catch (error) {
+    //     console.error('Error adding batch:', error);
+    //   }
+    // }
   };
 
   const handleCancelWorkout = async () => {
@@ -172,16 +178,23 @@ export default function WorkoutScreen() {
             onFinishExercise={handleFinishExercise}
           />
 
-          <ExerciseDropdown
+          {/* <ExerciseDropdown
             open={open}
             setOpen={setOpen}
             selectedExercise={selectedExercise}
             setSelectedExercise={setSelectedExercise}
             exercises={exercises}
             addExercise={handleAddExercise}
-          />
+          /> */}
 
           <ThemedView style={styles.buttonContainer}>
+            <TouchableOpacity>
+              <Link href="/ExerciseSelection">
+                <Ionicons name="settings-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
+              </Link>
+            </TouchableOpacity>
+
+
             <DangerTextButton onPress={handleCancelWorkout} title="Cancel Workout" />
           </ThemedView>
 
@@ -213,7 +226,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-around',
     alignItems: 'center',
     marginBottom: 20,

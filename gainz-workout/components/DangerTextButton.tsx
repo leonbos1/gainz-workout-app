@@ -19,5 +19,6 @@ const styles = StyleSheet.create({
     text: {
         color: Colors.light.dangerButton,
         fontSize: 16,
+        margin: 10,
     },
 });

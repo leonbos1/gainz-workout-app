@@ -1,0 +1,29 @@
+[
+    {
+        "name": "Bench Press"
+    },
+    {
+        "name": "Squat"
+    },
+    {
+        "name": "Deadlift"
+    },
+    {
+        "name": "Overhead Press"
+    },
+    {
+        "name": "Barbell Row"
+    },
+    {
+        "name": "Pull-up"
+    },
+    {
+        "name": "Dumbbell Curl"
+    },
+    {
+        "name": "Tricep Extension"
+    },
+    {
+        "name": "Leg Press"
+    }
+]

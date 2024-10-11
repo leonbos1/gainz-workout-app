@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Barbell",
+        "requiresAttachment": "false"
+    },
+    {
+        "name": "Machine",
+        "requiresAttachment": "false"
+    },
+    {
+        "name": "Dumbbell",
+        "requiresAttachment": "false"
+    },
+    {
+        "name": "Cable",
+        "requiresAttachment": "true"
+    },
+    {
+        "name": "Bodyweight",
+        "requiresAttachment": "false"
+    }
+]

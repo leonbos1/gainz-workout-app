@@ -75,3 +75,27 @@ export const createTables = async () => {
     );
   `);
 };
+
+export const seedDatabase = async () => {
+  const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+  const musclegroups = require('../database_seed/musclegroup.json');
+
+  for (const musclegroup of musclegroups) {
+    await db.runAsync(
+      `INSERT INTO musclegroup (name) VALUES (?)`,
+      [musclegroup.name]
+    );
+  }
+
+  const exercises = require('../database_seed/exercise.json');
+
+  for (const exercise of exercises) {
+    await db.runAsync(
+      `INSERT INTO exercise (name, description, musclegroupid) VALUES (?, ?, ?);`,
+      [exercise.name, exercise.description, exercise.musclegroupid]
+    );
+  }
+
+  
+}

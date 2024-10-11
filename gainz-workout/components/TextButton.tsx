@@ -20,5 +20,6 @@ const styles = StyleSheet.create({
     text: {
         color: Colors.light.textButton,
         fontSize: 16,
+        margin: 10,
     },
 });

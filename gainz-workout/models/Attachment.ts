@@ -13,4 +13,11 @@ export class Attachment {
         this.id = id;
         this.name = name;
     }
+
+    static async findAll(): Promise<Attachment[]> {
+        const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+        const rows = await db.getAllAsync('SELECT * FROM attachment') as AttachmentRow[];
+        return rows.map(row => new Attachment(row.id, row.name));
+    }
 }
