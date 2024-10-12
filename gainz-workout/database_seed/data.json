@@ -1,0 +1,92 @@
+{
+    "musclegroups": [
+        "Chest",
+        "Back",
+        "Shoulders",
+        "Legs",
+        "Arms",
+        "Abs"
+    ],
+    "exercises": [
+        {
+            "name": "Bench Press",
+            "musclegroup": "Chest"
+        },
+        {
+            "name": "Incline Bench Press",
+            "musclegroup": "Chest"
+        },
+        {
+            "name": "Decline Bench Press",
+            "musclegroup": "Chest"
+        },
+        {
+            "name": "Flyes",
+            "musclegroup": "Chest"
+        },
+        {
+            "name": "Pushups",
+            "musclegroup": "Chest"
+        },
+        {
+            "name": "Pullups",
+            "musclegroup": "Back"
+        },
+        {
+            "name": "Deadlift",
+            "musclegroup": "Back"
+        },
+        {
+            "name": "Bent Over Row",
+            "musclegroup": "Back"
+        },
+        {
+            "name": "Lat Pulldown",
+            "musclegroup": "Back"
+        },
+        {
+            "name": "Shoulder Press",
+            "musclegroup": "Shoulders"
+        },
+        {
+            "name": "Lateral Raise",
+            "musclegroup": "Shoulders"
+        },
+        {
+            "name": "Front Raise",
+            "musclegroup": "Shoulders"
+        },
+        {
+            "name": "Leg Press",
+            "musclegroup": "Legs"
+        },
+        {
+            "name": "Squat",
+            "musclegroup": "Legs"
+        },
+        {
+            "name": "Seated Leg Curl",
+            "musclegroup": "Legs"
+        },
+        {
+            "name": "Bicep Curl",
+            "musclegroup": "Arms"
+        },
+        {
+            "name": "Triceps Extension",
+            "musclegroup": "Arms"
+        },
+        {
+            "name": "Hammer Curl",
+            "musclegroup": "Arms"
+        },
+        {
+            "name": "Skull Crusher",
+            "musclegroup": "Arms"
+        },
+        {
+            "name": "Crunch",
+            "musclegroup": "Abs"
+        }
+    ]
+}

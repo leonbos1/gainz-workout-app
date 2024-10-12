@@ -1,4 +1,6 @@
 import * as SQLite from 'expo-sqlite';
+import exercises from '../database_seed/exercises.json';
+import musclegroups from '../database_seed/musclegroups.json';
 
 export const dropTables = async () => {
   try {
@@ -79,7 +81,7 @@ export const createTables = async () => {
 export const seedDatabase = async () => {
   const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
-  const musclegroups = require('../database_seed/musclegroup.json');
+  // const musclegroups = require('../database_seed/musclegroups.json');
 
   for (const musclegroup of musclegroups) {
     await db.runAsync(
@@ -88,7 +90,7 @@ export const seedDatabase = async () => {
     );
   }
 
-  const exercises = require('../database_seed/exercise.json');
+  // const exercises = require('../database_seed/exercises.json');
 
   for (const exercise of exercises) {
     await db.runAsync(
@@ -96,6 +98,4 @@ export const seedDatabase = async () => {
       [exercise.name, exercise.description, exercise.musclegroupid]
     );
   }
-
-  
 }
