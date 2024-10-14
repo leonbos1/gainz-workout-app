@@ -1,6 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import exercises from '../database_seed/exercises.json';
-import musclegroups from '../database_seed/musclegroups.json';
+import data from '../database_seed/data.json';
 
 export const dropTables = async () => {
   try {
@@ -11,7 +10,10 @@ export const dropTables = async () => {
     DROP TABLE IF EXISTS batch;
     DROP TABLE IF EXISTS workout;
     DROP TABLE IF EXISTS exercise;
-    DROP TABLE IF EXISTS musclegroup
+    DROP TABLE IF EXISTS musclegroup;
+    DROP TABLE IF EXISTS attachment;
+    DROP TABLE IF EXISTS equipment;
+    DROP TABLE IF EXISTS seed_status;
   `);
   }
   catch (error) {
@@ -75,27 +77,41 @@ export const createTables = async () => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS seed_status (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      status TEXT NOT NULL
+    );
   `);
 };
+
+type seedStatusRow = {
+  id: number;
+  status: string;
+}
 
 export const seedDatabase = async () => {
   const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
-  // const musclegroups = require('../database_seed/musclegroups.json');
+  const selectStatement = await db.getFirstAsync('SELECT * FROM seed_status where id = 1') as seedStatusRow;
 
-  for (const musclegroup of musclegroups) {
-    await db.runAsync(
-      `INSERT INTO musclegroup (name) VALUES (?)`,
-      [musclegroup.name]
-    );
+  if (selectStatement && selectStatement.status === 'seeded') {
+    console.log('Database already seeded');
+    return;
   }
 
-  // const exercises = require('../database_seed/exercises.json');
+  await db.runAsync('INSERT INTO seed_status (id, status) VALUES (1, "seeded")');
 
-  for (const exercise of exercises) {
-    await db.runAsync(
-      `INSERT INTO exercise (name, description, musclegroupid) VALUES (?, ?, ?);`,
-      [exercise.name, exercise.description, exercise.musclegroupid]
-    );
-  }
+  await db.execAsync(`
+    INSERT INTO musclegroup (name) VALUES ${data.musclegroups.map((name) => `("${name}")`).join(', ')};
+
+    INSERT INTO exercise (name, musclegroupid) VALUES ${data.exercises.map((exercise) => {
+    const musclegroupid = data.musclegroups.indexOf(exercise.musclegroup) + 1;
+    return `("${exercise.name}", ${musclegroupid})`;
+  }).join(', ')};
+
+    INSERT INTO equipment (name) VALUES ${data.equipment.map((name) => `("${name}")`).join(', ')};
+
+    INSERT INTO attachment (name) VALUES ${data.Attachments.map((name) => `("${name}")`).join(', ')};
+  `);
 }

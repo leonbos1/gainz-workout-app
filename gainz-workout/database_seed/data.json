@@ -87,6 +87,29 @@
         {
             "name": "Crunch",
             "musclegroup": "Abs"
+        },
+        {
+            "name": "Reverse fly",
+            "musclegroup": "Shoulders"
+        },
+        {
+            "name": "Shrug",
+            "musclegroup": "Shoulders"
         }
+    ],
+    "equipment": [
+        "Barbell",
+        "Dumbbell",
+        "Machine",
+        "Bodyweight",
+        "Cable"
+    ],
+    "Attachments": [
+        "V-Bar",
+        "Straight Bar",
+        "Rope",
+        "D-Handle",
+        "Single Handle",
+        "Double Handle"
     ]
 }

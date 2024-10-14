@@ -1,5 +1,4 @@
-// app/index.js (ProfileScreen)
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -11,6 +10,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Set } from '@/models/Set';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
+import { seedDatabase, createTables } from '@/database/database';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -19,9 +19,24 @@ export default function ProfileScreen() {
   const [workoutData, setWorkoutData] = useState<WorkoutWeekData | null>(null);
   const [estimatedBenchPress1RM, setEstimatedBenchPress1RM] = useState<ChartDataset | null>(null);
   const [estimatedSquat1RM, setEstimatedSquat1RM] = useState<ChartDataset | null>(null);
+  const [isDataSeeded, setIsDataSeeded] = useState(false);
+
+  const seedData = async () => {
+    await createTables();
+    await seedDatabase();
+    setIsDataSeeded(true);
+  }
+
+  useEffect(() => {
+    seedData();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
+      if (!isDataSeeded) {
+        return;
+      }
+
       async function fetchWorkoutData() {
         const data = await Workout.getWorkoutsPerWeek(8);
         setWorkoutData(data);
@@ -41,7 +56,7 @@ export default function ProfileScreen() {
       fetchBenchPress1RM();
       fetchSquat1RM();
       return () => { };
-    }, [])
+    }, [isDataSeeded]) // Dependencies include the seeding status
   );
 
   return (

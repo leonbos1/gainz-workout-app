@@ -18,15 +18,6 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  const setupDatabase = async () => {
-    try {
-      await createTables();
-    }
-    catch (error) {
-      // console.error('Failed to set up database:', error);
-    }
-  }
-
   const debugDb = async () => {
     try {
     }
@@ -37,7 +28,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      setupDatabase();
       debugDb();
       SplashScreen.hideAsync();
     }
