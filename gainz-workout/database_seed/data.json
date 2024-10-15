@@ -104,12 +104,118 @@
         "Bodyweight",
         "Cable"
     ],
-    "Attachments": [
+    "attachments": [
         "V-Bar",
         "Straight Bar",
         "Rope",
         "D-Handle",
         "Single Handle",
         "Double Handle"
+    ],
+    "exerciseEquipment": [
+        {
+            "exercise": "Bench Press",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Bench Press",
+            "equipment": "Dumbbell"
+        },
+        {
+            "exercise": "Incline Bench Press",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Incline Bench Press",
+            "equipment": "Dumbbell"
+        },
+        {
+            "exercise": "Decline Bench Press",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Decline Bench Press",
+            "equipment": "Dumbbell"
+        },
+        {
+            "exercise": "Flyes",
+            "equipment": "Dumbbell"
+        },
+        {
+            "exercise": "Flyes",
+            "equipment": "Cable"
+        },
+        {
+            "exercise": "Pushups",
+            "equipment": "Bodyweight"
+        },
+        {
+            "exercise": "Pullups",
+            "equipment": "Bodyweight"
+        },
+        {
+            "exercise": "Deadlift",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Bent Over Row",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Lat Pulldown",
+            "equipment": "Machine"
+        },
+        {
+            "exercise": "Shoulder Press",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Lateral Raise",
+            "equipment": "Dumbbell"
+        },
+        {
+            "exercise": "Front Raise",
+            "equipment": "Dumbbell"
+        },
+        {
+            "exercise": "Leg Press",
+            "equipment": "Machine"
+        },
+        {
+            "exercise": "Squat",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Seated Leg Curl",
+            "equipment": "Machine"
+        },
+        {
+            "exercise": "Bicep Curl",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Triceps Extension",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Hammer Curl",
+            "equipment": "Dumbbell"
+        },
+        {
+            "exercise": "Skull Crusher",
+            "equipment": "Barbell"
+        },
+        {
+            "exercise": "Crunch",
+            "equipment": "Bodyweight"
+        },
+        {
+            "exercise": "Reverse fly",
+            "equipment": "Dumbbell"
+        },
+        {
+            "exercise": "Shrug",
+            "equipment": "Barbell"
+        }
     ]
 }

@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { Equipment } from './Equipment';
 
 export type ExerciseRow = {
   id: number;
@@ -11,16 +12,16 @@ export class Exercise {
   id: number;
   name: string;
   description: string;
-  musclegroupid: number | null;
+  musclegroupid: number;
 
-  constructor(id: number, name: string, description: string, musclegroupid: number | null) {
+  constructor(id: number, name: string, description: string, musclegroupid: number) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.musclegroupid = musclegroupid;
   }
 
-  static async create(name: string, description: string, musclegroupid: number | null) {
+  static async create(name: string, description: string, musclegroupid: number) {
     const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
 
     const existingExercise = await db.getFirstAsync('SELECT * FROM exercise WHERE name = ?', [name]);
@@ -33,10 +34,6 @@ export class Exercise {
       `INSERT INTO exercise (name, description, musclegroupid) VALUES (?, ?, ?);`,
       [name, description, musclegroupid]
     );
-
-    if (!musclegroupid) {
-      return new Exercise(result.lastInsertRowId, name, description, null);
-    }
 
     return new Exercise(result.lastInsertRowId, name, description, musclegroupid);
   }
@@ -88,5 +85,18 @@ export class Exercise {
     ) as ExerciseRow[];
 
     return rows.slice(0, limit);
+  }
+
+  static async getEquipmentsForExercise(exerciseId: number): Promise<Equipment[]> {
+    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+
+    const rows = await db.getAllAsync(
+      `SELECT equipment.* FROM equipment
+       JOIN exercise_equipment ON equipment.id = exercise_equipment.equipmentid
+       WHERE exercise_equipment.exerciseid = ?`,
+      [exerciseId]
+    ) as Array<{ id: number, name: string }>;
+
+    return rows.map(row => new Equipment(row.id, row.name));
   }
 }

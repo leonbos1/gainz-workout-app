@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { RouteProp, useRoute, useNavigation, NavigationProp } from '@react-navigation/native';
 import { Attachment } from '@/models/Attachment';
 import { Colors } from '@/constants/Colors';
 import { AppNavigatorParams } from '@/models/AppNavigatorParams';
@@ -9,6 +9,7 @@ type AttachmentSelectionRouteProp = RouteProp<AppNavigatorParams, 'AttachmentSel
 
 export default function AttachmentSelection() {
   const route = useRoute<AttachmentSelectionRouteProp>();
+  const navigation = useNavigation<NavigationProp<any>>();
   const { selectedExercise, selectedEquipment } = route.params;
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
@@ -25,14 +26,22 @@ export default function AttachmentSelection() {
     fetchAttachments();
   }, []);
 
+  const handleAttachmentSelect = (attachment: Attachment) => {
+    navigation.navigate('workout', {
+      exercise: selectedExercise,
+      equipment: selectedEquipment,
+      attachment: attachment.name,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>Attachment Selection</Text>
         {attachments.map((attachment, index) => (
-          <View key={index} style={styles.attachmentItem}>
+          <TouchableOpacity key={index} style={styles.attachmentItem} onPress={() => handleAttachmentSelect(attachment)}>
             <Text style={styles.text}>{attachment.name}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>

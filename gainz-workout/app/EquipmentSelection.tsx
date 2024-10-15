@@ -1,43 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Link, useRoute, RouteProp } from '@react-navigation/native';
-import { AppNavigatorParams } from '@/models/AppNavigatorParams';
-import { Equipment } from '@/models/Equipment';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { Colors } from '@/constants/Colors';
+import { Equipment } from '@/models/Equipment';
 
-type EquipmentSelectionRouteProp = RouteProp<AppNavigatorParams, 'EquipmentSelection'>;
+interface RouteParams {
+  selectedExercise: string;
+  equipment: string;
+}
+
+type EquipmentSelectionRouteProp = RouteProp<{ params: RouteParams }, 'params'>;
 
 export default function EquipmentSelection() {
-  // const route = useRoute<EquipmentSelectionRouteProp>();
-  // const { selectedExercise } = route.params;
-  const [equipments, setEquipments] = useState<Equipment[]>([]);
-  const selectedExercise = 'selectedExercise';
+  const navigation = useNavigation<NavigationProp<any>>();
+  const route = useRoute<EquipmentSelectionRouteProp>();
+
+  const { selectedExercise, equipment: equipmentString } = route.params;
+
+  const [relevantEquipment, setRelevantEquipment] = useState<Equipment[]>([]);
 
   useEffect(() => {
-    const fetchEquipments = async () => {
-      try {
-        const data = await Equipment.findAll();
-        setEquipments(data);
-      } catch (error) {
-        console.error('Error fetching equipment:', error);
-      }
-    };
+    const parsedEquipment: Equipment[] = JSON.parse(equipmentString);
+    setRelevantEquipment(parsedEquipment);
+  }, [equipmentString]);
 
-    fetchEquipments();
-  }, []);
+  const handleEquipmentSelect = (equip: Equipment) => {
+    if (equip.name === 'Cable') {
+      navigation.navigate('AttachmentSelection', {
+        exercise: selectedExercise,
+        equipment: equip.name,
+      });
+    } else {
+      navigation.navigate('workout', {
+        exercise: selectedExercise,
+        equipment: equip.name,
+        attachment: '',
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Select Equipment for {selectedExercise}</Text>
       <ScrollView>
-        <Text style={styles.title}>Equipment Selection</Text>
-        {equipments.map((equipment, index) => (
-          <Link
+        {relevantEquipment.map((equip, index) => (
+          <TouchableOpacity
             key={index}
-            to='/AttachmentSelection?selectedExercise=selectedExercise&selectedEquipment=equipment'
             style={styles.equipmentItem}
+            onPress={() => handleEquipmentSelect(equip)}
           >
-            <Text style={styles.text}>{equipment.name}</Text>
-          </Link>
+            <Text style={styles.text}>{equip.name}</Text>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
@@ -63,6 +77,8 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: Colors.light.card,
     borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
   },
   text: {
     fontSize: 16,

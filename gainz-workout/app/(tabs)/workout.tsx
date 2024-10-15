@@ -1,44 +1,42 @@
-import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, Button, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useFocusEffect } from '@react-navigation/native';
-
+import { useFocusEffect, useRoute, RouteProp } from '@react-navigation/native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
 import { Set } from '@/models/Set';
 import { Batch } from '@/models/Batch';
-
 import { StartWorkoutButton } from '@/components/workout/StartWorkoutButton';
-import { ExerciseDropdown } from '@/components/workout/ExerciseDropdown';
 import { BatchList } from '@/components/workout/BatchList';
 import { EndWorkoutButton } from '@/components/workout/EndWorkoutButton';
-
 import { Colors } from '@/constants/Colors';
 import DangerTextButton from '@/components/DangerTextButton';
-
 import { Timer } from '@/components/Timer';
-import TextButton from '@/components/TextButton';
-import { Icon } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-
 import { Link } from 'expo-router';
 
-
 const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+
+interface RouteParams {
+  exercise: string;
+  equipment: string;
+  attachment: string;
+}
+
+type WorkoutScreenRouteProp = RouteProp<{ params: RouteParams }, 'params'>;
 
 export default function WorkoutScreen() {
+  const route = useRoute<WorkoutScreenRouteProp>();
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutId, setWorkoutId] = useState<number | null>(null);
-  const [open, setOpen] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
   const [exercises, setExercises] = useState<Array<{ label: string, value: string }>>([]);
   const timerRef = React.useRef<{ resetTimer: () => void } | null>(null);
 
   const handleReset = () => {
     if (timerRef.current) {
+      timerRef.current.resetTimer();
     }
   };
 
@@ -58,14 +56,18 @@ export default function WorkoutScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchExercises();
-      setOpen(false);
     }, [])
   );
+
+  useEffect(() => {
+    if (route.params && workoutStarted) {
+      handleAddExercise();
+    }
+  }, [route.params, workoutStarted]);
 
   const handleStartWorkout = async () => {
     try {
       const newWorkout = await Workout.create(new Date().toISOString(), '');
-
       setWorkoutId(newWorkout.id);
       setWorkoutStarted(true);
     } catch (error) {
@@ -73,38 +75,35 @@ export default function WorkoutScreen() {
     }
   };
 
+  const handleAddExercise = async () => {
+    if (route.params && workoutId) {
+      const { exercise, equipment, attachment } = route.params;
+      try {
+        const newBatch = await Batch.create(workoutId, '', 1, 1); // Adjust as needed
+        const updatedBatch = {
+          id: newBatch.id,
+          name: `${exercise} (${equipment}${attachment ? ` - ${attachment}` : ''})`,
+          sets: [],
+          reps: '',
+          weight: '',
+          rpe: '',
+        };
+        setBatches([...batches, updatedBatch]);
+      } catch (error) {
+        console.error('Error adding batch:', error);
+      }
+    }
+  };
+
   const handleEndWorkout = async () => {
     try {
       await Workout.endWorkout(workoutId!, new Date().toISOString());
-
       setWorkoutId(null);
       setWorkoutStarted(false);
       setBatches([]);
     } catch (error) {
       console.error('Error ending workout:', error);
     }
-  }
-
-  const handleAddExercise = async () => {
-    // if (selectedExercise && workoutId) {
-    //   try {
-    //     const newBatch = await Batch.create(workoutId, '', 1, 1); //TODO equipmentid en attachmentid implementeren
-
-    //     const updatedBatch = {
-    //       id: newBatch.id,
-    //       name: selectedExercise,
-    //       sets: [],
-    //       reps: '',
-    //       weight: '',
-    //       rpe: '',
-    //     };
-
-    //     setBatches([...batches, updatedBatch]);
-    //     setSelectedExercise(null);
-    //   } catch (error) {
-    //     console.error('Error adding batch:', error);
-    //   }
-    // }
   };
 
   const handleCancelWorkout = async () => {
@@ -116,7 +115,7 @@ export default function WorkoutScreen() {
     } catch (error) {
       console.error('Error canceling workout:', error);
     }
-  }
+  };
 
   const handleAddSet = async (batchId: number) => {
     const batch = batches.find(b => b.id === batchId);
@@ -158,8 +157,14 @@ export default function WorkoutScreen() {
   };
 
   const handleFinishExercise = (batchId: number) => {
-
+    setBatches(batches.map(batch => {
+      if (batch.id === batchId) {
+        return { ...batch, sets: [], reps: '', weight: '', rpe: '' };
+      }
+      return batch;
+    }));
   }
+
 
   return (
     <View style={styles.contentContainer}>
@@ -177,27 +182,14 @@ export default function WorkoutScreen() {
             onInputChange={handleInputChange}
             onFinishExercise={handleFinishExercise}
           />
-
-          {/* <ExerciseDropdown
-            open={open}
-            setOpen={setOpen}
-            selectedExercise={selectedExercise}
-            setSelectedExercise={setSelectedExercise}
-            exercises={exercises}
-            addExercise={handleAddExercise}
-          /> */}
-
           <ThemedView style={styles.buttonContainer}>
             <TouchableOpacity>
               <Link href="/ExerciseSelection">
                 <Ionicons name="settings-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
               </Link>
             </TouchableOpacity>
-
-
             <DangerTextButton onPress={handleCancelWorkout} title="Cancel Workout" />
           </ThemedView>
-
           <EndWorkoutButton onEndWorkout={handleEndWorkout} />
         </>
       )}

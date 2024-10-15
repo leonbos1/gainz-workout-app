@@ -11,7 +11,7 @@ interface BatchItemProps {
   onFinishExercise: (batchId: number) => void;
 }
 
-export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputChange, onFinishExercise }) => {
+export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputChange, onFinishExercise, onCancelExercise }) => {
   const [isExerciseFinished, setIsExerciseFinished] = useState(false);
   const isAddEnabled = batch.reps.trim() !== '' && batch.weight.trim() !== '';
 
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   buttonText: {
-    color: Colors.light.trinairy,
+    color: Colors.light.text,
     fontSize: 16,
     fontWeight: 'bold',
   },

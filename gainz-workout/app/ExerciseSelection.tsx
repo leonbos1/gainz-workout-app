@@ -1,19 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Link } from '@react-navigation/native';
+import { Link, useNavigation } from '@react-navigation/native';
 import { Exercise } from '@/models/Exercise';
+import { Equipment } from '@/models/Equipment';
 import { Colors } from '@/constants/Colors';
 
 export default function ExerciseSelection() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [equipmentForExercise, setEquipmentForExercise] = useState<{ [key: string]: Equipment[] }>({});
+
+  const navigation = useNavigation();
 
   useEffect(() => {
+    navigation.setOptions({
+      title: 'Exercise Selection',
+    });
     const fetchExercises = async () => {
       try {
-        const data = await Exercise.findAll();
-        setExercises(data);
+        const exercisesData = await Exercise.findAll();
+
+        setExercises(exercisesData);
+
+        const equipmentMap: { [key: string]: Equipment[] } = {};
+
+        for (let exercise of exercisesData) {
+          const relevantEquipment = await Exercise.getEquipmentsForExercise(exercise.id);
+          equipmentMap[exercise.id] = relevantEquipment;
+        }
+
+        setEquipmentForExercise(equipmentMap);
+
       } catch (error) {
-        console.error('Error fetching exercises:', error);
+        console.error('Error fetching exercises or equipment:', error);
       }
     };
 
@@ -23,11 +41,10 @@ export default function ExerciseSelection() {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <Text style={styles.title}>Exercise Selection</Text>
         {exercises.map((exercise, index) => (
           <Link
             key={index}
-            to={`/EquipmentSelection?selectedExercise=${encodeURIComponent(JSON.stringify(exercise))}`}
+            to={`/EquipmentSelection?selectedExercise=${exercise.name}&equipment=${encodeURIComponent(JSON.stringify(equipmentForExercise[exercise.id]))}`}
             style={styles.exerciseItem}
           >
             <Text style={styles.text}>{exercise.name}</Text>

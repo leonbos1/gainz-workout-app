@@ -82,6 +82,14 @@ export const createTables = async () => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       status TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS exercise_equipment (
+      exerciseid INTEGER,
+      equipmentid INTEGER,
+      FOREIGN KEY (exerciseid) REFERENCES exercise(id),
+      FOREIGN KEY (equipmentid) REFERENCES equipment(id),
+      PRIMARY KEY (exerciseid, equipmentid)
+    );
   `);
 };
 
@@ -112,6 +120,14 @@ export const seedDatabase = async () => {
 
     INSERT INTO equipment (name) VALUES ${data.equipment.map((name) => `("${name}")`).join(', ')};
 
-    INSERT INTO attachment (name) VALUES ${data.Attachments.map((name) => `("${name}")`).join(', ')};
+    INSERT INTO attachment (name) VALUES ${data.attachments.map((name) => `("${name}")`).join(', ')};
+
+    INSERT INTO exercise_equipment (exerciseid, equipmentid) VALUES ${data.exerciseEquipment.map((equipment) => {
+    //TODO: this assumes when data is seeded, database is empty and it assumes that everything is inserted correctly
+    const exerciseid = data.exercises.findIndex((exercise) => exercise.name === equipment.exercise) + 1;
+    const equipmentid = data.equipment.indexOf(equipment.equipment) + 1;
+
+    return `(${exerciseid}, ${equipmentid})`;
+  }).join(', ')};
   `);
 }
