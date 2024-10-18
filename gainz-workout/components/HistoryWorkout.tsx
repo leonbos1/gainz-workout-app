@@ -2,7 +2,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
 import { HistoryWorkoutViewmodel } from '@/viewmodels/HistoryWorkoutViewmodel';
 
@@ -13,11 +12,11 @@ interface HistoryWorkoutProps {
 export const HistoryWorkout: React.FC<HistoryWorkoutProps> = ({ viewmodel }) => {
     var formattedDate = '';
     try {
-         formattedDate = viewmodel.startTime.toLocaleDateString('en-US', {
-             weekday: 'long',
-             day: 'numeric',
-             month: 'long',
-         });
+        formattedDate = viewmodel.startTime.toLocaleDateString('en-US', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+        });
     }
     catch (error) {
         console.error('Error formatting date', error);
@@ -25,21 +24,21 @@ export const HistoryWorkout: React.FC<HistoryWorkoutProps> = ({ viewmodel }) => 
 
     return (
         <View style={styles.workoutContainer}>
-            <ThemedText style={styles.dateText}>{formattedDate}</ThemedText>
+            <Text style={styles.dateText}>{formattedDate}</Text>
             <View style={styles.headerRow}>
-                <ThemedText style={styles.headerText}>Exercise</ThemedText>
-                <ThemedText style={styles.headerText}>| Best set</ThemedText>
+                <Text style={styles.headerText}>Exercise</Text>
+                <Text style={styles.headerText}>| Best set</Text>
             </View>
             {viewmodel.exerciseBatches.map((batch) => {
                 if (batch.bestSet) {
                     return (
                         <View key={batch.batchId} style={styles.exerciseRow}>
-                            <ThemedText style={styles.exerciseText}>
+                            <Text style={styles.exerciseText}>
                                 {batch.numSets}x {batch.exercisename}
-                            </ThemedText>
-                            <ThemedText style={styles.bestSetText}>
+                            </Text>
+                            <Text style={styles.bestSetText}>
                                 {batch.bestSet.weight}kg {batch.bestSet.amount}x
-                            </ThemedText>
+                            </Text>
                         </View>
                     );
                 } else {

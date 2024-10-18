@@ -1,9 +1,7 @@
 import React from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
-import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
-import { ThemedText } from '../ThemedText';
 import { WorkoutWeekData } from '@/models/Workout';
 
 const screenWidth = Dimensions.get('window').width;
@@ -11,8 +9,8 @@ const screenHeight = Dimensions.get('window').height;
 
 export const WorkoutBarChart: React.FC<{ workoutWeekData: WorkoutWeekData }> = ({ workoutWeekData }) => {
   return (
-    <ThemedView style={styles.chartContainer}>
-      <ThemedText style={styles.chartTitle}>{workoutWeekData.title}</ThemedText>
+    <View style={styles.chartContainer}>
+      <Text style={styles.chartTitle}>{workoutWeekData.title}</Text>
       <BarChart
         data={workoutWeekData}
         width={screenWidth - 20}
@@ -44,7 +42,7 @@ export const WorkoutBarChart: React.FC<{ workoutWeekData: WorkoutWeekData }> = (
         }}
         style={styles.chart}
       />
-    </ThemedView>
+    </View>
   );
 };
 

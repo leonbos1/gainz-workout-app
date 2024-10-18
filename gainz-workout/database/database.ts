@@ -14,6 +14,7 @@ export const dropTables = async () => {
     DROP TABLE IF EXISTS attachment;
     DROP TABLE IF EXISTS equipment;
     DROP TABLE IF EXISTS seed_status;
+    DROP TABLE IF EXISTS exercise_equipment;
   `);
   }
   catch (error) {
@@ -104,7 +105,6 @@ export const seedDatabase = async () => {
   const selectStatement = await db.getFirstAsync('SELECT * FROM seed_status where id = 1') as seedStatusRow;
 
   if (selectStatement && selectStatement.status === 'seeded') {
-    console.log('Database already seeded');
     return;
   }
 
@@ -130,4 +130,16 @@ export const seedDatabase = async () => {
     return `(${exerciseid}, ${equipmentid})`;
   }).join(', ')};
   `);
+}
+
+export class Database {
+  static _dbInstance: SQLite.SQLiteDatabase | null = null;
+
+  static async getDbConnection(): Promise<SQLite.SQLiteDatabase> {
+    if (Database._dbInstance) {
+      return Database._dbInstance;
+    }
+    Database._dbInstance = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: false });
+    return Database._dbInstance;
+  }
 }

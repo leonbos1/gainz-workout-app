@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { Equipment } from './Equipment';
+import { Database } from '@/database/database';
 
 export type ExerciseRow = {
   id: number;
@@ -22,7 +23,7 @@ export class Exercise {
   }
 
   static async create(name: string, description: string, musclegroupid: number) {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
 
     const existingExercise = await db.getFirstAsync('SELECT * FROM exercise WHERE name = ?', [name]);
 
@@ -39,14 +40,14 @@ export class Exercise {
   }
 
   static async findAll(): Promise<Exercise[]> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
 
     const rows = await db.getAllAsync('SELECT * FROM exercise') as ExerciseRow[];
     return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
   }
 
   static async removeAll() {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
 
     await db.runAsync('DELETE FROM exercise');
 
@@ -54,14 +55,14 @@ export class Exercise {
   }
 
   static async findIdByName(name: string): Promise<number | null> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
 
     const result = await db.getFirstAsync('SELECT id FROM exercise WHERE name = ?', [name]) as { id: number };
     return result.id;
   }
 
   static async findRecent(limit: number): Promise<ExerciseRow[]> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
 
     const lastWorkouts = await db.getAllAsync(
       `SELECT id FROM workout ORDER BY id DESC LIMIT ?`,
@@ -88,7 +89,7 @@ export class Exercise {
   }
 
   static async getEquipmentsForExercise(exerciseId: number): Promise<Equipment[]> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
 
     const rows = await db.getAllAsync(
       `SELECT equipment.* FROM equipment

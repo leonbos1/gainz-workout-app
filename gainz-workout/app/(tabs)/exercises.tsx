@@ -1,14 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Dimensions, ScrollView, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Dimensions, ScrollView, View, Button, TextInput, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
-
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
 import { Colors } from '@/constants/Colors';
 import { Exercise } from '@/models/Exercise';
 import { MuscleGroup } from '@/models/MuscleGroup';
+import BigIconButton from '@/components/BigIconButton';
+import IconButton from '@/components/IconButton';
+import MusclegroupSelectList from '@/components/selectors/MusclegroupSelectList';
+import EquipmentMultipleSelectList from '@/components/selectors/EquipmentMultipleSelectList';
+import { Attachment } from '@/models/Attachment';
+import { Equipment } from '@/models/Equipment';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -18,17 +21,16 @@ export default function ExercisesScreen() {
   const [newExerciseName, setNewExerciseName] = useState('');
   const [newExerciseDescription, setNewExerciseDescription] = useState('');
   const [muscleGroups, setMuscleGroups] = useState<Array<{ label: string, value: number }>>([]);
-  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<number | null>(null);
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | null>(null);
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment[]>([]);
   const [open, setOpen] = useState(false);
 
   const fetchExercises = async () => {
     try {
-      // Fetch exercises and sort them
       const fetchedExercises = await Exercise.findAll();
-      // const recentExercises = await Exercise.findRecent(10);
 
       const remainingExercises = fetchedExercises.sort((a, b) => a.name.localeCompare(b.name));
-      
+
       setExercises([...remainingExercises]);
     } catch (error) {
       console.error('Error fetching exercises:', error);
@@ -48,15 +50,29 @@ export default function ExercisesScreen() {
     }
   };
 
+  const handleCloseExecise = () => {
+    setIsAddMode(false);
+    setNewExerciseName('');
+    setNewExerciseDescription('');
+    setSelectedMuscleGroup(null);
+    setSelectedEquipment([]);
+  };
+
   const handleAddExercise = async () => {
-    if (newExerciseName && selectedMuscleGroup) {
+    console.log('Adding exercise:', newExerciseName, newExerciseDescription, selectedMuscleGroup, selectedEquipment);
+
+    if (newExerciseName && selectedMuscleGroup && selectedEquipment.length) {
       try {
-        await Exercise.create(newExerciseName, newExerciseDescription, selectedMuscleGroup);
-        fetchExercises();
-        setIsAddMode(false); 
-        setNewExerciseName('');
-        setNewExerciseDescription('');
-        setSelectedMuscleGroup(null);
+        await Exercise.create(newExerciseName, newExerciseDescription, selectedMuscleGroup.id);
+        selectedEquipment.forEach(async (equipment) => {
+          await Equipment.create(equipment.name);
+          fetchExercises();
+          setIsAddMode(false);
+          setNewExerciseName('');
+          setNewExerciseDescription('');
+          setSelectedMuscleGroup(null);
+          setSelectedEquipment([]);
+        });
       } catch (error) {
         console.error('Error adding exercise:', error);
       }
@@ -70,19 +86,17 @@ export default function ExercisesScreen() {
 
   return (
     <View style={styles.contentContainer}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title" style={styles.screenTitle}>Exercises</ThemedText>
-        <FontAwesome
-          name="plus-circle"
-          size={24}
-          color={Colors.light.tint}
-          onPress={() => setIsAddMode(true)}
-        />
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text style={styles.screenTitle}>Exercises</Text>
+      </View>
+      <View style={{ alignItems: 'center' }}>
+        <BigIconButton iconName="add-circle" text="Add" onPress={() => setIsAddMode(true)} />
+      </View>
       <ScrollView>
         {exercises.map((exercise, index) => (
-          <ThemedText key={index} style={styles.exerciseItem}>{exercise.name}</ThemedText>
+          <Text key={index} style={styles.exerciseItem}>{exercise.name}</Text>
         ))}
+
       </ScrollView>
 
       {isAddMode && (
@@ -99,16 +113,12 @@ export default function ExercisesScreen() {
             value={newExerciseDescription}
             onChangeText={setNewExerciseDescription}
           />
-          <DropDownPicker
-            open={open}
-            value={selectedMuscleGroup}
-            items={muscleGroups}
-            setOpen={setOpen}
-            setValue={setSelectedMuscleGroup}
-            setItems={setMuscleGroups}
-            placeholder="Select Muscle Group"
-          />
-          <Button title="Add Exercise" onPress={handleAddExercise} />
+          <MusclegroupSelectList onMuscleGroupSelected={setSelectedMuscleGroup} />
+          <EquipmentMultipleSelectList onEquipmentSelected={setSelectedEquipment} />
+          <View style={styles.buttonContainer}>
+            <IconButton iconName="ban" text="Close" onPress={handleCloseExecise} />
+            <IconButton iconName="add-circle" text="Exercise" onPress={handleAddExercise} />
+          </View>
         </View>
       )}
     </View>
@@ -141,6 +151,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderColor: '#ccc',
+    color: Colors.light.text,
   },
   addExerciseContainer: {
     padding: 20,
@@ -160,5 +171,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 4,
     fontSize: 16,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
 });

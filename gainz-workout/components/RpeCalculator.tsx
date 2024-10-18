@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, Button } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from './ThemedView';
+import { StyleSheet, TextInput, View, Button, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 export function RpeCalculator() {
@@ -27,11 +25,11 @@ export function RpeCalculator() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>1RM Calculator (Weight, Reps & RPE)</ThemedText>
+    <View style={styles.container}>
+      <Text style={styles.title}>1RM Calculator (Weight, Reps & RPE)</Text>
 
       <View style={styles.inputContainer}>
-        <ThemedText style={styles.label}>Weight</ThemedText>
+        <Text style={styles.label}>Weight</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter weight"
@@ -43,7 +41,7 @@ export function RpeCalculator() {
       </View>
 
       <View style={styles.inputContainer}>
-        <ThemedText style={styles.label}>Reps</ThemedText>
+        <Text style={styles.label}>Reps</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter reps"
@@ -55,7 +53,7 @@ export function RpeCalculator() {
       </View>
 
       <View style={styles.inputContainer}>
-        <ThemedText style={styles.label}>RPE</ThemedText>
+        <Text style={styles.label}>RPE</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter RPE (6-10)"
@@ -68,10 +66,10 @@ export function RpeCalculator() {
 
       <Button title="Calculate" onPress={calculate1RM} />
 
-      <ThemedText style={styles.result}>
-        Estimated 1RM: <ThemedText style={styles.resultValue}>{estimated1RM.toFixed(2)}</ThemedText>
-      </ThemedText>
-    </ThemedView>
+      <Text style={styles.result}>
+        Estimated 1RM: <Text style={styles.resultValue}>{estimated1RM.toFixed(2)}</Text>
+      </Text>
+    </View>
   );
 }
 

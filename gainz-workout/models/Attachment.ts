@@ -1,3 +1,4 @@
+import { Database } from '@/database/database';
 import * as SQLite from 'expo-sqlite';
 
 export type AttachmentRow = {
@@ -15,7 +16,7 @@ export class Attachment {
     }
 
     static async findAll(): Promise<Attachment[]> {
-        const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+        const db = await Database.getDbConnection();
 
         const rows = await db.getAllAsync('SELECT * FROM attachment') as AttachmentRow[];
         return rows.map(row => new Attachment(row.id, row.name));

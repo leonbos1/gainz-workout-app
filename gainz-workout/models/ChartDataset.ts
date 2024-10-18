@@ -2,6 +2,7 @@ export class ChartDataset {
   data: number[];
   labels: string[];
   label: string;
+    strokeWidth: number;
 
   constructor(
     data: number[],

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity, Button } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from './ThemedView';
+import { StyleSheet, TextInput, View, Text, Button } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 export function RmCalculator() {
@@ -22,11 +20,11 @@ export function RmCalculator() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>RM Calculator</ThemedText>
+    <View style={styles.container}>
+      <Text style={styles.title}>RM Calculator</Text>
 
       <View style={styles.inputContainer}>
-        <ThemedText style={styles.label}>Weight</ThemedText>
+        <Text style={styles.label}>Weight</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter weight"
@@ -38,7 +36,7 @@ export function RmCalculator() {
       </View>
 
       <View style={styles.inputContainer}>
-        <ThemedText style={styles.label}>Reps</ThemedText>
+        <Text style={styles.label}>Reps</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter reps"
@@ -51,10 +49,10 @@ export function RmCalculator() {
 
       <Button title="Calculate" onPress={calculate1RM} />
 
-      <ThemedText style={styles.result}>
-        Estimated 1RM: <ThemedText style={styles.resultValue}>{estimated1RM.toFixed(2)}</ThemedText>
-      </ThemedText>
-    </ThemedView>
+      <Text style={styles.result}>
+        Estimated 1RM: <Text style={styles.resultValue}>{estimated1RM.toFixed(2)}</Text>
+      </Text>
+    </View>
   );
 }
 

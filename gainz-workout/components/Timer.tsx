@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import { ThemedView } from './ThemedView';
-import { ThemedText } from './ThemedText';
+import { StyleSheet, View, Text } from 'react-native';
 
 interface TimerProps {
     onReset?: () => void;
@@ -33,9 +31,9 @@ export function Timer({ onReset }: TimerProps) {
     };
 
     return (
-        <ThemedView style={styles.container}>
-            <ThemedText style={styles.timer}>{formatTime(seconds)}</ThemedText>
-        </ThemedView>
+        <View style={styles.container}>
+            <Text style={styles.timer}>{formatTime(seconds)}</Text>
+        </View>
     );
 }
 

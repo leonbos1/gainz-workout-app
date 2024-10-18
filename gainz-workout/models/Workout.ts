@@ -1,3 +1,4 @@
+import { Database } from '@/database/database';
 import * as SQLite from 'expo-sqlite';
 
 export type WorkoutRow = {
@@ -36,7 +37,8 @@ export class Workout {
   }
 
   public static async create(starttime: string, endtime: string) {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     const result = await db.runAsync(
       `INSERT INTO workout (starttime, endtime) VALUES (?, ?);`,
@@ -47,7 +49,8 @@ export class Workout {
 
   public static async findAll(): Promise<Workout[]> {
     try {
-      const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+      const db = await Database.getDbConnection();
+
 
       const rows = await db.getAllAsync('SELECT * FROM workout') as WorkoutRow[];
       return rows.map(row => new Workout(row.id, "sample title", row.starttime, row.endtime));
@@ -59,7 +62,8 @@ export class Workout {
   }
 
   static async removeAll() {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     await db.runAsync('DELETE FROM workout');
 
@@ -67,7 +71,8 @@ export class Workout {
   }
 
   static async endWorkout(id: number, endtime: string) {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     await db.runAsync('UPDATE workout SET endtime = ? WHERE id = ?', [endtime, id]);
 
@@ -76,7 +81,8 @@ export class Workout {
 
   static async findAllFinished(limit: number, page: number): Promise<Workout[]> {
     try {
-      const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+      const db = await Database.getDbConnection();
+
 
       const offset = (page - 1) * limit;
       const rows = await db.getAllAsync(
@@ -92,7 +98,8 @@ export class Workout {
   }
 
   static async delete(id: number) {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     await db.runAsync('DELETE FROM workout WHERE id = ?', [id]);
 
@@ -100,34 +107,37 @@ export class Workout {
   }
 
   static async getWorkoutsPerWeek(weeks: number): Promise<WorkoutWeekData> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
 
     // Fetch workout counts grouped by week
     const rows = await db.getAllAsync(`
-      SELECT strftime('%W', starttime) as week, COUNT(*) as count
+      SELECT strftime('%Y-%W', starttime) as year_week, COUNT(*) as count
       FROM workout
       WHERE endtime IS NOT NULL and endtime != ''
-      GROUP BY week
-      ORDER BY week DESC
+      GROUP BY year_week
+      ORDER BY year_week DESC
       LIMIT ?
-    `, [weeks]) as { week: string, count: number }[];
+    `, [weeks]) as { year_week: string, count: number }[];
 
     // Initialize an array for workout counts, filling with zeros
     const data: number[] = new Array(weeks).fill(0);
 
-    // Get the current week of the year
-    const currentWeek = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+    // Get the current year and current week of the year
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentWeek = Math.ceil((currentDate.getTime() - new Date(currentYear, 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
 
-    // Loop through the rows and fill the correct index in the data array
+    // Map rows to data array based on year and week
     for (const row of rows) {
-      const week = parseInt(row.week, 10);
+      const [year, week] = row.year_week.split('-').map(Number);
       const count = row.count;
 
-      const index = weeks - (currentWeek - week) - 1;
+      // Calculate the difference in weeks from the current week and year
+      let weekDifference = (currentYear - year) * 52 + (currentWeek - week);
 
       // Ensure index is within bounds before updating data array
-      if (index >= 0 && index < weeks) {
-        data[index] = count;
+      if (weekDifference >= 0 && weekDifference < weeks) {
+        data[weeks - 1 - weekDifference] = count;
       }
     }
 
@@ -139,22 +149,17 @@ export class Workout {
       labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
     }
 
-    // Ensure labels and data arrays have the same length
     if (labels.length !== data.length) {
       throw new Error("Labels and data arrays have different lengths.");
     }
 
-    // Create the workout data object to return
     const workoutData = new WorkoutWeekData('Workouts Per Week', labels, [{ data }]);
-
-    console.log(workoutData);
 
     return workoutData;
   }
 
-
   static async getById(id: number): Promise<Workout> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
 
     const row = await db.getFirstAsync('SELECT * FROM workout WHERE id = ?', [id]) as WorkoutRow;
 
@@ -162,7 +167,8 @@ export class Workout {
   }
 
   static async deleteFullWorkout(workoutId: number) {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     // first delete all batches and sets, then delete the workout
     const batchIds = await db.getAllAsync('SELECT id FROM batch WHERE workoutid = ?', [workoutId]) as { id: number }[];

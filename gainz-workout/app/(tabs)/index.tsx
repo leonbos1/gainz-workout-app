@@ -1,7 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { StyleSheet, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Chart, ChartDataset } from '@/components/profile/Chart';
 import { WorkoutBarChart } from '@/components/profile/WorkoutBarChart';
 import { Colors } from '@/constants/Colors';
@@ -56,19 +54,19 @@ export default function ProfileScreen() {
       fetchBenchPress1RM();
       fetchSquat1RM();
       return () => { };
-    }, [isDataSeeded]) // Dependencies include the seeding status
+    }, [isDataSeeded])
   );
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title" style={styles.screenTitle}>Profile</ThemedText>
+      <View style={styles.titleContainer}>
+        <Text style={styles.screenTitle}>Profile</Text>
         <TouchableOpacity>
           <Link href="./Settings">
             <Ionicons name="settings-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
           </Link>
         </TouchableOpacity>
-      </ThemedView>
+      </View>
 
       {workoutData && <WorkoutBarChart workoutWeekData={workoutData} />}
       {estimatedBenchPress1RM && <Chart data={estimatedBenchPress1RM} title="Estimated Bench Press 1RM" />}

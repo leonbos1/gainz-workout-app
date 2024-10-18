@@ -1,9 +1,7 @@
 import React from 'react';
 import { LineChart } from 'react-native-chart-kit';
-import { Dimensions, StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
+import { Dimensions, StyleSheet, View, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { ThemedView } from '@/components/ThemedView';
 import { ChartDataset } from '@/models/ChartDataset';
 
 const screenWidth = Dimensions.get('window').width;
@@ -26,8 +24,8 @@ export function Chart({ data, title }: ChartProps): JSX.Element {
     };
 
     return (
-        <ThemedView style={styles.chartContainer}>
-            <ThemedText style={styles.chartTitle}>{title}</ThemedText>
+        <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>{title}</Text>
             <LineChart
                 data={chartData}
                 width={screenWidth - 20}
@@ -55,32 +53,32 @@ export function Chart({ data, title }: ChartProps): JSX.Element {
                 bezier
                 style={styles.chart}
             />
-        </ThemedView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     chartContainer: {
-      alignItems: 'center',
-      marginVertical: 16,
-      backgroundColor: Colors.light.background,
+        alignItems: 'center',
+        marginVertical: 16,
+        backgroundColor: Colors.light.background,
     },
     chart: {
-      borderRadius: 16,
-      backgroundColor: Colors.light.backgroundSecondary,
-      shadowColor: Colors.light.backgroundSecondary,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 2,
+        borderRadius: 16,
+        backgroundColor: Colors.light.backgroundSecondary,
+        shadowColor: Colors.light.backgroundSecondary,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 2,
     },
     chartTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: Colors.light.text,
-      padding: 10,
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: Colors.light.text,
+        padding: 10,
     },
-  });
-  
+});
+
 
 export { ChartDataset };

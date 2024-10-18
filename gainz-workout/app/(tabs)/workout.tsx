@@ -1,7 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { useFocusEffect, useRoute, RouteProp } from '@react-navigation/native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
@@ -11,10 +9,9 @@ import { StartWorkoutButton } from '@/components/workout/StartWorkoutButton';
 import { BatchList } from '@/components/workout/BatchList';
 import { EndWorkoutButton } from '@/components/workout/EndWorkoutButton';
 import { Colors } from '@/constants/Colors';
-import DangerTextButton from '@/components/DangerTextButton';
 import { Timer } from '@/components/Timer';
-import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import IconButton from '@/components/IconButton';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -32,26 +29,13 @@ export default function WorkoutScreen() {
   const [workoutId, setWorkoutId] = useState<number | null>(null);
   const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
   const [exercises, setExercises] = useState<Array<{ label: string, value: string }>>([]);
-  const timerRef = React.useRef<{ resetTimer: () => void } | null>(null);
+  const timerRef = useRef<{ resetTimer: () => void } | null>(null);
 
-  const handleReset = () => {
-    if (timerRef.current) {
-      timerRef.current.resetTimer();
+  useEffect(() => {
+    if (route.params && workoutStarted) {
+      handleAddExercise();
     }
-  };
-
-  const fetchExercises = async () => {
-    try {
-      const fetchedExercises = await Exercise.findAll();
-      const formattedExercises = fetchedExercises.map(exercise => ({
-        label: exercise.name,
-        value: exercise.name,
-      }));
-      setExercises(formattedExercises);
-    } catch (error) {
-      console.error('Error fetching exercises:', error);
-    }
-  };
+  }, [route.params, workoutStarted]);
 
   useFocusEffect(
     useCallback(() => {
@@ -59,11 +43,17 @@ export default function WorkoutScreen() {
     }, [])
   );
 
-  useEffect(() => {
-    if (route.params && workoutStarted) {
-      handleAddExercise();
+  const fetchExercises = async () => {
+    try {
+      const fetchedExercises = await Exercise.findAll();
+      setExercises(fetchedExercises.map(exercise => ({
+        label: exercise.name,
+        value: exercise.name,
+      })));
+    } catch (error) {
+      console.error('Error fetching exercises:', error);
     }
-  }, [route.params, workoutStarted]);
+  };
 
   const handleStartWorkout = async () => {
     try {
@@ -80,15 +70,17 @@ export default function WorkoutScreen() {
       const { exercise, equipment, attachment } = route.params;
       try {
         const newBatch = await Batch.create(workoutId, '', 1, 1); // Adjust as needed
-        const updatedBatch = {
-          id: newBatch.id,
-          name: `${exercise} (${equipment}${attachment ? ` - ${attachment}` : ''})`,
-          sets: [],
-          reps: '',
-          weight: '',
-          rpe: '',
-        };
-        setBatches([...batches, updatedBatch]);
+        setBatches(prevBatches => [
+          ...prevBatches,
+          {
+            id: newBatch.id,
+            name: `${exercise} (${equipment}${attachment ? ` - ${attachment}` : ''})`,
+            sets: [],
+            reps: '',
+            weight: '',
+            rpe: '',
+          }
+        ]);
       } catch (error) {
         console.error('Error adding batch:', error);
       }
@@ -98,9 +90,7 @@ export default function WorkoutScreen() {
   const handleEndWorkout = async () => {
     try {
       await Workout.endWorkout(workoutId!, new Date().toISOString());
-      setWorkoutId(null);
-      setWorkoutStarted(false);
-      setBatches([]);
+      resetWorkoutState();
     } catch (error) {
       console.error('Error ending workout:', error);
     }
@@ -109,12 +99,16 @@ export default function WorkoutScreen() {
   const handleCancelWorkout = async () => {
     try {
       await Workout.delete(workoutId!);
-      setWorkoutId(null);
-      setWorkoutStarted(false);
-      setBatches([]);
+      resetWorkoutState();
     } catch (error) {
       console.error('Error canceling workout:', error);
     }
+  };
+
+  const resetWorkoutState = () => {
+    setWorkoutId(null);
+    setWorkoutStarted(false);
+    setBatches([]);
   };
 
   const handleAddSet = async (batchId: number) => {
@@ -132,45 +126,30 @@ export default function WorkoutScreen() {
           batchId
         );
 
-        const updatedBatch = {
-          ...batch,
-          sets: [...batch.sets, newSet],
-          reps: '',
-          weight: '',
-          rpe: '',
-        };
-
-        setBatches(batches.map(b => (b.id === batchId ? updatedBatch : b)));
+        updateBatch(batchId, { sets: [...batch.sets, newSet], reps: '', weight: '', rpe: '' });
       } catch (error) {
         console.error('Error adding set:', error);
       }
     }
   };
 
+  const updateBatch = (batchId: number, updatedFields: Partial<typeof batches[0]>) => {
+    setBatches(batches.map(b => (b.id === batchId ? { ...b, ...updatedFields } : b)));
+  };
+
   const handleInputChange = (batchId: number, field: string, value: string) => {
-    setBatches(batches.map(batch => {
-      if (batch.id === batchId) {
-        return { ...batch, [field]: value };
-      }
-      return batch;
-    }));
+    updateBatch(batchId, { [field]: value });
   };
 
   const handleFinishExercise = (batchId: number) => {
-    setBatches(batches.map(batch => {
-      if (batch.id === batchId) {
-        return { ...batch, sets: [], reps: '', weight: '', rpe: '' };
-      }
-      return batch;
-    }));
-  }
-
+    updateBatch(batchId, { sets: [], reps: '', weight: '', rpe: '' });
+  };
 
   return (
     <View style={styles.contentContainer}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title" style={styles.screenTitle}>Workout</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text style={styles.screenTitle}>Workout</Text>
+      </View>
       {!workoutStarted ? (
         <StartWorkoutButton onStartWorkout={handleStartWorkout} />
       ) : (
@@ -182,15 +161,15 @@ export default function WorkoutScreen() {
             onInputChange={handleInputChange}
             onFinishExercise={handleFinishExercise}
           />
-          <ThemedView style={styles.buttonContainer}>
-            <TouchableOpacity>
-              <Link href="/ExerciseSelection">
-                <Ionicons name="settings-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
-              </Link>
-            </TouchableOpacity>
-            <DangerTextButton onPress={handleCancelWorkout} title="Cancel Workout" />
-          </ThemedView>
-          <EndWorkoutButton onEndWorkout={handleEndWorkout} />
+          <View style={styles.buttonContainer}>
+            <Link href="/ExerciseSelection" asChild>
+              <IconButton iconName="add-circle-outline" text="Exercise" />
+            </Link>
+          </View>
+          <View style={styles.buttonContainer}>
+            <IconButton iconName="close-circle-outline" text="Cancel" onPress={handleCancelWorkout} />
+            <IconButton iconName="checkmark-circle-outline" text="Finish" onPress={handleEndWorkout} />
+          </View>
         </>
       )}
     </View>
@@ -218,7 +197,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   buttonContainer: {
-    flexDirection: 'column',
+    flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     marginBottom: 20,

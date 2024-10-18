@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { ChartDataset } from './ChartDataset';
+import { Database } from '@/database/database';
 
 // Define a type for the Set row returned by the database
 export type SetRow = {
@@ -30,7 +31,8 @@ export class Set {
   }
 
   static async create(exerciseid: number, amount: number, weight: number, rpe: number, batchid: number) {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     const result = await db.runAsync(
       `INSERT INTO exerciseset (exerciseid, amount, weight, rpe, batchid) VALUES (?, ?, ?, ?, ?);`,
@@ -40,7 +42,8 @@ export class Set {
   }
 
   static async findAll(): Promise<Set[]> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     const rows = await db.getAllAsync('SELECT * FROM exerciseset') as SetRow[];
     return rows.map(row => new Set(row.id, row.exerciseid, row.amount, row.weight, row.rpe, row.batchid));
@@ -48,7 +51,8 @@ export class Set {
 
   static async findByBatchId(batchId: number): Promise<Set[]> {
     try {
-      const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+      const db = await Database.getDbConnection();
+
       const rows = await db.getAllAsync('SELECT * FROM exerciseset WHERE batchid = ?', [batchId]) as SetRow[];
       return rows.map(row => new Set(row.id, row.exerciseid, row.amount, row.weight, row.rpe, row.batchid));
     }
@@ -59,7 +63,8 @@ export class Set {
   }
 
   static async removeAll() {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     await db.runAsync('DELETE FROM exerciseset');
 
@@ -68,7 +73,8 @@ export class Set {
 
   async getExerciseName() {
     try {
-      const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+      const db = await Database.getDbConnection();
+
       const result = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [this.exerciseid]) as { name: string };
       this.exerciseName = result.name;
       return result.name;
@@ -80,7 +86,8 @@ export class Set {
   }
 
   static async getEstimated1RM(exerciseName: string, weeks: number): Promise<ChartDataset> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
+    const db = await Database.getDbConnection();
+
 
     const rows = await db.getAllAsync(`
       SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 

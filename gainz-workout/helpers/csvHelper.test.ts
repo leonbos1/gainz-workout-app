@@ -25,6 +25,26 @@ describe('getAttachmentFromExerciseString', () => {
         const result = getAttachmentFromExerciseString('Triceps Pushdown (Cable) - V-Bar');
         expect(result).toBe('V-Bar');
     });
+
+    it('should handle strings with a - in the exercise name correctly', () => {
+        const result = getAttachmentFromExerciseString('Iso-Lateral Chest Press (Machine)');
+        expect(result).toBe('');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getAttachmentFromExerciseString('Bench Press - Close Grip (Barbell)');
+        expect(result).toBe('');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getAttachmentFromExerciseString('Lat Pulldown - Underhand (Cable)');
+        expect(result).toBe('');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getAttachmentFromExerciseString('Triceps Pushdown (Cable - Straight Bar)');
+        expect(result).toBe('Straight Bar');
+    });
 });
 
 describe('getEquipmentFromExerciseString', () => {
@@ -41,6 +61,26 @@ describe('getEquipmentFromExerciseString', () => {
     it('should handle strings with multiple parentheses correctly', () => {
         const result = getEquipmentFromExerciseString('Triceps Pushdown (Cable) - V-Bar');
         expect(result).toBe('Cable');
+    });
+
+    it('should handle strings with a - in the exercise name correctly', () => {
+        const result = getEquipmentFromExerciseString('Iso-Lateral Chest Press (Machine)');
+        expect(result).toBe('Machine');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getEquipmentFromExerciseString('Bench Press - Close Grip (Barbell)');
+        expect(result).toBe('Barbell');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getEquipmentFromExerciseString('Lat Pulldown - Underhand (Cable)');
+        expect(result).toBe('Cable');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getEquipmentFromExerciseString('Triceps Pushdown (Cable - Straight Bar)');
+        expect(result).toBe('Cable - Straight Bar');
     });
 });
 
@@ -62,6 +102,26 @@ describe('getExerciseNameFromExerciseString', () => {
 
     it('should handle strings with multiple hyphens correctly', () => {
         const result = getExerciseNameFromExerciseString('Triceps Pushdown (Cable)');
+        expect(result).toBe('Triceps Pushdown');
+    });
+
+    it('should handle strings with parentheses correctly', () => {
+        const result = getExerciseNameFromExerciseString('Iso-Lateral Chest Press (Machine)');
+        expect(result).toBe('Iso-Lateral Chest Press');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getExerciseNameFromExerciseString('Bench Press - Close Grip (Barbell)');
+        expect(result).toBe('Bench Press - Close Grip');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getExerciseNameFromExerciseString('Lat Pulldown - Underhand (Cable)');
+        expect(result).toBe('Lat Pulldown - Underhand');
+    });
+
+    it('should handle strings with parentheses and hyphens correctly', () => {
+        const result = getExerciseNameFromExerciseString('Triceps Pushdown (Cable - Straight Bar)');
         expect(result).toBe('Triceps Pushdown');
     });
 });

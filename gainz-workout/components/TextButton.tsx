@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors';
 
 interface TextButtonProps {
     title: string;
-    onPress: () => void;
+    onPress: () => void | Promise<void>;
     disabled?: boolean;
 }
 

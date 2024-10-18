@@ -3,8 +3,6 @@ import { RpeCalculator } from '@/components/RpeCalculator';
 import { Colors } from '@/constants/Colors';
 import { Link } from 'expo-router';
 import { Text, StyleSheet, TouchableOpacity, ScrollView, View, Dimensions } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -12,9 +10,9 @@ export default function ToolsScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title" style={styles.screenTitle}>Tools</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text style={styles.screenTitle}>Tools</Text>
+      </View>
       <TouchableOpacity>
         <Link href="/databaseManagement">
           <Text style={styles.text}>Database Management</Text>

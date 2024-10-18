@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Set } from '@/models/Set';
 import { Colors } from '@/constants/Colors';
-import { ThemedView } from '../ThemedView';
 
 interface BatchItemProps {
   batch: { id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string };
@@ -11,7 +10,7 @@ interface BatchItemProps {
   onFinishExercise: (batchId: number) => void;
 }
 
-export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputChange, onFinishExercise, onCancelExercise }) => {
+export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputChange, onFinishExercise }) => {
   const [isExerciseFinished, setIsExerciseFinished] = useState(false);
   const isAddEnabled = batch.reps.trim() !== '' && batch.weight.trim() !== '';
 
@@ -47,7 +46,7 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
             keyboardType="numeric"
             onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
           />
-            <ThemedView style={styles.buttonContainer}>
+            <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={[styles.button, !isAddEnabled && styles.buttonDisabled]}
                 onPress={() => onAddSet(batch.id)}
@@ -55,15 +54,15 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
               >
                 <Text style={styles.buttonText}>Add Set</Text>
               </TouchableOpacity>
-            </ThemedView>
-            <ThemedView style={styles.buttonContainer}>
+            </View>
+            <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.button}
                 onPress={handleFinishExercise}
               >
                 <Text style={styles.buttonText}>Finish Exercise</Text>
               </TouchableOpacity>
-            </ThemedView>
+            </View>
 
         </>
       )}

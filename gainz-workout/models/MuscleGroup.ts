@@ -1,3 +1,4 @@
+import { Database } from '@/database/database';
 import * as SQLite from 'expo-sqlite';
 
 type MuscleGroupRow = {
@@ -15,7 +16,7 @@ export class MuscleGroup {
   }
 
   static async create(name: string) {
-    const db = await SQLite.openDatabaseAsync('gainz.db', {useNewConnection: true});
+    const db = await Database.getDbConnection();
 
     const result = await db.runAsync(
       `INSERT INTO musclegroup (name) VALUES (?);`,
@@ -25,7 +26,7 @@ export class MuscleGroup {
   }
 
   static async findAll(): Promise<MuscleGroup[]> {
-    const db = await SQLite.openDatabaseAsync('gainz.db', {useNewConnection: true});
+    const db = await Database.getDbConnection();
 
     const rows = await db.getAllAsync('SELECT * FROM musclegroup') as MuscleGroupRow[];
     console.log('rows:', rows);
@@ -33,7 +34,7 @@ export class MuscleGroup {
   }
 
   static async removeAll() {
-    const db = await SQLite.openDatabaseAsync('gainz.db', {useNewConnection: true});
+    const db = await Database.getDbConnection();
 
     await db.runAsync('DELETE FROM musclegroup');
 

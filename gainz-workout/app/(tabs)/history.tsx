@@ -1,16 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Dimensions, View, ActivityIndicator, FlatList } from 'react-native';
+import { StyleSheet, Dimensions, View, ActivityIndicator, FlatList, Text, Alert } from 'react-native';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import { HistoryWorkout } from '@/components/history/HistoryWorkout';
-
 import { Colors } from '@/constants/Colors';
 import { Workout } from '@/models/Workout';
 import { Batch } from '@/models/Batch';
 import { Set } from '@/models/Set';
 import { HistoryWorkoutViewmodel, ExerciseBatchViewmodel } from '@/viewmodels/HistoryWorkoutViewmodel';
 import { useFocusEffect } from 'expo-router/build/useFocusEffect';
+import { debounce } from 'lodash';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -19,17 +17,19 @@ export default function HistoryScreen() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
-      fetchAndPrepareData(page);
+      debouncedFetchData(page);
     }, [page])
   );
 
   const fetchAndPrepareData = async (page: number) => {
     if (loading) return;
-    setLoading(true);
 
+    setLoading(true);
+    setError(null); // Reset error before new fetch attempt
     try {
       const fetchedWorkouts = await Workout.findAllFinished(10, page);
 
@@ -101,11 +101,14 @@ export default function HistoryScreen() {
       const filteredNewHistoryWorkoutViewmodels = newHistoryWorkoutViewmodels.filter(viewmodel => viewmodel !== null);
       setHistoryWorkoutViewmodels(prev => [...prev, ...filteredNewHistoryWorkoutViewmodels]);
     } catch (error) {
+      setError('Failed to fetch workout data. Please try again later.');
       console.error('Error fetching workouts:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const debouncedFetchData = useCallback(debounce(fetchAndPrepareData, 300), []);
 
   const handleDeleteWorkout = (workoutId: number) => {
     setHistoryWorkoutViewmodels(prevViewmodels =>
@@ -120,24 +123,37 @@ export default function HistoryScreen() {
   };
 
   useEffect(() => {
-    fetchAndPrepareData(page);
+    debouncedFetchData(page);
   }, []);
+
+  const renderItem = useCallback(({ item }: { item: HistoryWorkoutViewmodel }) => (
+    <HistoryWorkout viewmodel={item} onDelete={handleDeleteWorkout} />
+  ), []);
+
+  const keyExtractor = useCallback((item: { workoutId: { toString: () => any; }; }, index: any) => item.workoutId.toString() + index, []);
 
   return (
     <View style={styles.container}>
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
       <FlatList
         data={historyWorkoutViewmodels}
-        keyExtractor={(item, index) => item.workoutId.toString() + index}
-        renderItem={({ item }) => <HistoryWorkout viewmodel={item} onDelete={handleDeleteWorkout} />}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
         contentContainerStyle={styles.contentContainer}
         ListHeaderComponent={
-          <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title" style={styles.screenTitle}>History</ThemedText>
-          </ThemedView>
+          <View style={styles.titleContainer}>
+            <Text style={styles.screenTitle}>History</Text>
+          </View>
         }
-        ListFooterComponent={loading ? <ActivityIndicator size="large" color="#0000ff" /> : null}
+        ListFooterComponent={loading ? <ActivityIndicator size="large" color={Colors.light.text} /> : null}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
+        initialNumToRender={10}
+        windowSize={21}
       />
     </View>
   );
@@ -167,5 +183,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
-  }
+  },
+  errorContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+  },
 });
