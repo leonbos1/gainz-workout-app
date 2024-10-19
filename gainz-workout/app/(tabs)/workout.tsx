@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import { useFocusEffect, useRoute, RouteProp } from '@react-navigation/native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
@@ -7,10 +7,9 @@ import { Set } from '@/models/Set';
 import { Batch } from '@/models/Batch';
 import { StartWorkoutButton } from '@/components/workout/StartWorkoutButton';
 import { BatchList } from '@/components/workout/BatchList';
-import { EndWorkoutButton } from '@/components/workout/EndWorkoutButton';
 import { Colors } from '@/constants/Colors';
-import { Timer } from '@/components/Timer';
-import { Link } from 'expo-router';
+import { useNavigation } from 'expo-router';
+import { NavigationProp } from '@react-navigation/native';
 import IconButton from '@/components/IconButton';
 
 const screenWidth = Dimensions.get('window').width;
@@ -29,7 +28,7 @@ export default function WorkoutScreen() {
   const [workoutId, setWorkoutId] = useState<number | null>(null);
   const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
   const [exercises, setExercises] = useState<Array<{ label: string, value: string }>>([]);
-  const timerRef = useRef<{ resetTimer: () => void } | null>(null);
+  const navigation = useNavigation<NavigationProp<any>>();
 
   useEffect(() => {
     if (route.params && workoutStarted) {
@@ -51,7 +50,7 @@ export default function WorkoutScreen() {
         value: exercise.name,
       })));
     } catch (error) {
-      console.error('Error fetching exercises:', error);
+      Logger.log_error('Error fetching exercises:', error as string);
     }
   };
 
@@ -61,7 +60,7 @@ export default function WorkoutScreen() {
       setWorkoutId(newWorkout.id);
       setWorkoutStarted(true);
     } catch (error) {
-      console.error('Error starting workout:', error);
+      Logger.log_error('Error starting workout:', error as string);
     }
   };
 
@@ -69,7 +68,7 @@ export default function WorkoutScreen() {
     if (route.params && workoutId) {
       const { exercise, equipment, attachment } = route.params;
       try {
-        const newBatch = await Batch.create(workoutId, '', 1, 1); // Adjust as needed
+        const newBatch = await Batch.create(workoutId, '', 1, 1);
         setBatches(prevBatches => [
           ...prevBatches,
           {
@@ -82,7 +81,7 @@ export default function WorkoutScreen() {
           }
         ]);
       } catch (error) {
-        console.error('Error adding batch:', error);
+        Logger.log_error('Error adding exercise:', error as string);
       }
     }
   };
@@ -92,7 +91,7 @@ export default function WorkoutScreen() {
       await Workout.endWorkout(workoutId!, new Date().toISOString());
       resetWorkoutState();
     } catch (error) {
-      console.error('Error ending workout:', error);
+      Logger.log_error('Error ending workout:', error as string);
     }
   };
 
@@ -101,7 +100,7 @@ export default function WorkoutScreen() {
       await Workout.delete(workoutId!);
       resetWorkoutState();
     } catch (error) {
-      console.error('Error canceling workout:', error);
+      Logger.log_error('Error canceling workout:', error as string);
     }
   };
 
@@ -128,7 +127,7 @@ export default function WorkoutScreen() {
 
         updateBatch(batchId, { sets: [...batch.sets, newSet], reps: '', weight: '', rpe: '' });
       } catch (error) {
-        console.error('Error adding set:', error);
+        Logger.log_error('Error adding set:', error as string);
       }
     }
   };
@@ -145,6 +144,10 @@ export default function WorkoutScreen() {
     updateBatch(batchId, { sets: [], reps: '', weight: '', rpe: '' });
   };
 
+  const handleNavigateToExerciseSelection = () => {
+    navigation.navigate('ExerciseSelection');
+  };
+
   return (
     <View style={styles.contentContainer}>
       <View style={styles.titleContainer}>
@@ -154,7 +157,6 @@ export default function WorkoutScreen() {
         <StartWorkoutButton onStartWorkout={handleStartWorkout} />
       ) : (
         <>
-          <Timer onReset={() => timerRef.current?.resetTimer()} />
           <BatchList
             batches={batches}
             onAddSet={handleAddSet}
@@ -162,9 +164,7 @@ export default function WorkoutScreen() {
             onFinishExercise={handleFinishExercise}
           />
           <View style={styles.buttonContainer}>
-            <Link href="/ExerciseSelection" asChild>
-              <IconButton iconName="add-circle-outline" text="Exercise" />
-            </Link>
+            <IconButton iconName="add-circle-outline" text="Exercise" onPress={handleNavigateToExerciseSelection} />
           </View>
           <View style={styles.buttonContainer}>
             <IconButton iconName="close-circle-outline" text="Cancel" onPress={handleCancelWorkout} />

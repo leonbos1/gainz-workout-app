@@ -100,4 +100,12 @@ export class Exercise {
 
     return rows.map(row => new Equipment(row.id, row.name));
   }
+
+  static async delete(id: number) {
+    const db = await Database.getDbConnection();
+
+    await db.runAsync('DELETE FROM exercise WHERE id = ?', [id]);
+
+    return true;
+  }
 }
