@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Exercise } from '@/models/Exercise';
 import { Equipment } from '@/models/Equipment';
 import { Colors } from '@/constants/Colors';
 
 export default function ExerciseSelection() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<any>>();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [equipmentForExercise, setEquipmentForExercise] = useState<{ [key: string]: Equipment[] }>({});
 
@@ -41,12 +41,23 @@ export default function ExerciseSelection() {
     fetchExercises();
   }, [navigation]);
 
+  const handleExerciseSelect = (exercise: Exercise) => {
+    navigation.navigate('EquipmentSelection', {
+      selectedExercise: exercise,
+      equipment: JSON.stringify(equipmentForExercise[exercise.id]),
+    });
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>Exercise Selection</Text>
         {exercises.map((exercise) => (
-          <TouchableOpacity key={exercise.id} style={styles.exerciseItem}>
+          <TouchableOpacity
+            key={exercise.id}
+            style={styles.exerciseItem}
+            onPress={() => handleExerciseSelect(exercise)}
+          >
             <Text style={styles.text}>{exercise.name}</Text>
           </TouchableOpacity>
         ))}

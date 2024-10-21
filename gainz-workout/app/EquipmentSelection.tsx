@@ -4,9 +4,10 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Colors } from '@/constants/Colors';
 import { Equipment } from '@/models/Equipment';
+import { Exercise } from '@/models/Exercise';
 
 interface RouteParams {
-  selectedExercise: string;
+  selectedExercise: Exercise;
   equipment: string;
 }
 
@@ -21,6 +22,9 @@ export default function EquipmentSelection() {
   const [relevantEquipment, setRelevantEquipment] = useState<Equipment[]>([]);
 
   useEffect(() => {
+    navigation.setOptions({
+      title: 'Equipment Selection',
+    });
     const parsedEquipment: Equipment[] = JSON.parse(equipmentString);
     setRelevantEquipment(parsedEquipment);
   }, [equipmentString]);
@@ -42,7 +46,9 @@ export default function EquipmentSelection() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Select Equipment for {selectedExercise}</Text>
+      {selectedExercise && (
+        <Text style={styles.title}>Select Equipment for {selectedExercise.name}</Text>
+      )}
       <ScrollView>
         {relevantEquipment.map((equip, index) => (
           <TouchableOpacity

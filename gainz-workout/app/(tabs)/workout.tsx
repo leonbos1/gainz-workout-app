@@ -11,13 +11,15 @@ import { Colors } from '@/constants/Colors';
 import { useNavigation } from 'expo-router';
 import { NavigationProp } from '@react-navigation/native';
 import IconButton from '@/components/IconButton';
+import { Equipment } from '@/models/Equipment';
+import { Attachment } from '@/models/Attachment';
 
 const screenWidth = Dimensions.get('window').width;
 
 interface RouteParams {
-  exercise: string;
-  equipment: string;
-  attachment: string;
+  exercise: Exercise;
+  equipment: Equipment;
+  attachment: Attachment;
 }
 
 type WorkoutScreenRouteProp = RouteProp<{ params: RouteParams }, 'params'>;
@@ -73,7 +75,7 @@ export default function WorkoutScreen() {
           ...prevBatches,
           {
             id: newBatch.id,
-            name: `${exercise} (${equipment}${attachment ? ` - ${attachment}` : ''})`,
+            name: `${exercise.name} (${equipment}${attachment ? ` - ${attachment}` : ''})`,
             sets: [],
             reps: '',
             weight: '',
