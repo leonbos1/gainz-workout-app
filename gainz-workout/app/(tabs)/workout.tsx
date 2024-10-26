@@ -13,6 +13,7 @@ import { NavigationProp } from '@react-navigation/native';
 import IconButton from '@/components/IconButton';
 import { Equipment } from '@/models/Equipment';
 import { Attachment } from '@/models/Attachment';
+import { getExerciseNameFromExerciseString } from '@/helpers/csvHelper';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -114,10 +115,11 @@ export default function WorkoutScreen() {
 
   const handleAddSet = async (batchId: number) => {
     const batch = batches.find(b => b.id === batchId);
-    const exercise = exercises.find(e => e.value === batch?.name);
-    const exerciseId = await Exercise.findIdByName(exercise?.value || '');
+    const exerciseName = getExerciseNameFromExerciseString(batch!.name);
 
-    if (batch && exercise && exerciseId !== null) {
+    const exerciseId = await Exercise.findIdByName(exerciseName);
+
+    if (batch && exerciseId !== null) {
       try {
         const newSet = await Set.create(
           exerciseId,

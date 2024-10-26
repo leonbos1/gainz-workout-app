@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, Button, Text } from 'react-native';
+import { StyleSheet, TextInput, View, Button, Text, TouchableOpacity } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 export function RpeCalculator() {
@@ -64,7 +64,9 @@ export function RpeCalculator() {
         />
       </View>
 
-      <Button title="Calculate" onPress={calculate1RM} />
+      <TouchableOpacity style={styles.button} onPress={calculate1RM}>
+        <Text style={styles.buttonText}>Calculate</Text>
+      </TouchableOpacity>
 
       <Text style={styles.result}>
         Estimated 1RM: <Text style={styles.resultValue}>{estimated1RM.toFixed(2)}</Text>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Set } from '@/models/Set';
 import { Colors } from '@/constants/Colors';
@@ -14,6 +14,10 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
   const [isExerciseFinished, setIsExerciseFinished] = useState(false);
   const isAddEnabled = batch.reps.trim() !== '' && batch.weight.trim() !== '';
 
+  const repsInputRef = useRef<TextInput>(null);
+  const weightInputRef = useRef<TextInput>(null);
+  const rpeInputRef = useRef<TextInput>(null);
+
   const handleFinishExercise = () => {
     setIsExerciseFinished(true);
     onFinishExercise(batch.id);
@@ -27,43 +31,51 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
         <>
           <Text style={styles.label}>Reps</Text>
           <TextInput
+            ref={repsInputRef}
             style={styles.input}
             value={batch.reps}
             keyboardType="numeric"
+            returnKeyType="next"
             onChangeText={(value) => onInputChange(batch.id, 'reps', value)}
+            onSubmitEditing={() => weightInputRef.current?.focus()}
           />
           <Text style={styles.label}>Weight (kg)</Text>
           <TextInput
+            ref={weightInputRef}
             style={styles.input}
             value={batch.weight}
             keyboardType="numeric"
+            returnKeyType="next"
             onChangeText={(value) => onInputChange(batch.id, 'weight', value)}
+            onSubmitEditing={() => rpeInputRef.current?.focus()}
           />
           <Text style={styles.label}>RPE</Text>
           <TextInput
+            ref={rpeInputRef}
             style={styles.rpeinput}
             value={batch.rpe}
             keyboardType="numeric"
+            returnKeyType="done"
             onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
+            onSubmitEditing={() => isAddEnabled && onAddSet(batch.id)}
           />
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={[styles.button, !isAddEnabled && styles.buttonDisabled]}
-                onPress={() => onAddSet(batch.id)}
-                disabled={!isAddEnabled}
-              >
-                <Text style={styles.buttonText}>Add Set</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleFinishExercise}
-              >
-                <Text style={styles.buttonText}>Finish Exercise</Text>
-              </TouchableOpacity>
-            </View>
-
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, !isAddEnabled && styles.buttonDisabled]}
+              onPress={() => onAddSet(batch.id)}
+              disabled={!isAddEnabled}
+            >
+              <Text style={styles.buttonText}>Add Set</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleFinishExercise}
+            >
+              <Text style={styles.buttonText}>Finish Exercise</Text>
+            </TouchableOpacity>
+          </View>
         </>
       )}
       {isExerciseFinished && (

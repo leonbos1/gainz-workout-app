@@ -4,7 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { Colors } from '@/constants/Colors';
 import { processCSVRowsInBatch, CSVRow } from '@/helpers/csvHelper';
-import { Database } from '@/database/database';
+import { createTables, Database, dropTables, seedDatabase } from '@/database/database';
 
 export default function SettingsScreen() {
   const [loading, setLoading] = useState(false);
@@ -54,6 +54,14 @@ export default function SettingsScreen() {
     }
   };
 
+  const deleteData = async () => {
+    setLoading(true);
+    await dropTables();
+    await createTables();
+    await seedDatabase();
+    setLoading(false);
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Settings</Text>
@@ -62,6 +70,9 @@ export default function SettingsScreen() {
       </Text>
       <TouchableOpacity style={styles.button} onPress={importCSV} disabled={loading}>
         <Text style={styles.buttonText}>Import CSV</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={deleteData} disabled={loading}>
+        <Text style={styles.buttonText}>Delete Data</Text>
       </TouchableOpacity>
       {loading && (
         <View>
@@ -96,15 +107,18 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   button: {
-    backgroundColor: Colors.light.textButton,
+    backgroundColor: Colors.light.trinairy,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    width: '80%',
+    margin: 10,
   },
   buttonText: {
     color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   progress: {
     marginTop: 10,
