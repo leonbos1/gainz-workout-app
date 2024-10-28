@@ -9,14 +9,11 @@ import { Set } from '@/models/Set';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import { seedDatabase, createTables } from '@/database/database';
+import ChartList from '@/components/profile/ChartList';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function ProfileScreen() {
-
-  const [workoutData, setWorkoutData] = useState<WorkoutWeekData | null>(null);
-  const [estimatedBenchPress1RM, setEstimatedBenchPress1RM] = useState<ChartDataset | null>(null);
-  const [estimatedSquat1RM, setEstimatedSquat1RM] = useState<ChartDataset | null>(null);
   const [isDataSeeded, setIsDataSeeded] = useState(false);
 
   const seedData = async () => {
@@ -29,33 +26,7 @@ export default function ProfileScreen() {
     seedData();
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!isDataSeeded) {
-        return;
-      }
 
-      async function fetchWorkoutData() {
-        const data = await Workout.getWorkoutsPerWeek(8);
-        setWorkoutData(data);
-      }
-
-      async function fetchBenchPress1RM() {
-        const benchPressSets = await Set.getEstimated1RM('Bench Press', 100);
-        setEstimatedBenchPress1RM(benchPressSets);
-      }
-
-      async function fetchSquat1RM() {
-        const squatSets = await Set.getEstimated1RM('Squat', 100);
-        setEstimatedSquat1RM(squatSets);
-      }
-
-      fetchWorkoutData();
-      fetchBenchPress1RM();
-      fetchSquat1RM();
-      return () => { };
-    }, [isDataSeeded])
-  );
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -66,11 +37,9 @@ export default function ProfileScreen() {
             <Ionicons name="settings-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
           </Link>
         </TouchableOpacity>
-      </View>
 
-      {workoutData && <WorkoutBarChart workoutWeekData={workoutData} />}
-      {estimatedBenchPress1RM && <Chart data={estimatedBenchPress1RM} title="Estimated Bench Press 1RM" />}
-      {estimatedSquat1RM && <Chart data={estimatedSquat1RM} title="Estimated Squat 1RM" />}
+      </View>
+      <ChartList />
     </ScrollView>
   );
 }
