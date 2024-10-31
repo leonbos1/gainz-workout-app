@@ -1,15 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
-import { Chart, ChartDataset } from '@/components/profile/Chart';
-import { WorkoutBarChart } from '@/components/profile/WorkoutBarChart';
 import { Colors } from '@/constants/Colors';
-import { Workout, WorkoutWeekData } from '@/models/Workout';
-import { useFocusEffect } from '@react-navigation/native';
-import { Set } from '@/models/Set';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import { seedDatabase, createTables } from '@/database/database';
 import ChartList from '@/components/profile/ChartList';
+import { ChartSelector } from '@/components/profile/ChartSelector';
+import IconButton from '@/components/IconButton';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -26,8 +23,6 @@ export default function ProfileScreen() {
     seedData();
   }, []);
 
-
-
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <View style={styles.titleContainer}>
@@ -37,8 +32,9 @@ export default function ProfileScreen() {
             <Ionicons name="settings-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
           </Link>
         </TouchableOpacity>
-
       </View>
+      <IconButton iconName='add' text='Add Graph' onPress={() => { }} />
+      <ChartSelector />
       <ChartList />
     </ScrollView>
   );

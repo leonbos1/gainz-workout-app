@@ -91,6 +91,26 @@ export const createTables = async () => {
       FOREIGN KEY (equipmentid) REFERENCES equipment(id),
       PRIMARY KEY (exerciseid, equipmentid)
     );
+
+    CREATE TABLE IF NOT EXISTS graph (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      graph_typeid INTEGER NOT NULL,
+      exerciseid INTEGER NOT NULL,
+      graph_durationid INTEGER NOT NULL,
+      FOREIGN KEY (exerciseid) REFERENCES exercise(id)
+      FOREIGN KEY (graph_type) REFERENCES graph_type(id)
+      FOREIGN KEY (graph_duration) REFERENCES graph_duration(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS graph_type (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS graph_duration (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      value INTEGER NOT NULL
   `);
 };
 
@@ -118,17 +138,23 @@ export const seedDatabase = async () => {
     return `("${exercise.name}", ${musclegroupid})`;
   }).join(', ')};
 
+    INSERT INTO graph_duration (name, value) VALUES ${data.graph_durations.map((duration) => `("${duration.name}", ${duration.value})`).join(', ')};
+
+    INSERT INTO graph_type (name) VALUES ${data.graph_types.map((name) => `("${name}")`).join(', ')};
+
     INSERT INTO equipment (name) VALUES ${data.equipment.map((name) => `("${name}")`).join(', ')};
 
     INSERT INTO attachment (name) VALUES ${data.attachments.map((name) => `("${name}")`).join(', ')};
 
-    INSERT INTO exercise_equipment (exerciseid, equipmentid) VALUES ${data.exerciseEquipment.map((equipment) => {
-    //TODO: this assumes when data is seeded, database is empty and it assumes that everything is inserted correctly
-    const exerciseid = data.exercises.findIndex((exercise) => exercise.name === equipment.exercise) + 1;
-    const equipmentid = data.equipment.indexOf(equipment.equipment) + 1;
+    INSERT INTO exercise_equipment(exerciseid, equipmentid) VALUES ${
+    data.exerciseEquipment.map((equipment) => {
+      //TODO: this assumes when data is seeded, database is empty and it assumes that everything is inserted correctly
+      const exerciseid = data.exercises.findIndex((exercise) => exercise.name === equipment.exercise) + 1;
+      const equipmentid = data.equipment.indexOf(equipment.equipment) + 1;
 
-    return `(${exerciseid}, ${equipmentid})`;
-  }).join(', ')};
+      return `(${exerciseid}, ${equipmentid})`;
+    }).join(', ')
+  };
   `);
 }
 
