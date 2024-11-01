@@ -12,6 +12,7 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function ProfileScreen() {
   const [isDataSeeded, setIsDataSeeded] = useState(false);
+  const [chartSelectorVisible, setChartSelectorVisible] = useState(false);
 
   const seedData = async () => {
     await createTables();
@@ -33,8 +34,8 @@ export default function ProfileScreen() {
           </Link>
         </TouchableOpacity>
       </View>
-      <IconButton iconName='add' text='Add Graph' onPress={() => { }} />
-      <ChartSelector />
+      <IconButton iconName="add-outline" text="Select Charts" onPress={() => setChartSelectorVisible(!chartSelectorVisible)} />
+      <ChartSelector visible={chartSelectorVisible} />
       <ChartList />
     </ScrollView>
   );

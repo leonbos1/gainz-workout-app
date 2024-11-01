@@ -15,6 +15,9 @@ export const dropTables = async () => {
     DROP TABLE IF EXISTS equipment;
     DROP TABLE IF EXISTS seed_status;
     DROP TABLE IF EXISTS exercise_equipment;
+    DROP TABLE IF EXISTS graph;
+    DROP TABLE IF EXISTS graph_type;
+    DROP TABLE IF EXISTS graph_duration;
   `);
   }
   catch (error) {
@@ -92,16 +95,6 @@ export const createTables = async () => {
       PRIMARY KEY (exerciseid, equipmentid)
     );
 
-    CREATE TABLE IF NOT EXISTS graph (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      graph_typeid INTEGER NOT NULL,
-      exerciseid INTEGER NOT NULL,
-      graph_durationid INTEGER NOT NULL,
-      FOREIGN KEY (exerciseid) REFERENCES exercise(id)
-      FOREIGN KEY (graph_type) REFERENCES graph_type(id)
-      FOREIGN KEY (graph_duration) REFERENCES graph_duration(id)
-    );
-
     CREATE TABLE IF NOT EXISTS graph_type (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL
@@ -111,6 +104,17 @@ export const createTables = async () => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       value INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS graph (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      graph_typeid INTEGER NOT NULL,
+      exerciseid INTEGER NOT NULL,
+      graph_durationid INTEGER NOT NULL,
+      FOREIGN KEY (exerciseid) REFERENCES exercise(id)
+      FOREIGN KEY (graph_typeid) REFERENCES graph_type(id)
+      FOREIGN KEY (graph_durationid) REFERENCES graph_duration(id)
+    );
   `);
 };
 
@@ -146,15 +150,14 @@ export const seedDatabase = async () => {
 
     INSERT INTO attachment (name) VALUES ${data.attachments.map((name) => `("${name}")`).join(', ')};
 
-    INSERT INTO exercise_equipment(exerciseid, equipmentid) VALUES ${
-    data.exerciseEquipment.map((equipment) => {
-      //TODO: this assumes when data is seeded, database is empty and it assumes that everything is inserted correctly
-      const exerciseid = data.exercises.findIndex((exercise) => exercise.name === equipment.exercise) + 1;
-      const equipmentid = data.equipment.indexOf(equipment.equipment) + 1;
+    INSERT INTO exercise_equipment(exerciseid, equipmentid) VALUES ${data.exerciseEquipment.map((equipment) => {
+    //TODO: this assumes when data is seeded, database is empty and it assumes that everything is inserted correctly
+    const exerciseid = data.exercises.findIndex((exercise) => exercise.name === equipment.exercise) + 1;
+    const equipmentid = data.equipment.indexOf(equipment.equipment) + 1;
 
-      return `(${exerciseid}, ${equipmentid})`;
-    }).join(', ')
-  };
+    return `(${exerciseid}, ${equipmentid})`;
+  }).join(', ')
+    };
   `);
 }
 

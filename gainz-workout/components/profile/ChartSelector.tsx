@@ -3,11 +3,17 @@ import { LineChart } from 'react-native-chart-kit';
 import { Dimensions, StyleSheet, View, Text } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { Graph } from '@/models/Graph';
+import { Colors } from '@/constants/Colors';
+import IconButton from '../IconButton';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-export function ChartSelector(): JSX.Element {
+type GraphSelectorProps = {
+    visible: boolean;
+};
+
+export function ChartSelector({ visible }: GraphSelectorProps) {
     const [graphs, setGraphs] = useState<Graph[]>([]);
     const [selectedGraphs, setSelectedGraphs] = useState<{ [key: number]: boolean }>({});
 
@@ -32,8 +38,8 @@ export function ChartSelector(): JSX.Element {
     };
 
     return (
-        <View>
-            <Text>ChartSelector</Text>
+        <View style={{ display: visible ? 'flex' : 'none' }}>
+            <Text style={styles.text}>Select Graphs</Text>
             {graphs.map(graph => (
                 <View key={graph.id} style={styles.checkboxContainer}>
                     <CheckBox
@@ -42,6 +48,7 @@ export function ChartSelector(): JSX.Element {
                     />
                 </View>
             ))}
+            <IconButton text='Add Graph' iconName='add-outline' onPress={() => { }} />
         </View>
     );
 }
@@ -49,6 +56,10 @@ export function ChartSelector(): JSX.Element {
 const styles = StyleSheet.create({
     checkboxContainer: {
         flexDirection: 'row',
-        marginBottom: 10,
+        alignItems: 'center',
     },
+    text: {
+        fontSize: 20,
+        color: Colors.light.text,
+    }
 });
