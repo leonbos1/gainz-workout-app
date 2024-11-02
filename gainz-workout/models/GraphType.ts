@@ -19,6 +19,7 @@ export class GraphType {
         const db = await Database.getDbConnection();
 
         const rows = await db.getAllAsync('SELECT * FROM graph_type') as GraphTypeRow[];
+        console.log(rows);
         return rows.map(row => new GraphType(row.id, row.name));
     }
 }

@@ -5,6 +5,7 @@ import CheckBox from '@react-native-community/checkbox';
 import { Graph } from '@/models/Graph';
 import { Colors } from '@/constants/Colors';
 import IconButton from '../IconButton';
+import AddGraphForm from './AddGraphForm';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -16,6 +17,7 @@ type GraphSelectorProps = {
 export function ChartSelector({ visible }: GraphSelectorProps) {
     const [graphs, setGraphs] = useState<Graph[]>([]);
     const [selectedGraphs, setSelectedGraphs] = useState<{ [key: number]: boolean }>({});
+    const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
 
     useEffect(() => {
         async function fetchGraphs() {
@@ -48,7 +50,8 @@ export function ChartSelector({ visible }: GraphSelectorProps) {
                     />
                 </View>
             ))}
-            <IconButton text='Add Graph' iconName='add-outline' onPress={() => { }} />
+            <IconButton text='Add Chart' iconName='add-outline' onPress={() => setAddGraphFormVisible(!addGraphFormVisible)} />
+            <AddGraphForm visible={addGraphFormVisible} />
         </View>
     );
 }

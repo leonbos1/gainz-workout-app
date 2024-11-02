@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextInput, View } from 'react-native';
+import { Button, TextInput, View, StyleSheet, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Graph } from '@/models/Graph';
 import { Exercise } from '@/models/Exercise';
 import { GraphType } from '@/models/GraphType';
 import { GraphDuration } from '@/models/GraphDuration';
+import { Colors } from '@/constants/Colors';
 
-const AddGraphForm: React.FC = () => {
+interface AddGraphFormProps {
+    visible: boolean;
+}
+
+const AddGraphForm: React.FC<AddGraphFormProps> = ({ visible }) => {
     const [graphType, setGraphType] = useState<number | null>(null);
     const [exercise, setExercise] = useState<number | null>(null);
     const [enabled, setEnabled] = useState<boolean>(true);
@@ -35,20 +40,25 @@ const AddGraphForm: React.FC = () => {
     };
 
     return (
-        <View>
+        <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
+            <Text style={styles.title}>Add New Graph</Text>
+
             <Picker
+                style={styles.picker}
                 selectedValue={graphType}
-                onValueChange={(itemValue: React.SetStateAction<number | null>) => setGraphType(itemValue)}
+                onValueChange={(itemValue) => setGraphType(itemValue)}
             >
                 <Picker.Item label="Select Graph Type" value={null} />
                 {graphTypes.map((type) => (
+                    // console.log(type),
                     <Picker.Item key={type.id} label={type.name} value={type.id} />
                 ))}
             </Picker>
 
             <Picker
+                style={styles.picker}
                 selectedValue={exercise}
-                onValueChange={(itemValue: React.SetStateAction<number | null>) => setExercise(itemValue)}
+                onValueChange={(itemValue) => setExercise(itemValue)}
             >
                 <Picker.Item label="Select Exercise" value={null} />
                 {exercises.map((ex) => (
@@ -56,9 +66,32 @@ const AddGraphForm: React.FC = () => {
                 ))}
             </Picker>
 
-            <Button title="Add Graph" onPress={handleAddGraph} />
+            <Button title="Add Graph" onPress={handleAddGraph} color={Colors.light.secundary} />
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#2c2c2c',
+        borderRadius: 10,
+        margin: 15,
+    },
+    title: {
+        fontSize: 20,
+        color: 'white',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    picker: {
+        color: 'white',
+        backgroundColor: '#444',
+        borderRadius: 5,
+        marginBottom: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+});
 
 export default AddGraphForm;
