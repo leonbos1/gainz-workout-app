@@ -1,74 +1,86 @@
 import React, { useEffect, useState } from 'react';
-import { LineChart } from 'react-native-chart-kit';
-import { Dimensions, StyleSheet, View, Text } from 'react-native';
+import { Dimensions, StyleSheet, View, Text, ScrollView } from 'react-native';
 import CheckBox from 'expo-checkbox';
-import { Graph } from '@/models/Graph';
 import { Colors } from '@/constants/Colors';
 import IconButton from '../IconButton';
 import AddGraphForm from './AddGraphForm';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
-
 type GraphSelectorProps = {
     visible: boolean;
+    graphVms: GraphViewModel[];
+    selectedGraphs: { [key: number]: boolean };
+    toggleGraphVisibility: (id: number) => void;
 };
 
-export function ChartSelector({ visible }: GraphSelectorProps) {
-    const [graphVms, setGraphs] = useState<GraphViewModel[]>([]);
-    const [selectedGraphs, setSelectedGraphs] = useState<{ [key: number]: boolean }>({});
+export function ChartSelector({ visible, graphVms, selectedGraphs, toggleGraphVisibility }: GraphSelectorProps) {
     const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
 
-    useEffect(() => {
-        async function fetchGraphs() {
-            const allGraphsVms = await Graph.findAllAsViewModel();
-
-            setGraphs(allGraphsVms);
-            const initialSelectedGraphs = allGraphsVms.reduce((acc, graphVm) => {
-                acc[graphVm.graph.id] = graphVm.graph.enabled;
-                return acc;
-            }, {} as { [key: number]: boolean });
-            setSelectedGraphs(initialSelectedGraphs);
-        }
-        fetchGraphs();
-    }, []);
-
-    const toggleGraph = (id: number) => {
-        setSelectedGraphs(prevState => ({
-            ...prevState,
-            [id]: !prevState[id]
-        }));
-    };
-
     return (
-        <View style={{ display: visible ? 'flex' : 'none' }}>
-            <Text style={styles.text}>Select Graphs</Text>
-            {graphVms.map(graphVm => (
-                <View key={graphVm.graph.id} style={styles.checkboxContainer}>
-                    <CheckBox
-                        value={selectedGraphs[graphVm.graph.id]}
-                        onValueChange={() => toggleGraph(graphVm.graph.id)}
-                        style={styles.checkBoxItem}
-                    />
-                    <Text style={styles.text}>{graphVm.graphTitle}</Text>
-                </View>
-            ))}
-            <IconButton text='Add Chart' iconName='add-outline' onPress={() => setAddGraphFormVisible(!addGraphFormVisible)} />
+        <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
+            <Text style={styles.header}>Select Graphs</Text>
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                {graphVms.map(graphVm => (
+                    <View key={graphVm.graph.id} style={styles.checkboxContainer}>
+                        <CheckBox
+                            value={selectedGraphs[graphVm.graph.id]}
+                            onValueChange={() => toggleGraphVisibility(graphVm.graph.id)}
+                            style={styles.checkBoxItem}
+                        />
+                        <Text style={styles.graphTitle}>{graphVm.graphTitle}</Text>
+                    </View>
+                ))}
+            </ScrollView>
+            <IconButton
+                text='Add Chart'
+                iconName='add-outline'
+                onPress={() => setAddGraphFormVisible(!addGraphFormVisible)}
+            />
             <AddGraphForm visible={addGraphFormVisible} />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: Colors.light.background,
+        alignItems: 'center',
+        padding: 20,
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: Colors.light.text,
+        marginBottom: 20,
+    },
+    scrollViewContent: {
+        alignItems: 'center',
+        paddingBottom: 20,
+    },
     checkboxContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginBottom: 15,
+        width: '100%',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        backgroundColor: Colors.light.card,
+        borderRadius: 10,
     },
-    text: {
-        fontSize: 20,
+    graphTitle: {
+        fontSize: 18,
         color: Colors.light.text,
+        marginLeft: 10,
     },
     checkBoxItem: {
+        width: 24,
+        height: 24,
+    },
+    addButton: {
+        marginTop: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 10,
     },
 });

@@ -69,4 +69,10 @@ export class Graph {
     
         return viewModels;
     }
+
+    static async updateEnabled(id: number, enabled: boolean): Promise<void> {
+        const db = await Database.getDbConnection();
+
+        await db.runAsync('UPDATE graph SET enabled = ? WHERE id = ?', [enabled, id]);
+    }
 }

@@ -7,12 +7,15 @@ import { seedDatabase, createTables } from '@/database/database';
 import ChartList from '@/components/profile/ChartList';
 import { ChartSelector } from '@/components/profile/ChartSelector';
 import IconButton from '@/components/IconButton';
+import { GraphViewModel } from '@/viewmodels/GraphViewModel';
+import { Graph } from '@/models/Graph';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function ProfileScreen() {
   const [isDataSeeded, setIsDataSeeded] = useState(false);
   const [chartSelectorVisible, setChartSelectorVisible] = useState(false);
+  const [graphVms, setGraphs] = useState<GraphViewModel[]>([]);
 
   const seedData = async () => {
     await createTables();
@@ -22,6 +25,12 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     seedData();
+    const fetchGraphs = async () => {
+      const allGraphsVms = await Graph.findAllAsViewModel();
+      console.log('allGraphsVms fetched');
+      setGraphs(allGraphsVms);
+    }
+    fetchGraphs();
   }, []);
 
   return (
@@ -34,8 +43,11 @@ export default function ProfileScreen() {
           </Link>
         </TouchableOpacity>
       </View>
-      <IconButton iconName="add-outline" text="Select Charts" onPress={() => setChartSelectorVisible(!chartSelectorVisible)} />
-      <ChartSelector visible={chartSelectorVisible} />
+      <IconButton
+        iconName={chartSelectorVisible ? "close-outline" : "add-outline"}
+        text={chartSelectorVisible ? "Close" : "Select Charts"}
+        onPress={() => setChartSelectorVisible(!chartSelectorVisible)}
+      />
       <ChartList />
     </ScrollView>
   );

@@ -1,5 +1,4 @@
 import { Database } from '@/database/database';
-import * as SQLite from 'expo-sqlite';
 
 export type GraphTypeRow = {
     id: number;
@@ -11,7 +10,6 @@ export class GraphType {
     name: string;
 
     constructor(id: number, name: string) {
-        console.log('GraphType constructor id:', id, 'name:', name);
         this.id = id;
         this.name = name;
     }
@@ -20,7 +18,6 @@ export class GraphType {
         const db = await Database.getDbConnection();
 
         const rows = await db.getAllAsync('SELECT * FROM graph_type') as GraphTypeRow[];
-        console.log('Database rows:', rows); // Log the rows to inspect the structure
 
         return rows.map(row => new GraphType(row.id, row.name as string));
     }
