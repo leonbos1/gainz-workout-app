@@ -108,4 +108,12 @@ export class Exercise {
 
     return true;
   }
+
+  static async findById(id: number): Promise<Exercise> {
+    const db = await Database.getDbConnection();
+
+    const row = await db.getFirstAsync('SELECT * FROM exercise WHERE id = ?', [id]) as ExerciseRow;
+
+    return new Exercise(row.id, row.name, row.description, row.musclegroupid);
+  }
 }

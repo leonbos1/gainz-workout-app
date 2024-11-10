@@ -25,4 +25,12 @@ export class GraphDuration {
 
         return rows.map(row => new GraphDuration(row.id, row.name, row.value));
     }
+
+    static async findById(id: number): Promise<GraphDuration> {
+        const db = await Database.getDbConnection();
+
+        const row = await db.getFirstAsync('SELECT * FROM graph_duration WHERE id = ?', [id]) as GraphDurationRow;
+
+        return new GraphDuration(row.id, row.name, row.value);
+    }
 }

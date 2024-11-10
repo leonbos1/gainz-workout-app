@@ -111,6 +111,7 @@ export const createTables = async () => {
       graph_typeid INTEGER NOT NULL,
       exerciseid INTEGER NOT NULL,
       graph_durationid INTEGER NOT NULL,
+      enabled BOOLEAN NOT NULL,
       FOREIGN KEY (exerciseid) REFERENCES exercise(id)
       FOREIGN KEY (graph_typeid) REFERENCES graph_type(id)
       FOREIGN KEY (graph_durationid) REFERENCES graph_duration(id)
@@ -144,7 +145,7 @@ export const seedDatabase = async () => {
 
     INSERT INTO graph_duration (name, value) VALUES ${data.graph_durations.map((duration) => `("${duration.name}", ${duration.value})`).join(', ')};
 
-    INSERT INTO graph_type (name) VALUES ${data.graph_types.map((name) => `("${name}")`).join(', ')};
+    INSERT INTO graph_type (name) VALUES ${data.graph_types.map((graphType) => `("${graphType.name}")`).join(', ')};
 
     INSERT INTO equipment (name) VALUES ${data.equipment.map((name) => `("${name}")`).join(', ')};
 

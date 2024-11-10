@@ -1,6 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import { ChartDataset } from './ChartDataset';
 import { Database } from '@/database/database';
+import { GraphDuration } from './GraphDuration';
 
 // Define a type for the Set row returned by the database
 export type SetRow = {
@@ -85,7 +86,7 @@ export class Set {
     }
   }
 
-  static async getEstimated1RM(exerciseName: string, weeks: number): Promise<ChartDataset> {
+  static async getEstimated1RM(exerciseId: number, weeks: number): Promise<ChartDataset> {
     const db = await Database.getDbConnection();
 
 
@@ -95,11 +96,11 @@ export class Set {
       FROM exerciseset es
       JOIN batch b ON es.batchid = b.id
       JOIN workout w ON b.workoutid = w.id
-      WHERE es.exerciseid = (SELECT id FROM exercise WHERE name = ?)
+      WHERE es.exerciseid = ?
       GROUP BY monday
       ORDER BY monday DESC
       LIMIT ?
-    `, [exerciseName, weeks]) as { monday: string, estimated1RM: number }[];
+    `, [exerciseId, weeks]) as { monday: string, estimated1RM: number }[];
 
     const data: number[] = new Array(9).fill(0);
     const labels: string[] = new Array(9).fill('');
@@ -120,6 +121,8 @@ export class Set {
       }
     }
 
-    return new ChartDataset(data, labels, exerciseName);
+    const exercise = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };
+
+    return new ChartDataset(data, labels, exercise.name);
   }
 }

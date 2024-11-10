@@ -17,6 +17,8 @@ const AddGraphForm: React.FC<AddGraphFormProps> = ({ visible }) => {
     const [enabled, setEnabled] = useState<boolean>(true);
     const [graphTypes, setGraphTypes] = useState<GraphType[]>([]);
     const [exercises, setExercises] = useState<Exercise[]>([]);
+    const [times, setTimes] = useState<GraphDuration[]>([]);
+    const [time, setTime] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,6 +27,9 @@ const AddGraphForm: React.FC<AddGraphFormProps> = ({ visible }) => {
 
             const fetchedExercises = await Exercise.findAll();
             setExercises(fetchedExercises);
+
+            const fetchedDurations = await GraphDuration.findAll();
+            setTimes(fetchedDurations);
         };
 
         fetchData();
@@ -32,7 +37,12 @@ const AddGraphForm: React.FC<AddGraphFormProps> = ({ visible }) => {
 
     const handleAddGraph = async () => {
         if (graphType !== null && exercise !== null) {
-            await Graph.create(graphType, exercise, enabled);
+            if (graphType !== null && exercise !== null && time !== null) {
+                await Graph.create(graphType, exercise, enabled, time);
+                alert('Graph added successfully!');
+            } else {
+                alert('Please select a graph type, exercise, and time.');
+            }
             alert('Graph added successfully!');
         } else {
             alert('Please select a graph type and exercise.');
@@ -62,6 +72,17 @@ const AddGraphForm: React.FC<AddGraphFormProps> = ({ visible }) => {
             >
                 <Picker.Item label="Select Exercise" value={null} />
                 {exercises.map((ex) => (
+                    <Picker.Item key={ex.id} label={ex.name} value={ex.id} />
+                ))}
+            </Picker>
+
+            <Picker
+                style={styles.picker}
+                selectedValue={time}
+                onValueChange={(itemValue) => setTime(itemValue)}
+            >
+                <Picker.Item label="Select Time" value={null} />
+                {times.map((ex) => (
                     <Picker.Item key={ex.id} label={ex.name} value={ex.id} />
                 ))}
             </Picker>
