@@ -1,73 +1,88 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { useFocusEffect } from '@react-navigation/native';
 import { Workout, WorkoutWeekData } from '@/models/Workout';
 import { Chart, ChartDataset } from './Chart';
 import { WorkoutBarChart } from './WorkoutBarChart';
-import { Set } from '@/models/Set';
-import { Graph } from '@/models/Graph';
-import { GraphDuration } from '@/models/GraphDuration';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
 import { ChartSelector } from './ChartSelector';
+import { Graph } from '@/models/Graph';
+import { GraphDuration } from '@/models/GraphDuration';
+import { Set } from '@/models/Set';
 
 type ChartListProps = {};
 
-const ChartList: React.FC<ChartListProps> = ({ }) => {
+const ChartList: React.FC<ChartListProps> = () => {
     const [workoutData, setWorkoutData] = useState<WorkoutWeekData | null>(null);
     const [graphVms, setGraphVms] = useState<GraphViewModel[]>([]);
     const [graphData, setGraphData] = useState<{ [key: string]: ChartDataset | null }>({});
     const [selectedGraphs, setSelectedGraphs] = useState<{ [key: number]: boolean }>({});
 
-    useFocusEffect(
-        useCallback(() => {
-            async function fetchWorkoutData() {
-                const data = await Workout.getWorkoutsPerWeek(8);
-                setWorkoutData(data);
-            }
+    const fetchWorkoutData = async () => {
+        try {
+            const data = await Workout.getWorkoutsPerWeek(8);
+            setWorkoutData(data);
+        } catch (error) {
+            console.error('Error fetching workout data:', error);
+        }
+    };
 
-            async function fetchGraphs() {
-                var allGraphs = await Graph.findAllAsViewModel();
-                allGraphs = allGraphs.filter(graph => graph.graph.enabled);
-                setGraphVms(allGraphs);
-                const initialSelectedGraphs = allGraphs.reduce((acc, graphVm) => {
-                    acc[graphVm.graph.id] = graphVm.graph.enabled;
-                    return acc;
-                }, {} as { [key: number]: boolean });
-                setSelectedGraphs(initialSelectedGraphs);
-            }
+    const fetchGraphs = async () => {
+        try {
+            const allGraphs = await Graph.findAllAsViewModel();
+            const enabledGraphs = allGraphs.filter(graph => graph.graph.enabled);
+            setGraphVms(enabledGraphs);
 
-            fetchWorkoutData();
-            fetchGraphs();
-            return () => { };
-        }, [])
-    );
+            const initialSelectedGraphs = enabledGraphs.reduce((acc, graphVm) => {
+                acc[graphVm.graph.id] = true;
+                return acc;
+            }, {} as { [key: number]: boolean });
+
+            setSelectedGraphs(initialSelectedGraphs);
+        } catch (error) {
+            console.error('Error fetching graphs:', error);
+        }
+    };
 
     useEffect(() => {
-        async function loadGraphData() {
-            const dataPromises = graphVms.map(async (graphVm) => {
-                const duration = await GraphDuration.findById(graphVm.graphDuration.id);
-                if (graphVm.graphType.id === 1) {
-                    const chartData = await Set.getEstimated1RM(graphVm.exercise.id, duration.value);
-                    return { id: graphVm.graph.id, data: chartData };
-                }
-                return { id: graphVm.graph.id, data: null };
-            });
+        fetchWorkoutData();
+        fetchGraphs();
+    }, []);
 
-            const data = await Promise.all(dataPromises);
-            const dataMap = data.reduce((acc, { id, data }) => ({ ...acc, [id]: data }), {});
-            setGraphData(dataMap);
+    useEffect(() => {
+        const loadGraphData = async () => {
+            try {
+                const dataPromises = graphVms.map(async (graphVm) => {
+                    if (graphVm.graphType.id === 1) {
+                        const duration = await GraphDuration.findById(graphVm.graphDuration.id);
+                        const chartData = await Set.getEstimated1RM(graphVm.exercise.id, duration.value);
+                        return { id: graphVm.graph.id, data: chartData };
+                    }
+                    return { id: graphVm.graph.id, data: null };
+                });
+
+                const results = await Promise.all(dataPromises);
+                const dataMap = results.reduce((acc, { id, data }) => {
+                    acc[id] = data;
+                    return acc;
+                }, {} as { [key: string]: ChartDataset | null });
+
+                setGraphData(dataMap);
+            } catch (error) {
+                console.error('Error loading graph data:', error);
+            }
+        };
+
+        if (graphVms.length > 0) {
+            loadGraphData();
         }
-
-        if (graphVms.length > 0) loadGraphData();
     }, [graphVms]);
 
     const toggleGraphVisibility = (id: number) => {
-        setSelectedGraphs(prevState => ({
-            ...prevState,
-            [id]: !prevState[id]
-        }));
+        setSelectedGraphs(prevState => {
+            const updatedState = { ...prevState, [id]: !prevState[id] };
+            return updatedState;
+        });
     };
 
     return (
@@ -79,11 +94,11 @@ const ChartList: React.FC<ChartListProps> = ({ }) => {
                 toggleGraphVisibility={toggleGraphVisibility}
             />
             {workoutData && <WorkoutBarChart workoutWeekData={workoutData} />}
-            {graphVms.map(graphVm => (
+            {graphVms.map(graphVm =>
                 selectedGraphs[graphVm.graph.id] && graphData[graphVm.graph.id] ? (
-                    <Chart key={graphVm.graph.id} data={graphData[graphVm.graph.id] as ChartDataset} title={graphVm.graphTitle} />
+                    <Chart key={graphVm.graph.id} data={graphData[graphVm.graph.id]!} title={graphVm.graphTitle} />
                 ) : null
-            ))}
+            )}
         </View>
     );
 };

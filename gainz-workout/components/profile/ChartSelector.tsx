@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View, Text, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 import CheckBox from 'expo-checkbox';
 import { Colors } from '@/constants/Colors';
 import IconButton from '../IconButton';
@@ -19,7 +19,7 @@ export function ChartSelector({ visible, graphVms, selectedGraphs, toggleGraphVi
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
             <Text style={styles.header}>Select Graphs</Text>
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            <View style={styles.scrollViewContent}>
                 {graphVms.map(graphVm => (
                     <View key={graphVm.graph.id} style={styles.checkboxContainer}>
                         <CheckBox
@@ -30,10 +30,10 @@ export function ChartSelector({ visible, graphVms, selectedGraphs, toggleGraphVi
                         <Text style={styles.graphTitle}>{graphVm.graphTitle}</Text>
                     </View>
                 ))}
-            </ScrollView>
+            </View>
             <IconButton
-                text='Add Chart'
-                iconName='add-outline'
+                text="Add Chart"
+                iconName="add-outline"
                 onPress={() => setAddGraphFormVisible(!addGraphFormVisible)}
             />
             <AddGraphForm visible={addGraphFormVisible} />
@@ -76,11 +76,5 @@ const styles = StyleSheet.create({
     checkBoxItem: {
         width: 24,
         height: 24,
-    },
-    addButton: {
-        marginTop: 20,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 10,
     },
 });

@@ -27,7 +27,6 @@ export default function ProfileScreen() {
     seedData();
     const fetchGraphs = async () => {
       const allGraphsVms = await Graph.findAllAsViewModel();
-      console.log('allGraphsVms fetched');
       setGraphs(allGraphsVms);
     }
     fetchGraphs();
