@@ -59,15 +59,21 @@ export class Graph {
     }
 
     static async findAllAsViewModel(): Promise<GraphViewModel[]> {
-        const db = await Database.getDbConnection();
-    
-        const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
-    
-        const viewModels = await Promise.all(
-            rows.map(row => GraphViewModel.create(row))
-        );
-    
-        return viewModels;
+        try {
+            const db = await Database.getDbConnection();
+
+            const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
+
+            const viewModels = await Promise.all(
+                rows.map(row => GraphViewModel.create(row))
+            );
+
+            return viewModels;
+        }
+        catch (error) {
+            console.error('Error fetching graphs:', error);
+        }
+        return [];
     }
 
     static async updateEnabled(id: number, enabled: boolean): Promise<void> {

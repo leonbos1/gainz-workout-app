@@ -14,8 +14,7 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function ProfileScreen() {
   const [isDataSeeded, setIsDataSeeded] = useState(false);
-  const [chartSelectorVisible, setChartSelectorVisible] = useState(false);
-  const [graphVms, setGraphs] = useState<GraphViewModel[]>([]);
+  const [enabledGraphVms, setEnabledGraphVms] = useState<GraphViewModel[]>([]);
 
   const seedData = async () => {
     await createTables();
@@ -25,11 +24,20 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     seedData();
-    const fetchGraphs = async () => {
-      const allGraphsVms = await Graph.findAllAsViewModel();
-      setGraphs(allGraphsVms);
+    try {
+      const fetchGraphs = async () => {
+        console.log('fetchGraphs');
+        const allGraphsVms = await Graph.findAllAsViewModel();
+        console.log('allGraphsVms', allGraphsVms);
+        const enGraphsVms = allGraphsVms.filter(graphVm => graphVm.graph.enabled);
+        console.log('enGraphsVms', enGraphsVms);
+        setEnabledGraphVms(enGraphsVms);
+      }
+      fetchGraphs();
     }
-    fetchGraphs();
+    catch (error) {
+      console.error('Error fetching graphs:', error);
+    }
   }, []);
 
   return (
@@ -42,12 +50,12 @@ export default function ProfileScreen() {
           </Link>
         </TouchableOpacity>
       </View>
-      <IconButton
-        iconName={chartSelectorVisible ? "close-outline" : "add-outline"}
-        text={chartSelectorVisible ? "Close" : "Select Charts"}
-        onPress={() => setChartSelectorVisible(!chartSelectorVisible)}
-      />
-      <ChartList />
+      <TouchableOpacity>
+        <Link href="./GraphChoose">
+          <Ionicons name="add-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
+        </Link>
+      </TouchableOpacity>
+      <ChartList enabledGraphVms={enabledGraphVms} />
     </ScrollView>
   );
 }
