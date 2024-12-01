@@ -278,10 +278,16 @@
     ],
     "graphs": [
         {
-            "graph_type": 1,
-            "graph_duration": 1,
-            "exerciseid": 1,
-            "enabled": "false"
+            "graph_type_id": 1,
+            "graph_duration_id": 4,
+            "exercise_id": 1,
+            "enabled": "true"
+        },
+        {
+            "graph_type_id": 2,
+            "graph_duration_id": 4,
+            "exercise_id": 1,
+            "enabled": "true"
         }
     ]
 }

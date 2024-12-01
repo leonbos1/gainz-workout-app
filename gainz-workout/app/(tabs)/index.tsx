@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { seedDatabase, createTables } from '@/database/database';
 import ChartList from '@/components/profile/ChartList';
 import { ChartSelector } from '@/components/profile/ChartSelector';
@@ -15,6 +15,12 @@ const screenWidth = Dimensions.get('window').width;
 export default function ProfileScreen() {
   const [isDataSeeded, setIsDataSeeded] = useState(false);
   const [enabledGraphVms, setEnabledGraphVms] = useState<GraphViewModel[]>([]);
+  const [selectedGraphs, setSelectedGraphs] = useState<{ [key: number]: boolean }>({});
+  const router = useRouter();
+
+  const toggleGraphVisibility = useCallback((id: number) => {
+    setSelectedGraphs(prev => ({ ...prev, [id]: !prev[id] }));
+  }, []);
 
   const seedData = async () => {
     await createTables();
@@ -26,11 +32,10 @@ export default function ProfileScreen() {
     seedData();
     try {
       const fetchGraphs = async () => {
-        console.log('fetchGraphs');
         const allGraphsVms = await Graph.findAllAsViewModel();
-        console.log('allGraphsVms', allGraphsVms);
+        console.log('allGraphsVms:', allGraphsVms);
         const enGraphsVms = allGraphsVms.filter(graphVm => graphVm.graph.enabled);
-        console.log('enGraphsVms', enGraphsVms);
+        console.log('enGraphsVms:', enGraphsVms);
         setEnabledGraphVms(enGraphsVms);
       }
       fetchGraphs();
@@ -50,10 +55,18 @@ export default function ProfileScreen() {
           </Link>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity>
-        <Link href="./GraphChoose">
-          <Ionicons name="add-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
-        </Link>
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: './GraphChoose',
+            params: {
+              enabledGraphVms: JSON.stringify(enabledGraphVms),
+              selectedGraphs: JSON.stringify(selectedGraphs),
+            },
+          })
+        }
+      >
+        <Ionicons name="add-outline" size={25} color={Colors.light.text} style={{ marginLeft: 15 }} />
       </TouchableOpacity>
       <ChartList enabledGraphVms={enabledGraphVms} />
     </ScrollView>

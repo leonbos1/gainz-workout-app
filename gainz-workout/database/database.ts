@@ -147,6 +147,8 @@ export const seedDatabase = async () => {
 
     INSERT INTO graph_type (name) VALUES ${data.graph_types.map((graphType) => `("${graphType.name}")`).join(', ')};
 
+    INSERT INTO graph (graph_typeid, exerciseid, graph_durationid, enabled) VALUES ${data.graphs.map((graph) => `(${graph.graph_type_id}, ${graph.exercise_id}, ${graph.graph_duration_id}, ${graph.enabled})`).join(', ')};
+
     INSERT INTO equipment (name) VALUES ${data.equipment.map((name) => `("${name}")`).join(', ')};
 
     INSERT INTO attachment (name) VALUES ${data.attachments.map((name) => `("${name}")`).join(', ')};

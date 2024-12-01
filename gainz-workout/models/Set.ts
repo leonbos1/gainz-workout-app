@@ -2,6 +2,7 @@ import * as SQLite from 'expo-sqlite';
 import { ChartDataset } from './ChartDataset';
 import { Database } from '@/database/database';
 import { GraphDuration } from './GraphDuration';
+import { round } from 'lodash';
 
 // Define a type for the Set row returned by the database
 export type SetRow = {
@@ -89,6 +90,7 @@ export class Set {
   static async getEstimated1RM(exerciseId: number, weeks: number): Promise<ChartDataset> {
     const db = await Database.getDbConnection();
 
+    weeks = round(weeks);
 
     const rows = await db.getAllAsync(`
       SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 
@@ -114,11 +116,54 @@ export class Set {
     data.reverse();
     labels.reverse();
 
-    // make sure 3/4 of the labels are empty strings
     for (let i = 0; i < labels.length; i++) {
-      if (i % 10 !== 0) {
+      if (i % 5 !== 0) {
         labels[i] = '';
       }
+      //TODO: iets toevoegen dat jaartallen er in komen
+    }
+
+    const exercise = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };
+
+    return new ChartDataset(data, labels, exercise.name);
+  }
+
+  static async getVolume(exerciseId: number, weeks: number): Promise<ChartDataset> {
+    const db = await Database.getDbConnection();
+
+    weeks = round(weeks);
+
+    const rows = await db.getAllAsync(`
+    SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 
+           SUM(es.amount * es.weight) as volume
+    FROM exerciseset es
+    JOIN batch b ON es.batchid = b.id
+    JOIN workout w ON b.workoutid = w.id
+    WHERE es.exerciseid = ?
+    GROUP BY monday
+    ORDER BY monday DESC
+    LIMIT ?
+  `, [exerciseId, weeks]) as { monday: string, volume: number }[];
+
+    const data: number[] = new Array(9).fill(0);
+    const labels: string[] = new Array(9).fill('');
+
+    let cumulativeVolume = 0;
+    rows.forEach((row, index) => {
+      cumulativeVolume += row.volume;
+      data[index] = cumulativeVolume;
+      const date = new Date(row.monday);
+      labels[index] = `${date.getMonth() + 1}/${date.getDate()}`;
+    });
+
+    // data.reverse();
+    labels.reverse();
+
+    for (let i = 0; i < labels.length; i++) {
+      if (i % 5 !== 0) {
+        labels[i] = '';
+      }
+      //TODO: iets toevoegen dat jaartallen er in komen
     }
 
     const exercise = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };

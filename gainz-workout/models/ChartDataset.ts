@@ -2,7 +2,6 @@ import { Database } from "@/database/database";
 import { Exercise } from "./Exercise";
 import { GraphDuration } from "./GraphDuration";
 import { GraphType } from "./GraphType";
-import { combineTransition } from "react-native-reanimated";
 import { Set } from "./Set";
 
 export class ChartDataset {
@@ -22,12 +21,17 @@ export class ChartDataset {
   }
 
   static async create(exercise: Exercise, graphDuration: GraphDuration, graphType: GraphType): Promise<ChartDataset> {
-    const db = await Database.getDbConnection();
-
+    var data = new ChartDataset([], [], "");
+    
     if (graphType.id == 1) {
-      const data = await Set.getEstimated1RM(exercise.id, graphDuration.value/7);
+      data = await Set.getEstimated1RM(exercise.id, Math.round(graphDuration.value/7));
     }
 
-    
+    if (graphType.id == 2) {
+      data = await Set.getVolume(exercise.id, Math.round(graphDuration.value/7));
+    }
+
+    return data;
   }
 }
+

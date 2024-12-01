@@ -42,6 +42,9 @@ export function Chart({ data, title }: ChartProps): JSX.Element {
                     style: {
                         borderRadius: 16,
                     },
+                    propsForDots: {
+                        r: '0',
+                    },
                     propsForBackgroundLines: {
                         stroke: Colors.light.backgroundSecondary,
                         strokeDasharray: '',

@@ -16,11 +16,13 @@ type GraphSelectorProps = {
 export function ChartSelector({ visible, graphVms, selectedGraphs, toggleGraphVisibility }: GraphSelectorProps) {
     const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
 
+    console.log('graphVms:', graphVms);
+
     return (
         <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
             <Text style={styles.header}>Select Graphs</Text>
             <View style={styles.scrollViewContent}>
-                {graphVms.map(graphVm => (
+                {/* {graphVms.map(graphVm => (
                     <View key={graphVm.graph.id} style={styles.checkboxContainer}>
                         <CheckBox
                             value={selectedGraphs[graphVm.graph.id]}
@@ -29,7 +31,7 @@ export function ChartSelector({ visible, graphVms, selectedGraphs, toggleGraphVi
                         />
                         <Text style={styles.graphTitle}>{graphVm.graphTitle}</Text>
                     </View>
-                ))}
+                ))} */}
             </View>
             <IconButton
                 text="Add Chart"

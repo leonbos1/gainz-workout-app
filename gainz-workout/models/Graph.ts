@@ -64,9 +64,14 @@ export class Graph {
 
             const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
 
+            console.log('rows length:', rows.length);
+
             const viewModels = await Promise.all(
                 rows.map(row => GraphViewModel.create(row))
             );
+
+            console.log('vms length:', viewModels.length);
+
 
             return viewModels;
         }
