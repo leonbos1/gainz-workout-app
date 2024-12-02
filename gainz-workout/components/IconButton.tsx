@@ -7,13 +7,14 @@ type ButtonProps = {
     iconName: keyof typeof Ionicons.glyphMap;
     text: string;
     onPress?: () => void;
+    style?: any;
 };
 
-const ButtonComponent: React.FC<ButtonProps> = ({ iconName, text, onPress }) => {
+const ButtonComponent: React.FC<ButtonProps> = ({ iconName, text, onPress, style }) => {
     const handlePress = onPress || (() => { });
 
     return (
-        <View style={styles.buttonContainer}>
+        <View style={{ ...styles.buttonContainer, ...style }}>
             <TouchableOpacity onPress={handlePress} style={styles.buttonContent}>
                 <Ionicons name={iconName} size={24} color="white" />
                 <Text style={styles.buttonText}>

@@ -64,14 +64,9 @@ export class Graph {
 
             const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
 
-            console.log('rows length:', rows.length);
-
             const viewModels = await Promise.all(
                 rows.map(row => GraphViewModel.create(row))
             );
-
-            console.log('vms length:', viewModels.length);
-
 
             return viewModels;
         }
@@ -85,5 +80,7 @@ export class Graph {
         const db = await Database.getDbConnection();
 
         await db.runAsync('UPDATE graph SET enabled = ? WHERE id = ?', [enabled, id]);
+
+        console.log('updated graph enabled with id:', id);
     }
 }
