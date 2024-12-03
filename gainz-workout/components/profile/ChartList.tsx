@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { memo } from 'react';
+import { FlatList, View, Text } from 'react-native';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
 import { Chart } from './Chart';
 
@@ -7,15 +7,21 @@ type ChartListProps = {
   enabledGraphVms: GraphViewModel[];
 };
 
-export default function ChartList({ enabledGraphVms }: ChartListProps) {
-  return (
-    <View>
-      {enabledGraphVms.map(graphVm => (
-        <View key={graphVm.graph.id}>
-            <Chart data={graphVm.data} title={graphVm.graphTitle} />
-          <Text>{graphVm.graphTitle}</Text>
-        </View>
-      ))}
+const ChartList: React.FC<ChartListProps> = ({ enabledGraphVms }) => {
+  const renderItem = ({ item }: { item: GraphViewModel }) => (
+    <View key={item.graph.id}>
+      <Chart data={item.data} title={item.graphTitle} />
+      <Text>{item.graphTitle}</Text>
     </View>
   );
-}
+
+  return (
+    <FlatList
+      data={enabledGraphVms}
+      renderItem={renderItem}
+      keyExtractor={item => item.graph.id.toString()}
+    />
+  );
+};
+
+export default memo(ChartList);

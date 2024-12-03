@@ -12,7 +12,6 @@ type ChartSelectorProps = {
     toggleGraphEnabled: (id: number) => void;
     allChartVms: GraphViewModel[];
     setAllChartVms: (allChartVms: GraphViewModel[]) => void;
-    style: any;
 };
 
 export function ChartSelector({
@@ -20,14 +19,12 @@ export function ChartSelector({
     setEnabledGraphVms,
     allChartVms,
     setAllChartVms,
-    style
 }: ChartSelectorProps) {
-    const [AddGraphFormVisible, setAddGraphFormVisible] = useState(false);
+    const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
     const enabledGraphIds = new Set(enabledGraphVms.map(vm => vm.graph.id));
 
     return (
-        <ScrollView style={style}>
-            <Text style={styles.header}>Select Graphs</Text>
+        <View>
             <View style={styles.scrollView}>
                 {allChartVms.map(graphVm => (
                     <View key={graphVm.graph.id} style={styles.checkboxContainer}>
@@ -58,14 +55,14 @@ export function ChartSelector({
                     text="Add Chart"
                     iconName="add-outline"
                     onPress={() => {
-                        setAddGraphFormVisible(true);
+                        setAddGraphFormVisible(!addGraphFormVisible);
                     }}
                     style={styles.iconButton}
                 />
                 <IconButton text="Close" iconName="close-outline" onPress={() => { }} />
             </View>
-            <AddGraphForm visible={AddGraphFormVisible} />
-        </ScrollView>
+            <AddGraphForm visible={addGraphFormVisible} />
+        </View >
     );
 }
 
