@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, Modal } from 'react-native';
 import { useFocusEffect, useRoute, RouteProp } from '@react-navigation/native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
@@ -15,28 +15,56 @@ import { Equipment } from '@/models/Equipment';
 import { Attachment } from '@/models/Attachment';
 import { getExerciseNameFromExerciseString } from '@/helpers/csvHelper';
 import { ExerciseDropdown } from '@/components/workout/ExerciseDropdown';
+import { EquipmentDropdown } from '@/components/workout/EquipmentDropdown';
+import { AttachmentDropdown } from '@/components/workout/AttachmentDropdown';
 
 const screenWidth = Dimensions.get('window').width;
-
 
 export default function WorkoutScreen() {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutId, setWorkoutId] = useState<number | null>(null);
   const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
-  const [exercises, setExercises] = useState<Array<{ label: string, value: string }>>([]);
   const [exerciseSelectionOpen, setExerciseSelectionOpen] = useState(false);
   const [equipmentSelectionOpen, setEquipmentSelectionOpen] = useState(false);
   const [attachmentSelectionOpen, setAttachmentSelectionOpen] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
+  const [selectedAttachment, setSelectedAttachment] = useState<string | null>(null);
+  const [exercises, setExercises] = useState<Array<Exercise>>([]);
+  const [equipment, setEquipment] = useState<Array<Equipment>>([]);
+  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+
+  useEffect(() => {
+    fetchExercises();
+    fetchEquipment();
+    fetchAttachments();
+  }, []);
 
   const fetchExercises = async () => {
     try {
       const fetchedExercises = await Exercise.findAll();
-      setExercises(fetchedExercises.map(exercise => ({
-        label: exercise.name,
-        value: exercise.name,
-      })));
+      setExercises(fetchedExercises);
     } catch (error) {
       Logger.log_error('Error fetching exercises:', error as string);
+    }
+  };
+
+  const fetchEquipment = async () => {
+    try {
+      const fetchedEquipment = await Equipment.findAll();
+      setEquipment(fetchedEquipment);
+    } catch (error) {
+      Logger.log_error('Error fetching equipment:', error as string);
+    }
+  };
+
+  const fetchAttachments = async () => {
+    try {
+      const fetchedAttachments = await Attachment.findAll();
+      setAttachments(fetchedAttachments);
+    } catch (error) {
+      Logger.log_error('Error fetching attachments:', error as string);
     }
   };
 
@@ -109,28 +137,54 @@ export default function WorkoutScreen() {
     updateBatch(batchId, { sets: [], reps: '', weight: '', rpe: '' });
   };
 
+  const toggleFormVisibility = (formName: string | null) => {
+    setActiveForm((prev) => (prev === formName ? null : formName));
+  };
+
   return (
     <View style={styles.contentContainer}>
       <View style={styles.titleContainer}>
         <Text style={styles.screenTitle}>Workout</Text>
       </View>
-      <View style={styles.popOverContainer}>
-        <ExerciseDropdown
-          // open,
-          // setOpen,
-          // selectedExercise,
-          // setSelectedExercise,
-          // exercises,
-          // addExercise,
-          open={exerciseSelectionOpen}
-          setOpen={setExerciseSelectionOpen}
-          selectedExercise={null}
-          setSelectedExercise={null}
-          exercises={exercises}
-          addExercise={null}
-
-        />
-      </View>
+      <Modal
+        visible={activeForm !== null}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => toggleFormVisibility(null)}
+      >
+        <View style={styles.popOverContainer}>
+          {activeForm === 'AddExerciseForm' && (
+            <ExerciseDropdown
+              open={exerciseSelectionOpen}
+              setOpen={setExerciseSelectionOpen}
+              selectedExercise={selectedExercise}
+              setSelectedExercise={setSelectedExercise}
+              exercises={exercises}
+              addExercise={() => { }}
+            />
+          )}
+          {activeForm === 'AddEquipmentForm' && (
+            <EquipmentDropdown
+              open={equipmentSelectionOpen}
+              setOpen={setEquipmentSelectionOpen}
+              selectedEquipment={selectedEquipment}
+              setSelectedEquipment={setSelectedEquipment}
+              equipment={equipment}
+              addEquipment={() => { }}
+            />
+          )}
+          {activeForm === 'AddAttachmentForm' && (
+            <AttachmentDropdown
+              open={attachmentSelectionOpen}
+              setOpen={setAttachmentSelectionOpen}
+              selectedAttachment={selectedAttachment}
+              setSelectedAttachment={setSelectedAttachment}
+              attachments={attachments}
+              addAttachment={() => { }}
+            />
+          )}
+        </View>
+      </Modal>
       {!workoutStarted ? (
         <StartWorkoutButton onStartWorkout={handleStartWorkout} />
       ) : (
@@ -142,11 +196,11 @@ export default function WorkoutScreen() {
             onFinishExercise={handleFinishExercise}
           />
           <View style={styles.buttonContainer}>
-            <IconButton iconName="add-circle-outline" text="Exercise" onPress={ } />
+            <IconButton iconName="add-circle-outline" text="Exercise" onPress={() => toggleFormVisibility('AddExerciseForm')} />
           </View>
           <View style={styles.buttonContainer}>
-            <IconButton iconName="close-circle-outline" text="Cancel" onPress={ } />
-            <IconButton iconName="checkmark-circle-outline" text="Finish" onPress={ } />
+            <IconButton iconName="close-circle-outline" text="Cancel" onPress={() => handleCancelWorkout()} />
+            <IconButton iconName="checkmark-circle-outline" text="Finish" onPress={() => handleEndWorkout()} />
           </View>
         </>
       )}

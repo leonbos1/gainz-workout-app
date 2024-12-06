@@ -2,13 +2,14 @@ import React from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import { Attachment } from '@/models/Attachment';
 
 interface AttachmentDropdownProps {
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;  // Updated type
     selectedAttachment: string | null;
     setSelectedAttachment: React.Dispatch<React.SetStateAction<string | null>>;  // Updated type
-    attachments: Array<{ label: string, value: string }>;
+    attachments: Attachment[];
     addAttachment: () => void;
 }
 

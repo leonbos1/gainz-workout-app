@@ -20,7 +20,7 @@ export default function ProfileScreen() {
   const [isChartSelectorVisible, setIsChartSelectorVisible] = useState(false);
   const [chartSelectorHeight, setChartSelectorHeight] = useState(0);
   const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
-  const [activeForm, setActiveForm] = useState<string | null>(null);
+    const [activeForm, setActiveForm] = useState<string | null>(null);
 
   const animationValue = useRef(new Animated.Value(0)).current;
 

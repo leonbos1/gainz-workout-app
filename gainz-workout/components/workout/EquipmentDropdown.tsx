@@ -2,13 +2,14 @@ import React from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import { Equipment } from '@/models/Equipment';
 
 interface EquipmentDropdownProps {
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;  // Updated type
     selectedEquipment: string | null;
     setSelectedEquipment: React.Dispatch<React.SetStateAction<string | null>>;  // Updated type
-    Equipments: Array<{ label: string, value: string }>;
+    equipment: Equipment[];
     addEquipment: () => void;
 }
 
@@ -17,14 +18,14 @@ export const EquipmentDropdown: React.FC<EquipmentDropdownProps> = ({
     setOpen,
     selectedEquipment,
     setSelectedEquipment,
-    Equipments,
+    equipment,
     addEquipment,
 }) => {
     return (
         <DropDownPicker
             open={open}
             value={selectedEquipment}
-            items={Equipments}
+            items={equipment}
             onChangeValue={addEquipment}
             setOpen={setOpen}
             setValue={setSelectedEquipment}

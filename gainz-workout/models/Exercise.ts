@@ -14,12 +14,17 @@ export class Exercise {
   name: string;
   description: string;
   musclegroupid: number;
+  label: string;
+  value: string;
 
   constructor(id: number, name: string, description: string, musclegroupid: number) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.musclegroupid = musclegroupid;
+
+    this.label = name;
+    this.value = id.toString();
   }
 
   static async create(name: string, description: string, musclegroupid: number) {

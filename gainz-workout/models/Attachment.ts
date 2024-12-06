@@ -9,10 +9,14 @@ export type AttachmentRow = {
 export class Attachment {
     id: number;
     name: string;
+    label: string;
+    value: string;
 
     constructor(id: number, name: string) {
         this.id = id;
         this.name = name;
+        this.label = name;
+        this.value = id.toString();
     }
 
     static async findAll(): Promise<Attachment[]> {
