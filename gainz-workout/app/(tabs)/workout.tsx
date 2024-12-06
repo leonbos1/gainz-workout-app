@@ -14,36 +14,19 @@ import IconButton from '@/components/IconButton';
 import { Equipment } from '@/models/Equipment';
 import { Attachment } from '@/models/Attachment';
 import { getExerciseNameFromExerciseString } from '@/helpers/csvHelper';
+import { ExerciseDropdown } from '@/components/workout/ExerciseDropdown';
 
 const screenWidth = Dimensions.get('window').width;
 
-interface RouteParams {
-  exercise: Exercise;
-  equipment: Equipment;
-  attachment: Attachment;
-}
-
-type WorkoutScreenRouteProp = RouteProp<{ params: RouteParams }, 'params'>;
 
 export default function WorkoutScreen() {
-  const route = useRoute<WorkoutScreenRouteProp>();
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutId, setWorkoutId] = useState<number | null>(null);
   const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
   const [exercises, setExercises] = useState<Array<{ label: string, value: string }>>([]);
-  const navigation = useNavigation<NavigationProp<any>>();
-
-  useEffect(() => {
-    if (route.params && workoutStarted) {
-      handleAddExercise();
-    }
-  }, [route.params, workoutStarted]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchExercises();
-    }, [])
-  );
+  const [exerciseSelectionOpen, setExerciseSelectionOpen] = useState(false);
+  const [equipmentSelectionOpen, setEquipmentSelectionOpen] = useState(false);
+  const [attachmentSelectionOpen, setAttachmentSelectionOpen] = useState(false);
 
   const fetchExercises = async () => {
     try {
@@ -64,28 +47,6 @@ export default function WorkoutScreen() {
       setWorkoutStarted(true);
     } catch (error) {
       Logger.log_error('Error starting workout:', error as string);
-    }
-  };
-
-  const handleAddExercise = async () => {
-    if (route.params && workoutId) {
-      const { exercise, equipment, attachment } = route.params;
-      try {
-        const newBatch = await Batch.create(workoutId, '', 1, 1);
-        setBatches(prevBatches => [
-          ...prevBatches,
-          {
-            id: newBatch.id,
-            name: `${exercise.name} (${equipment}${attachment ? ` - ${attachment}` : ''})`,
-            sets: [],
-            reps: '',
-            weight: '',
-            rpe: '',
-          }
-        ]);
-      } catch (error) {
-        Logger.log_error('Error adding exercise:', error as string);
-      }
     }
   };
 
@@ -148,14 +109,27 @@ export default function WorkoutScreen() {
     updateBatch(batchId, { sets: [], reps: '', weight: '', rpe: '' });
   };
 
-  const handleNavigateToExerciseSelection = () => {
-    navigation.navigate('ExerciseSelection');
-  };
-
   return (
     <View style={styles.contentContainer}>
       <View style={styles.titleContainer}>
         <Text style={styles.screenTitle}>Workout</Text>
+      </View>
+      <View style={styles.popOverContainer}>
+        <ExerciseDropdown
+          // open,
+          // setOpen,
+          // selectedExercise,
+          // setSelectedExercise,
+          // exercises,
+          // addExercise,
+          open={exerciseSelectionOpen}
+          setOpen={setExerciseSelectionOpen}
+          selectedExercise={null}
+          setSelectedExercise={null}
+          exercises={exercises}
+          addExercise={null}
+
+        />
       </View>
       {!workoutStarted ? (
         <StartWorkoutButton onStartWorkout={handleStartWorkout} />
@@ -168,11 +142,11 @@ export default function WorkoutScreen() {
             onFinishExercise={handleFinishExercise}
           />
           <View style={styles.buttonContainer}>
-            <IconButton iconName="add-circle-outline" text="Exercise" onPress={handleNavigateToExerciseSelection} />
+            <IconButton iconName="add-circle-outline" text="Exercise" onPress={ } />
           </View>
           <View style={styles.buttonContainer}>
-            <IconButton iconName="close-circle-outline" text="Cancel" onPress={handleCancelWorkout} />
-            <IconButton iconName="checkmark-circle-outline" text="Finish" onPress={handleEndWorkout} />
+            <IconButton iconName="close-circle-outline" text="Cancel" onPress={ } />
+            <IconButton iconName="checkmark-circle-outline" text="Finish" onPress={ } />
           </View>
         </>
       )}
@@ -205,5 +179,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     marginBottom: 20,
+  },
+  popOverContainer: {
+    padding: 20,
+    backgroundColor: Colors.light.card,
+    borderRadius: 5,
+    margin: 20,
   },
 });

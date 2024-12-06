@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity, Animated, Easing } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity, Animated, Easing, Modal } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, useRouter } from 'expo-router';
@@ -9,20 +9,29 @@ import { ChartSelector } from '@/components/profile/ChartSelector';
 import IconButton from '@/components/IconButton';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
 import { Graph } from '@/models/Graph';
+import AddGraphForm from '@/components/profile/AddGraphForm';
 
 const screenWidth = Dimensions.get('window').width;
+
 export default function ProfileScreen() {
   const [isDataSeeded, setIsDataSeeded] = useState(false);
   const [enabledGraphVms, setEnabledGraphVms] = useState<GraphViewModel[]>([]);
   const [allChartVms, setAllChartVms] = useState<GraphViewModel[]>([]);
   const [isChartSelectorVisible, setIsChartSelectorVisible] = useState(false);
   const [chartSelectorHeight, setChartSelectorHeight] = useState(0);
+  const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
+  const [activeForm, setActiveForm] = useState<string | null>(null);
+
   const animationValue = useRef(new Animated.Value(0)).current;
 
   const seedData = async () => {
     await createTables();
     await seedDatabase();
     setIsDataSeeded(true);
+  };
+
+  const toggleFormVisibility = (formName: string | null) => {
+    setActiveForm((prev) => (prev === formName ? null : formName));
   };
 
   const fetchGraphs = useCallback(async () => {
@@ -102,24 +111,41 @@ export default function ProfileScreen() {
           </Link>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={toggleChartSelector}>
-        <Ionicons
-          name={isChartSelectorVisible ? "chevron-up-outline" : "chevron-down-outline"}
-          size={25}
-          color={Colors.light.text}
-          style={{ marginLeft: 15 }}
-        />
-      </TouchableOpacity>
-      <Animated.View style={[styles.animatedContainer, chartSelectorStyle]}>
-        <ChartSelector
-          enabledGraphVms={enabledGraphVms}
-          setEnabledGraphVms={setEnabledGraphVms}
-          toggleGraphEnabled={toggleGraphEnabled}
-          allChartVms={allChartVms}
-          setAllChartVms={setAllChartVms}
-        />
-      </Animated.View>
-      <ChartList enabledGraphVms={enabledGraphVms} />
+      <Modal
+        visible={activeForm !== null}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => toggleFormVisibility(null)}
+      >
+        <View style={styles.popOverContainer}>
+          {activeForm === 'AddGraphForm' && (
+            <AddGraphForm
+              toggleFormVisibility={() => toggleFormVisibility('AddGraphForm')}
+            />
+          )}
+        </View>
+      </Modal>
+      <View>
+        <TouchableOpacity onPress={toggleChartSelector}>
+          <Ionicons
+            name={isChartSelectorVisible ? "chevron-up-outline" : "chevron-down-outline"}
+            size={25}
+            color={Colors.light.text}
+            style={{ marginLeft: 15 }}
+          />
+        </TouchableOpacity>
+        <Animated.View style={[styles.animatedContainer, chartSelectorStyle]}>
+          <ChartSelector
+            enabledGraphVms={enabledGraphVms}
+            setEnabledGraphVms={setEnabledGraphVms}
+            toggleGraphEnabled={toggleGraphEnabled}
+            allChartVms={allChartVms}
+            setAllChartVms={setAllChartVms}
+            toggleFormVisibility={toggleFormVisibility}
+          />
+        </Animated.View>
+        <ChartList enabledGraphVms={enabledGraphVms} />
+      </View>
     </View>
   );
 }
@@ -151,4 +177,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
   },
+  popOverContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  }
 });

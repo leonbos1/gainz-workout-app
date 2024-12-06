@@ -6,12 +6,10 @@ import { Exercise } from '@/models/Exercise';
 import { GraphType } from '@/models/GraphType';
 import { GraphDuration } from '@/models/GraphDuration';
 import { Colors } from '@/constants/Colors';
+import { FormProps } from '@/app/props/formProps';
 
-interface AddGraphFormProps {
-    visible: boolean;
-}
 
-const AddGraphForm: React.FC<AddGraphFormProps> = ({ visible }) => {
+const AddGraphForm: React.FC<FormProps> = ({ toggleFormVisibility }) => {
     const [graphType, setGraphType] = useState<number | null>(null);
     const [exercise, setExercise] = useState<number | null>(null);
     const [enabled, setEnabled] = useState<boolean>(true);
@@ -50,7 +48,7 @@ const AddGraphForm: React.FC<AddGraphFormProps> = ({ visible }) => {
     };
 
     return (
-        <View style={[styles.container, { display: visible ? 'flex' : 'none' }]}>
+        <View style={styles.container}>
             <Text style={styles.title}>Add New Graph</Text>
 
             <Picker
@@ -86,29 +84,40 @@ const AddGraphForm: React.FC<AddGraphFormProps> = ({ visible }) => {
                     <Picker.Item key={ex.id} label={ex.name} value={ex.id} />
                 ))}
             </Picker>
-
-            <Button title="Add Graph" onPress={handleAddGraph} color={Colors.light.secundary} />
+            <View style={styles.btnContainer}>
+                <View style={{ margin: 5, width: '50%' }}>
+                    <Button title="Add Graph" onPress={handleAddGraph} color={Colors.light.secundary} />
+                </View>
+                <View style={{ margin: 5, width: '50%' }}>
+                    <Button title="Close" onPress={() => toggleFormVisibility('AddGraphForm')} color={Colors.light.secundary} />
+                </View>
+            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    btnContainer: {
+        flexDirection: 'row',
+        alignSelf: 'center',
+        justifyContent: 'center',
+    },
     container: {
+        backgroundColor: Colors.light.card,
         padding: 20,
-        backgroundColor: '#2c2c2c',
-        borderRadius: 10,
-        margin: 15,
-        width: '90%',
+        borderRadius: 5,
+        margin: 20,
     },
     title: {
         fontSize: 20,
-        color: 'white',
+        fontWeight: 'bold',
+        color: Colors.light.text,
         textAlign: 'center',
         marginBottom: 20,
     },
     picker: {
         color: 'white',
-        backgroundColor: '#444',
+        backgroundColor: Colors.light.input,
         borderRadius: 5,
         marginBottom: 20,
         paddingHorizontal: 10,

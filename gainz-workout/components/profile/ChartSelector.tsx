@@ -12,6 +12,7 @@ type ChartSelectorProps = {
     toggleGraphEnabled: (id: number) => void;
     allChartVms: GraphViewModel[];
     setAllChartVms: (allChartVms: GraphViewModel[]) => void;
+    toggleFormVisibility: (formName: string | null) => void;
 };
 
 export function ChartSelector({
@@ -19,8 +20,8 @@ export function ChartSelector({
     setEnabledGraphVms,
     allChartVms,
     setAllChartVms,
+    toggleFormVisibility,
 }: ChartSelectorProps) {
-    const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
     const enabledGraphIds = new Set(enabledGraphVms.map(vm => vm.graph.id));
 
     return (
@@ -55,13 +56,11 @@ export function ChartSelector({
                     text="Add Chart"
                     iconName="add-outline"
                     onPress={() => {
-                        setAddGraphFormVisible(!addGraphFormVisible);
+                        toggleFormVisibility('AddGraphForm');
                     }}
                     style={styles.iconButton}
                 />
-                <IconButton text="Close" iconName="close-outline" onPress={() => { }} />
             </View>
-            <AddGraphForm visible={addGraphFormVisible} />
         </View >
     );
 }
