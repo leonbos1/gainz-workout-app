@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text, Modal } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, Modal, TouchableOpacity } from 'react-native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
 import { Set } from '@/models/Set';
@@ -13,6 +13,7 @@ import { getExerciseNameFromExerciseString } from '@/helpers/csvHelper';
 import { ExerciseDropdown } from '@/components/workout/ExerciseDropdown';
 import { EquipmentDropdown } from '@/components/workout/EquipmentDropdown';
 import { AttachmentDropdown } from '@/components/workout/AttachmentDropdown';
+import { Batch } from '@/models/Batch';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -98,6 +99,7 @@ export default function WorkoutScreen() {
   };
 
   const handleAddSet = async (batchId: number) => {
+    console
     const batch = batches.find(b => b.id === batchId);
     const exerciseName = getExerciseNameFromExerciseString(batch!.name);
 
@@ -120,6 +122,25 @@ export default function WorkoutScreen() {
     }
   };
 
+  const handleAddExercise = async () => {
+    if (selectedExercise && selectedEquipment) {
+      var newBatch: Batch;
+      if (selectedAttachment) {
+        newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment), parseInt(selectedAttachment));
+      }
+      else {
+        newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment));
+      }
+      setBatches([...batches, {
+        id: newBatch.id, name: exercises.find(e => e.id === parseInt(selectedExercise))!.name + ' (' + equipment.find(e => e.id === parseInt(selectedEquipment))!.name + ')',
+        sets: [], reps: '', weight: '', rpe: ''
+      }]);
+      toggleFormVisibility(null);
+    } else {
+      Logger.log_error('Error adding exercise:', 'Exercise and equipment must be selected');
+    }
+  }
+
   const handleExerciseSelection = async (exerciseId: string) => {
     const exerciseName = getExerciseNameFromExerciseString(exerciseId);
 
@@ -136,7 +157,6 @@ export default function WorkoutScreen() {
       setFilteredEquipment([]);
     }
   };
-
 
   const updateBatch = (batchId: number, updatedFields: Partial<typeof batches[0]>) => {
     setBatches(batches.map(b => (b.id === batchId ? { ...b, ...updatedFields } : b)));
@@ -200,7 +220,7 @@ export default function WorkoutScreen() {
             )}
           <View style={styles.buttonContainer}>
             <IconButton iconName="close-circle-outline" text="Close" onPress={() => toggleFormVisibility(null)} />
-            <IconButton iconName="checkmark-circle-outline" text="Add" onPress={() => toggleFormVisibility(null)} />
+            <IconButton iconName="checkmark-circle-outline" text="Add" onPress={() => handleAddExercise()} />
           </View>
         </View>
       </Modal>
@@ -214,9 +234,12 @@ export default function WorkoutScreen() {
             onInputChange={handleInputChange}
             onFinishExercise={handleFinishExercise}
           />
-          <View style={styles.buttonContainer}>
-            <IconButton iconName="add-circle-outline" text="Exercise" onPress={() => toggleFormVisibility('AddExerciseForm')} />
-          </View>
+          <TouchableOpacity
+            style={styles.floatingButton}
+            onPress={() => toggleFormVisibility('AddExerciseForm')}
+          >
+            <Text style={styles.floatingButtonText}>+</Text>
+          </TouchableOpacity>
           <View style={styles.buttonContainer}>
             <IconButton iconName="close-circle-outline" text="Cancel" onPress={() => handleCancelWorkout()} />
             <IconButton iconName="checkmark-circle-outline" text="Finish" onPress={() => handleEndWorkout()} />
@@ -228,6 +251,30 @@ export default function WorkoutScreen() {
 }
 
 const styles = StyleSheet.create({
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.light.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 1000,
+  },
+  floatingButtonText: {
+    color: '#fff',
+    fontSize: 36,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
   contentContainer: {
     paddingTop: 20,
     paddingHorizontal: 5,

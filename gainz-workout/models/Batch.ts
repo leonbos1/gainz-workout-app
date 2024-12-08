@@ -24,14 +24,26 @@ export class Batch {
     this.attachmentid = attachmentid;
   }
 
-  static async create(workoutid: number, note: string, equipmentid: number, attachmentid: number) {
+  static async create(workoutid: number, note: string, equipmentid: number, attachmentid: number = 0): Promise<Batch> {
     const db = await Database.getDbConnection();
 
-    const result = await db.runAsync(
-      `INSERT INTO batch (workoutid, note) VALUES (?, ?);`,
-      [workoutid, note]
-    );
-    return new Batch(result.lastInsertRowId, workoutid, note, equipmentid, attachmentid);
+    if (attachmentid === 0) {
+      const result = await db.runAsync(
+        `INSERT INTO batch (workoutid, note, equipmentid) VALUES (?, ?, ?);`,
+        [workoutid, note, equipmentid]
+      );
+
+      return new Batch(result.lastInsertRowId, workoutid, note, equipmentid, attachmentid);
+    }
+
+    else {
+      const result = await db.runAsync(
+        `INSERT INTO batch (workoutid, note, equipmentid, attachmentid) VALUES (?, ?, ?, ?);`,
+        [workoutid, note, equipmentid, attachmentid]
+      );
+
+      return new Batch(result.lastInsertRowId, workoutid, note, equipmentid, attachmentid);
+    }
   }
 
   static async findAll(): Promise<Batch[]> {

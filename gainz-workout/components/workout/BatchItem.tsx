@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Set } from '@/models/Set';
 import { Colors } from '@/constants/Colors';
+import { Icon } from 'react-native-vector-icons/Icon';
 
 interface BatchItemProps {
   batch: { id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string };
@@ -26,39 +27,79 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
   return (
     <View style={styles.batchContainer}>
       <Text style={styles.batchTitle}>{batch.name}</Text>
+      <View>
+        {/* Header row with column labels */}
+        <View style={styles.setInputRow}>
+          <View style={styles.inputContainer}>
+            <Text style={styles.columnLabel}>Reps</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.columnLabel}>Weight (kg)</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.columnLabel}>RPE</Text>
+          </View>
+        </View>
 
+        {batch.sets.length > 0 ? (
+          <FlatList
+            data={batch.sets}
+            keyExtractor={(set) => set.id.toString()}
+            renderItem={({ item: set }) => (
+              <View style={styles.setInputRow}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.resultValue}>{set.amount}</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.resultValue}>{set.weight}</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.resultValue}>{set.rpe ? set.rpe : '-'}</Text>
+                </View>
+              </View>
+            )}
+          />
+        ) : (
+          <View></View>
+        )}
+      </View>
       {!isExerciseFinished && (
         <>
-          <Text style={styles.label}>Reps</Text>
-          <TextInput
-            ref={repsInputRef}
-            style={styles.input}
-            value={batch.reps}
-            keyboardType="numeric"
-            returnKeyType="next"
-            onChangeText={(value) => onInputChange(batch.id, 'reps', value)}
-            onSubmitEditing={() => weightInputRef.current?.focus()}
-          />
-          <Text style={styles.label}>Weight (kg)</Text>
-          <TextInput
-            ref={weightInputRef}
-            style={styles.input}
-            value={batch.weight}
-            keyboardType="numeric"
-            returnKeyType="next"
-            onChangeText={(value) => onInputChange(batch.id, 'weight', value)}
-            onSubmitEditing={() => rpeInputRef.current?.focus()}
-          />
-          <Text style={styles.label}>RPE</Text>
-          <TextInput
-            ref={rpeInputRef}
-            style={styles.rpeinput}
-            value={batch.rpe}
-            keyboardType="numeric"
-            returnKeyType="done"
-            onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
-            onSubmitEditing={() => isAddEnabled && onAddSet(batch.id)}
-          />
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref={repsInputRef}
+                style={styles.input}
+                value={batch.reps}
+                keyboardType="number-pad"
+                returnKeyType="next"
+                onChangeText={(value) => onInputChange(batch.id, 'reps', value)}
+                onSubmitEditing={() => weightInputRef.current?.focus()}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref={weightInputRef}
+                style={styles.input}
+                value={batch.weight}
+                keyboardType="number-pad"
+                returnKeyType="next"
+                onChangeText={(value) => onInputChange(batch.id, 'weight', value)}
+                onSubmitEditing={() => rpeInputRef.current?.focus()}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref={rpeInputRef}
+                style={styles.input}
+                value={batch.rpe}
+                keyboardType="number-pad"
+                returnKeyType="done"
+                onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
+                onSubmitEditing={() => isAddEnabled && onAddSet(batch.id)}
+              />
+            </View>
+          </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={[styles.button, !isAddEnabled && styles.buttonDisabled]}
@@ -86,21 +127,27 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
           <Text style={styles.buttonText}>Continue Exercise</Text>
         </TouchableOpacity>
       )}
-
-      <FlatList
-        data={batch.sets}
-        keyExtractor={set => set.id.toString()}
-        renderItem={({ item: set }) => (
-          <Text style={styles.setText}>
-            {`Reps: ${set.amount}, Weight: ${set.weight}kg, RPE: ${set.rpe}`}
-          </Text>
-        )}
-      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  columnLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: Colors.light.text,
+    marginBottom: 5,
+  },
+  placeholderRow: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: Colors.light.text,
+    fontStyle: 'italic',
+  },
   batchContainer: {
     marginBottom: 20,
     padding: 15,
@@ -113,20 +160,43 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  setDetailsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  setLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.light.text,
+  },
+  setValue: {
+    fontSize: 16,
+    fontWeight: 'normal',
+    color: Colors.light.text,
+  },
   batchTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     color: Colors.light.text,
   },
+  inputRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  inputContainer: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
   input: {
-    borderWidth: 1,
     padding: 10,
     marginBottom: 10,
-    borderRadius: 4,
+    borderRadius: 8,
     fontSize: 16,
     color: Colors.light.text,
-    backgroundColor: Colors.light.input,
+    backgroundColor: Colors.light.card,
   },
   setText: {
     fontSize: 16,
@@ -159,13 +229,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  rpeinput: {
-    borderWidth: 1,
+  setInputRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  resultValue: {
     padding: 10,
-    marginBottom: 50,
-    borderRadius: 4,
+    marginBottom: 10,
+    borderRadius: 8,
     fontSize: 16,
     color: Colors.light.text,
-    backgroundColor: Colors.light.input,
+    backgroundColor: Colors.light.card,
+    textAlign: 'center',
   },
 });
