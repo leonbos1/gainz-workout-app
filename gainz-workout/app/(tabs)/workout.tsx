@@ -1,15 +1,11 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Dimensions, Text, Modal } from 'react-native';
-import { useFocusEffect, useRoute, RouteProp } from '@react-navigation/native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
 import { Set } from '@/models/Set';
-import { Batch } from '@/models/Batch';
 import { StartWorkoutButton } from '@/components/workout/StartWorkoutButton';
 import { BatchList } from '@/components/workout/BatchList';
 import { Colors } from '@/constants/Colors';
-import { useNavigation } from 'expo-router';
-import { NavigationProp } from '@react-navigation/native';
 import IconButton from '@/components/IconButton';
 import { Equipment } from '@/models/Equipment';
 import { Attachment } from '@/models/Attachment';
@@ -24,9 +20,6 @@ export default function WorkoutScreen() {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutId, setWorkoutId] = useState<number | null>(null);
   const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]);
-  const [exerciseSelectionOpen, setExerciseSelectionOpen] = useState(false);
-  const [equipmentSelectionOpen, setEquipmentSelectionOpen] = useState(false);
-  const [attachmentSelectionOpen, setAttachmentSelectionOpen] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
@@ -34,6 +27,8 @@ export default function WorkoutScreen() {
   const [exercises, setExercises] = useState<Array<Exercise>>([]);
   const [equipment, setEquipment] = useState<Array<Equipment>>([]);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+  const [filteredEquipment, setFilteredEquipment] = useState<Array<Equipment>>([]);
+  const [filteredAttachments, setFilteredAttachments] = useState<Array<Attachment>>([]);
 
   useEffect(() => {
     fetchExercises();
@@ -125,6 +120,24 @@ export default function WorkoutScreen() {
     }
   };
 
+  const handleExerciseSelection = async (exerciseId: string) => {
+    const exerciseName = getExerciseNameFromExerciseString(exerciseId);
+
+    setSelectedExercise(exerciseName);
+    try {
+      if (exerciseId) {
+        const relatedEquipment = await Exercise.getEquipmentsForExercise(parseInt(exerciseId));
+        setFilteredEquipment(relatedEquipment);
+      } else {
+        setFilteredEquipment([]);
+      }
+    } catch (error) {
+      Logger.log_error('Error fetching equipment for exercise:', error as string);
+      setFilteredEquipment([]);
+    }
+  };
+
+
   const updateBatch = (batchId: number, updatedFields: Partial<typeof batches[0]>) => {
     setBatches(batches.map(b => (b.id === batchId ? { ...b, ...updatedFields } : b)));
   };
@@ -141,6 +154,15 @@ export default function WorkoutScreen() {
     setActiveForm((prev) => (prev === formName ? null : formName));
   };
 
+  const handleExerciseWrapper = (exerciseId: string | null) => {
+    if (exerciseId) {
+      handleExerciseSelection(exerciseId);
+    } else {
+      setSelectedExercise(null);
+      setFilteredEquipment([]);
+    }
+  };
+
   return (
     <View style={styles.contentContainer}>
       <View style={styles.titleContainer}>
@@ -153,36 +175,33 @@ export default function WorkoutScreen() {
         onRequestClose={() => toggleFormVisibility(null)}
       >
         <View style={styles.popOverContainer}>
-          {activeForm === 'AddExerciseForm' && (
-            <ExerciseDropdown
-              open={exerciseSelectionOpen}
-              setOpen={setExerciseSelectionOpen}
-              selectedExercise={selectedExercise}
-              setSelectedExercise={setSelectedExercise}
-              exercises={exercises}
-              addExercise={() => { }}
-            />
-          )}
-          {activeForm === 'AddEquipmentForm' && (
+          <ExerciseDropdown
+            selectedExercise={selectedExercise}
+            setSelectedExercise={handleExerciseWrapper}
+            exercises={exercises}
+            addExercise={() => { }}
+          />
+          {selectedExercise && (
             <EquipmentDropdown
-              open={equipmentSelectionOpen}
-              setOpen={setEquipmentSelectionOpen}
               selectedEquipment={selectedEquipment}
               setSelectedEquipment={setSelectedEquipment}
-              equipment={equipment}
+              equipment={filteredEquipment}
               addEquipment={() => { }}
             />
           )}
-          {activeForm === 'AddAttachmentForm' && (
-            <AttachmentDropdown
-              open={attachmentSelectionOpen}
-              setOpen={setAttachmentSelectionOpen}
-              selectedAttachment={selectedAttachment}
-              setSelectedAttachment={setSelectedAttachment}
-              attachments={attachments}
-              addAttachment={() => { }}
-            />
-          )}
+          {selectedEquipment &&
+            equipment.find(e => e.id === parseInt(selectedEquipment))?.name === 'Cable' && (
+              <AttachmentDropdown
+                selectedAttachment={selectedAttachment}
+                setSelectedAttachment={setSelectedAttachment}
+                attachments={attachments}
+                addAttachment={() => { }}
+              />
+            )}
+          <View style={styles.buttonContainer}>
+            <IconButton iconName="close-circle-outline" text="Close" onPress={() => toggleFormVisibility(null)} />
+            <IconButton iconName="checkmark-circle-outline" text="Add" onPress={() => toggleFormVisibility(null)} />
+          </View>
         </View>
       </Modal>
       {!workoutStarted ? (

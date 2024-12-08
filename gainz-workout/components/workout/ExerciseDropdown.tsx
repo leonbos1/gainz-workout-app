@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors';
 
 interface ExerciseDropdownProps {
   selectedExercise: string | null;
-  setSelectedExercise: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedExercise: (exercise: string | null) => void;
   exercises: Array<{ label: string, value: string }>;
   addExercise: () => void;
 }

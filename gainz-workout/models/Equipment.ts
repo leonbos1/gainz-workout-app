@@ -34,4 +34,6 @@ export class Equipment {
 
         return new Equipment(id, name);
     }
+
+    
 }
