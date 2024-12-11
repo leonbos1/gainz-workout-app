@@ -1,4 +1,3 @@
-import { Database } from "@/database/database";
 import { Exercise } from "./Exercise";
 import { GraphDuration } from "./GraphDuration";
 import { GraphType } from "./GraphType";

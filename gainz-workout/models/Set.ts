@@ -1,10 +1,7 @@
-import * as SQLite from 'expo-sqlite';
 import { ChartDataset } from './ChartDataset';
-import { Database } from '@/database/database';
-import { GraphDuration } from './GraphDuration';
+import db from '@/database/database';
 import { round } from 'lodash';
 
-// Define a type for the Set row returned by the database
 export type SetRow = {
   id: number;
   exerciseid: number;
@@ -33,9 +30,6 @@ export class Set {
   }
 
   static async create(exerciseid: number, amount: number, weight: number, rpe: number, batchid: number) {
-    const db = await Database.getDbConnection();
-
-
     const result = await db.runAsync(
       `INSERT INTO exerciseset (exerciseid, amount, weight, rpe, batchid) VALUES (?, ?, ?, ?, ?);`,
       [exerciseid, amount, weight, rpe, batchid]
@@ -44,17 +38,12 @@ export class Set {
   }
 
   static async findAll(): Promise<Set[]> {
-    const db = await Database.getDbConnection();
-
-
     const rows = await db.getAllAsync('SELECT * FROM exerciseset') as SetRow[];
     return rows.map(row => new Set(row.id, row.exerciseid, row.amount, row.weight, row.rpe, row.batchid));
   }
 
   static async findByBatchId(batchId: number): Promise<Set[]> {
     try {
-      const db = await Database.getDbConnection();
-
       const rows = await db.getAllAsync('SELECT * FROM exerciseset WHERE batchid = ?', [batchId]) as SetRow[];
       return rows.map(row => new Set(row.id, row.exerciseid, row.amount, row.weight, row.rpe, row.batchid));
     }
@@ -65,9 +54,6 @@ export class Set {
   }
 
   static async removeAll() {
-    const db = await Database.getDbConnection();
-
-
     await db.runAsync('DELETE FROM exerciseset');
 
     return true;
@@ -75,8 +61,6 @@ export class Set {
 
   async getExerciseName() {
     try {
-      const db = await Database.getDbConnection();
-
       const result = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [this.exerciseid]) as { name: string };
       this.exerciseName = result.name;
       return result.name;
@@ -88,8 +72,6 @@ export class Set {
   }
 
   static async getEstimated1RM(exerciseId: number, weeks: number): Promise<ChartDataset> {
-    const db = await Database.getDbConnection();
-
     weeks = round(weeks);
 
     const rows = await db.getAllAsync(`
@@ -129,8 +111,6 @@ export class Set {
   }
 
   static async getVolume(exerciseId: number, weeks: number): Promise<ChartDataset> {
-    const db = await Database.getDbConnection();
-
     weeks = round(weeks);
 
     const rows = await db.getAllAsync(`

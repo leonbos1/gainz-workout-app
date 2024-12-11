@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Modal, StyleSheet, TouchableOpacity, View, Text, FlatList } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Attachment } from '@/models/Attachment';
+import { Equipment } from '@/models/Equipment';
 
 interface EquipmentDropdownProps {
     selectedEquipment: string | null;
     setSelectedEquipment: React.Dispatch<React.SetStateAction<string | null>>;
-    equipment: Attachment[];
+    equipment: Equipment[];
     addEquipment: () => void;
 }
 
