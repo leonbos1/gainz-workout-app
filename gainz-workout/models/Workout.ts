@@ -1,4 +1,4 @@
-import { Database } from '@/database/database';
+import db from '@/database/database';
 import * as SQLite from 'expo-sqlite';
 
 export type WorkoutRow = {
@@ -37,9 +37,6 @@ export class Workout {
   }
 
   public static async create(starttime: string, endtime: string) {
-    const db = await Database.getDbConnection();
-
-
     const result = await db.runAsync(
       `INSERT INTO workout (starttime, endtime) VALUES (?, ?);`,
       [starttime, endtime]
@@ -49,9 +46,6 @@ export class Workout {
 
   public static async findAll(): Promise<Workout[]> {
     try {
-      const db = await Database.getDbConnection();
-
-
       const rows = await db.getAllAsync('SELECT * FROM workout') as WorkoutRow[];
       return rows.map(row => new Workout(row.id, "sample title", row.starttime, row.endtime));
     }
@@ -62,18 +56,12 @@ export class Workout {
   }
 
   static async removeAll() {
-    const db = await Database.getDbConnection();
-
-
     await db.runAsync('DELETE FROM workout');
 
     return true;
   }
 
   static async endWorkout(id: number, endtime: string) {
-    const db = await Database.getDbConnection();
-
-
     await db.runAsync('UPDATE workout SET endtime = ? WHERE id = ?', [endtime, id]);
 
     return true;
@@ -81,9 +69,6 @@ export class Workout {
 
   static async findAllFinished(limit: number, page: number): Promise<Workout[]> {
     try {
-      const db = await Database.getDbConnection();
-
-
       const offset = (page - 1) * limit;
       const rows = await db.getAllAsync(
         'SELECT * FROM workout WHERE endtime IS NOT NULL AND endtime != "" ORDER BY starttime DESC LIMIT ? OFFSET ?',
@@ -98,17 +83,12 @@ export class Workout {
   }
 
   static async delete(id: number) {
-    const db = await Database.getDbConnection();
-
-
     await db.runAsync('DELETE FROM workout WHERE id = ?', [id]);
 
     return true;
   }
 
   static async getWorkoutsPerWeek(weeks: number): Promise<WorkoutWeekData> {
-    const db = await Database.getDbConnection();
-
     // Fetch workout counts grouped by week
     const rows = await db.getAllAsync(`
       SELECT strftime('%Y-%W', starttime) as year_week, COUNT(*) as count
@@ -159,17 +139,12 @@ export class Workout {
   }
 
   static async getById(id: number): Promise<Workout> {
-    const db = await Database.getDbConnection();
-
     const row = await db.getFirstAsync('SELECT * FROM workout WHERE id = ?', [id]) as WorkoutRow;
 
     return new Workout(row.id, "", row.starttime, row.endtime);
   }
 
   static async deleteFullWorkout(workoutId: number) {
-    const db = await Database.getDbConnection();
-
-
     // first delete all batches and sets, then delete the workout
     const batchIds = await db.getAllAsync('SELECT id FROM batch WHERE workoutid = ?', [workoutId]) as { id: number }[];
 

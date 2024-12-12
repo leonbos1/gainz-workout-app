@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
-interface ExerciseDropdownProps {
+interface ExerciseSelectListProps {
   selectedExercise: string | null;
   setSelectedExercise: (exercise: string | null) => void;
   exercises: Array<{ label: string, value: string }>;
-  addExercise: () => void;
 }
 
-export const ExerciseDropdown: React.FC<ExerciseDropdownProps> = ({
+export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
   selectedExercise,
   setSelectedExercise,
   exercises,
-  addExercise,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
