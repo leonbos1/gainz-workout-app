@@ -1,5 +1,3 @@
-import * as SQLite from 'expo-sqlite';
-
 export type ExerciseEquipmentRow = {
     id: number;
     exerciseid: number;

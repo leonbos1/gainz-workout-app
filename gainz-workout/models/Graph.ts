@@ -1,6 +1,5 @@
-import { Database } from '@/database/database';
+import db from '@/database/database';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
-import * as SQLite from 'expo-sqlite';
 
 export type GraphRow = {
     id: number;
@@ -26,16 +25,12 @@ export class Graph {
     }
 
     static async findAll(): Promise<Graph[]> {
-        const db = await Database.getDbConnection();
-
         const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
 
         return rows.map(row => new Graph(row.id, row.graph_typeid, row.exerciseid, row.enabled, row.graph_durationid));
     }
 
     static async create(graph_typeid: number, exerciseid: number, enabled: boolean, graph_durationid: number): Promise<Graph> {
-        const db = await Database.getDbConnection();
-
         const existingGraph = await db.getFirstAsync('SELECT * FROM graph WHERE graph_typeid = ? AND exerciseid = ? AND graph_durationid = ?', [graph_typeid, exerciseid, graph_durationid]);
 
         if (existingGraph) {
@@ -51,8 +46,6 @@ export class Graph {
     }
 
     static async findAllEnabled(): Promise<Graph[]> {
-        const db = await Database.getDbConnection();
-
         const rows = await db.getAllAsync('SELECT * FROM graph WHERE enabled = 1') as GraphRow[];
 
         return rows.map(row => new Graph(row.id, row.graph_typeid, row.exerciseid, row.enabled, row.graph_durationid));
@@ -60,8 +53,6 @@ export class Graph {
 
     static async findAllAsViewModel(): Promise<GraphViewModel[]> {
         try {
-            const db = await Database.getDbConnection();
-
             const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
 
             const viewModels = await Promise.all(
@@ -77,8 +68,6 @@ export class Graph {
     }
 
     static async updateEnabled(id: number, enabled: boolean): Promise<void> {
-        const db = await Database.getDbConnection();
-
         await db.runAsync('UPDATE graph SET enabled = ? WHERE id = ?', [enabled, id]);
 
         console.log('updated graph enabled with id:', id);
