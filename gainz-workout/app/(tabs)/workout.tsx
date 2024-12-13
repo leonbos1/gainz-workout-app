@@ -205,7 +205,6 @@ export default function WorkoutScreen() {
               selectedEquipment={selectedEquipment}
               setSelectedEquipment={setSelectedEquipment}
               equipment={filteredEquipment}
-              addEquipment={() => { }}
             />
           )}
           {selectedEquipment &&
@@ -214,7 +213,6 @@ export default function WorkoutScreen() {
                 selectedAttachment={selectedAttachment}
                 setSelectedAttachment={setSelectedAttachment}
                 attachments={attachments}
-                addAttachment={() => { }}
               />
             )}
           <View style={styles.buttonContainer}>

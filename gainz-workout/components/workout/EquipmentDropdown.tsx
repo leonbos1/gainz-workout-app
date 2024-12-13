@@ -8,14 +8,12 @@ interface EquipmentDropdownProps {
     selectedEquipment: string | null;
     setSelectedEquipment: React.Dispatch<React.SetStateAction<string | null>>;
     equipment: Equipment[];
-    addEquipment: () => void;
 }
 
 export const EquipmentDropdown: React.FC<EquipmentDropdownProps> = ({
     selectedEquipment,
     setSelectedEquipment,
     equipment,
-    addEquipment,
 }) => {
     const [modalVisible, setModalVisible] = useState(false);
 
