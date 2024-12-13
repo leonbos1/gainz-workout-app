@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, View } from 'react-native';
-import BigIconButton from '../BigIconButton';
+import BigIconButton from '../buttons/BigIconButton';
 
 interface StartWorkoutButtonProps {
   onStartWorkout: () => void;

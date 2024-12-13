@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import CheckBox from 'expo-checkbox';
 import { Colors } from '@/constants/Colors';
-import IconButton from '../IconButton';
+import IconButton from '../buttons/IconButton';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
 import AddGraphForm from './AddGraphForm';
 

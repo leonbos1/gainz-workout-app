@@ -1,25 +1,21 @@
-import db from '@/database/database';
+import BaseEntity from './base/BaseEntity';
 
 export type AttachmentRow = {
     id: number;
     name: string;
 };
 
-export class Attachment {
+export class Attachment extends BaseEntity {
     id: number;
     name: string;
     label: string;
     value: string;
 
     constructor(id: number, name: string) {
+        super(id, new Date(), new Date());
         this.id = id;
         this.name = name;
         this.label = name;
         this.value = id.toString();
-    }
-
-    static async findAll(): Promise<Attachment[]> {
-        const rows = await db.getAllAsync('SELECT * FROM attachment') as AttachmentRow[];
-        return rows.map(row => new Attachment(row.id, row.name));
     }
 }

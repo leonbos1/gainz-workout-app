@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
-import IconButton from '@/components/IconButton';
+import IconButton from '@/components/buttons/IconButton';
 import MusclegroupSelectList from '@/components/selectors/MusclegroupSelectList';
 import EquipmentMultipleSelectList from '@/components/selectors/EquipmentMultipleSelectList';
 import { Colors } from '@/constants/Colors';

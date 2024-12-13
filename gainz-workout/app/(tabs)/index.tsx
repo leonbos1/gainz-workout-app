@@ -6,7 +6,7 @@ import { Link, useRouter } from 'expo-router';
 import { seedDatabase, createTables } from '@/database/database';
 import ChartList from '@/components/profile/ChartList';
 import { ChartSelector } from '@/components/profile/ChartSelector';
-import IconButton from '@/components/IconButton';
+import IconButton from '@/components/buttons/IconButton';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
 import { Graph } from '@/models/Graph';
 import AddGraphForm from '@/components/profile/AddGraphForm';

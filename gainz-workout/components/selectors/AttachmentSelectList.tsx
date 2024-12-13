@@ -3,36 +3,36 @@ import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList, TextInput } 
 import { Colors } from '@/constants/Colors';
 import { SearchInput } from '../SearchSelectList';
 
-interface ExerciseSelectListProps {
-  selectedExercise: string | null;
-  setSelectedExercise: (exercise: string | null) => void;
-  exercises: Array<{ label: string, value: string }>;
+interface AttachmentSelectListProps {
+  selectedAttachment: string | null;
+  setSelectedAttachment: (exercise: string | null) => void;
+  attachments: Array<{ label: string, value: string }>;
 }
 
-export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
-  selectedExercise,
-  setSelectedExercise,
-  exercises,
+export const AttachmentSelectList: React.FC<AttachmentSelectListProps> = ({
+  selectedAttachment,
+  setSelectedAttachment,
+  attachments,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSelectExercise = (value: string) => {
-    setSelectedExercise(value);
+  const handleSelectAttachment = (value: string) => {
+    setSelectedAttachment(value);
     setModalVisible(false);
   };
 
-  const filteredExercises = exercises.filter((exercise) =>
-    exercise.label.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAttachments = attachments.filter((eq) =>
+    eq.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.dropdown} onPress={() => setModalVisible(true)}>
         <Text style={styles.dropdownText}>
-          {selectedExercise
-            ? exercises.find(ex => ex.value === selectedExercise)?.label
-            : 'Select an exercise'}
+          {selectedAttachment
+            ? attachments.find(at => at.value === selectedAttachment)?.label
+            : 'Select an equipment'}
         </Text>
       </TouchableOpacity>
 
@@ -47,14 +47,14 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
             <SearchInput
               value={searchQuery}
               onChangeText={(text) => setSearchQuery(text)}
-              placeholder="Search for exercises..."
+              placeholder="Search for attachment..."
             />
 
             <FlatList
-              data={filteredExercises}
+              data={filteredAttachments}
               keyExtractor={(item) => item.value}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.item} onPress={() => handleSelectExercise(item.value)}>
+                <TouchableOpacity style={styles.item} onPress={() => handleSelectAttachment(item.value)}>
                   <Text style={styles.itemText}>{item.label}</Text>
                 </TouchableOpacity>
               )}
