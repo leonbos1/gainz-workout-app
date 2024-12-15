@@ -1,4 +1,4 @@
-import BaseEntity from "../models/base/BaseEntity";
+import BaseEntity from "./base/BaseEntity";
 
 export type ExerciseEquipmentRow = {
     id: number;

@@ -1,4 +1,4 @@
-import BaseEntity from '@/models/base/BaseEntity';
+import BaseEntity from '@/datamodels/base/BaseEntity';
 import db from '../database/database';
 
 export type BatchRow = {

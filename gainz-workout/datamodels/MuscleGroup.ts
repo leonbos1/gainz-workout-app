@@ -1,5 +1,5 @@
 import db from '@/database/database';
-import BaseEntity from '../models/base/BaseEntity';
+import BaseEntity from './base/BaseEntity';
 
 type MuscleGroupRow = {
   id: number;

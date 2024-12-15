@@ -1,5 +1,5 @@
 import db from '@/database/database';
-import BaseEntity from '@/models/base/BaseEntity';
+import BaseEntity from '@/datamodels/base/BaseEntity';
 
 export default abstract class BaseRepository<T extends BaseEntity> {
     protected table: string;
@@ -10,6 +10,10 @@ export default abstract class BaseRepository<T extends BaseEntity> {
     }
 
     abstract initTable(): Promise<void>;
+
+    async dropTable(): Promise<void> {
+        await db.runAsync(`DROP TABLE ${this.table}`);
+    }
 
     async getAll(): Promise<T[]> {
         const result = await db.getAllAsync(`SELECT * FROM ${this.table}`);

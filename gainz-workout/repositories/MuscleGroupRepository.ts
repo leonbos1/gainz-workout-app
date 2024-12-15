@@ -5,7 +5,7 @@ import { MuscleGroup } from "@/datamodels/MuscleGroup";
 export class MuscleGroupRepository extends BaseRepository<MuscleGroup> {
   async initTable(): Promise<void> {
     await db.runAsync(`
-      CREATE TABLE IF NOT EXISTS musclegroups (
+      CREATE TABLE IF NOT EXISTS ${this.table} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL
       )
