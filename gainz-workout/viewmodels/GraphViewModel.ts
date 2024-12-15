@@ -1,8 +1,8 @@
 import { ChartDataset } from "@/models/ChartDataset";
-import { Exercise } from "@/models/Exercise";
-import { Graph, GraphRow } from "@/models/Graph";
-import { GraphDuration } from "@/models/GraphDuration";
-import { GraphType } from "@/models/GraphType";
+import { Exercise } from "@/datamodels/Exercise";
+import { Graph, GraphRow } from "@/datamodels/Graph";
+import { GraphDuration } from "@/datamodels/GraphDuration";
+import { GraphType } from "@/datamodels/GraphType";
 
 
 export class GraphViewModel {

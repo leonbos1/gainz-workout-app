@@ -1,4 +1,4 @@
-import BaseEntity from './base/BaseEntity';
+import BaseEntity from '../models/base/BaseEntity';
 
 export type AttachmentRow = {
     id: number;

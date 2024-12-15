@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import { Equipment } from './Equipment';
 import db from '@/database/database';
-import BaseEntity from './base/BaseEntity';
+import BaseEntity from '../models/base/BaseEntity';
 
 export type ExerciseRow = {
   id: number;

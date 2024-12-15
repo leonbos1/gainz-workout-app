@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput, View, StyleSheet, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Graph } from '@/models/Graph';
-import { Exercise } from '@/models/Exercise';
-import { GraphType } from '@/models/GraphType';
-import { GraphDuration } from '@/models/GraphDuration';
+import { Graph } from '@/datamodels/Graph';
+import { Exercise } from '@/datamodels/Exercise';
+import { GraphType } from '@/datamodels/GraphType';
+import { GraphDuration } from '@/datamodels/GraphDuration';
 import { Colors } from '@/constants/Colors';
 import { FormProps } from '@/app/props/formProps';
 

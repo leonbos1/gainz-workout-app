@@ -1,10 +1,10 @@
 import React from 'react';
 import { Alert, Dimensions, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { Set } from '@/models/Set';
+import { Set } from '@/datamodels/Set';
 import { HistoryWorkoutViewmodel } from '@/viewmodels/HistoryWorkoutViewmodel';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Workout } from '@/models/Workout';
+import { Workout } from '@/datamodels/Workout';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, TouchableOpacity, View, Text, FlatList } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { Attachment } from '@/models/Attachment';
-import { Equipment } from '@/models/Equipment';
+import { Attachment } from '@/datamodels/Attachment';
+import { Equipment } from '@/datamodels/Equipment';
 
 interface EquipmentDropdownProps {
     selectedEquipment: string | null;

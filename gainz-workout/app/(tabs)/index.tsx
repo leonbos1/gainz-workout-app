@@ -8,7 +8,7 @@ import ChartList from '@/components/profile/ChartList';
 import { ChartSelector } from '@/components/profile/ChartSelector';
 import IconButton from '@/components/buttons/IconButton';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
-import { Graph } from '@/models/Graph';
+import { Graph } from '@/datamodels/Graph';
 import AddGraphForm from '@/components/profile/AddGraphForm';
 
 const screenWidth = Dimensions.get('window').width;

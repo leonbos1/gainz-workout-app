@@ -3,9 +3,9 @@ import { StyleSheet, Dimensions, View, ActivityIndicator, FlatList, Text, Alert 
 
 import { HistoryWorkout } from '@/components/history/HistoryWorkout';
 import { Colors } from '@/constants/Colors';
-import { Workout } from '@/models/Workout';
-import { Batch } from '@/models/Batch';
-import { Set } from '@/models/Set';
+import { Workout } from '@/datamodels/Workout';
+import { Batch } from '@/datamodels/Batch';
+import { Set } from '@/datamodels/Set';
 import { HistoryWorkoutViewmodel, ExerciseBatchViewmodel } from '@/viewmodels/HistoryWorkoutViewmodel';
 import { useFocusEffect } from 'expo-router/build/useFocusEffect';
 import { debounce } from 'lodash';

@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, View, Text, Button } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
-import { Exercise } from '@/models/Exercise';
-import { MuscleGroup } from '@/models/MuscleGroup';
+import { Exercise } from '@/datamodels/Exercise';
+import { MuscleGroup } from '@/datamodels/MuscleGroup';
 import BigIconButton from '@/components/buttons/BigIconButton';
 import AddExerciseMenu from '@/components/exercises/AddExerciseMenu';
-import { Equipment } from '@/models/Equipment';
+import { Equipment } from '@/datamodels/Equipment';
 import ExerciseItem from '@/components/exercises/ExerciseItem';
 
 const screenWidth = Dimensions.get('window').width;

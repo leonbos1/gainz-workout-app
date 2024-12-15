@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { Set } from '@/models/Set';
+import { Set } from '@/datamodels/Set';
 import { Colors } from '@/constants/Colors';
 import { Icon } from 'react-native-vector-icons/Icon';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, View } from 'react-native';
 import { BatchItem } from './BatchItem';
-import { Set } from '@/models/Set';
+import { Set } from '@/datamodels/Set';
 
 interface BatchListProps {
   batches: Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>;

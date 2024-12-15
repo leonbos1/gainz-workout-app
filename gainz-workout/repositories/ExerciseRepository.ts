@@ -1,4 +1,4 @@
-import { Exercise } from "@/models/Exercise";
+import { Exercise } from "@/datamodels/Exercise";
 import BaseRepository from "./base/BaseRepository";
 import db from "@/database/database";
 

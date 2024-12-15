@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { MuscleGroup } from '@/models/MuscleGroup';
+import { MuscleGroup } from '@/datamodels/MuscleGroup';
 
 interface MusclegroupSelectListProps {
     onMuscleGroupSelected: (muscleGroup: MuscleGroup) => void;

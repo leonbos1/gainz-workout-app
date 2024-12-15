@@ -1,5 +1,6 @@
 import db from '@/database/database';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
+import BaseEntity from '../models/base/BaseEntity';
 
 export type GraphRow = {
     id: number;
@@ -9,15 +10,14 @@ export type GraphRow = {
     graph_durationid: number;
 };
 
-export class Graph {
-    id: number;
+export class Graph extends BaseEntity {
     graph_typeid: number;
     exerciseid: number;
     enabled: boolean;
     graph_durationid: number;
 
     constructor(id: number, graph_typeid: number, exerciseid: number, enabled: boolean, graph_durationid: number) {
-        this.id = id;
+        super(id, new Date(), new Date());
         this.graph_typeid = graph_typeid;
         this.exerciseid = exerciseid;
         this.enabled = enabled;

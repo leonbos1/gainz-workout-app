@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, TouchableOpacity, View, Text, FlatList } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { Attachment } from '@/models/Attachment';
+import { Attachment } from '@/datamodels/Attachment';
 
 interface AttachmentDropdownProps {
     selectedAttachment: string | null;

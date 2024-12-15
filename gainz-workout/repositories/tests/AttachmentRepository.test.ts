@@ -1,5 +1,5 @@
 import { AttachmentRepository } from "@/repositories/AttachmentRepository";
-import { Attachment } from "@/models/Attachment";
+import { Attachment } from "@/datamodels/Attachment";
 import db from "@/database/database";
 
 jest.mock("@/database/database", () => ({

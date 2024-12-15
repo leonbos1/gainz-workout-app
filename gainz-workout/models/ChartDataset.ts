@@ -1,7 +1,7 @@
-import { Exercise } from "./Exercise";
-import { GraphDuration } from "./GraphDuration";
-import { GraphType } from "./GraphType";
-import { Set } from "./Set";
+import { Exercise } from "../datamodels/Exercise";
+import { GraphDuration } from "../datamodels/GraphDuration";
+import { GraphType } from "../datamodels/GraphType";
+import { Set } from "../datamodels/Set";
 
 export class ChartDataset {
   data: number[];

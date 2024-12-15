@@ -1,3 +1,4 @@
+import BaseEntity from '@/models/base/BaseEntity';
 import db from '../database/database';
 
 export type BatchRow = {
@@ -8,15 +9,14 @@ export type BatchRow = {
   attachmentid: number;
 };
 
-export class Batch {
-  id: number;
+export class Batch extends BaseEntity {
   workoutid: number;
   note: string;
   equipmentid: number;
   attachmentid: number;
 
   constructor(id: number, workoutid: number, note: string, equipmentid: number, attachmentid: number) {
-    this.id = id;
+    super(id, new Date(), new Date());  
     this.workoutid = workoutid;
     this.note = note;
     this.equipmentid = equipmentid;
