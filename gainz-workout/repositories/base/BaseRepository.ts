@@ -1,5 +1,5 @@
-import db from '@/database/database';
 import BaseEntity from '@/datamodels/base/BaseEntity';
+import { db } from '@/database/database';
 
 export default abstract class BaseRepository<T extends BaseEntity> {
     protected table: string;
@@ -12,16 +12,25 @@ export default abstract class BaseRepository<T extends BaseEntity> {
     abstract initTable(): Promise<void>;
 
     async dropTable(): Promise<void> {
-        await db.runAsync(`DROP TABLE ${this.table}`);
+        console.log(`Dropping table ${this.table}`);
+        try {
+            await db.instance.runAsync(`DROP TABLE ${this.table}`);
+        }
+        catch (error) {
+            console.error(`Error dropping table ${this.table}: ${error}`);
+        }
+        finally {
+            await db.instance.closeAsync();
+        }
     }
 
     async getAll(): Promise<T[]> {
-        const result = await db.getAllAsync(`SELECT * FROM ${this.table}`);
+        const result = await db.instance.getAllAsync(`SELECT * FROM ${this.table}`);
         return result as T[];
     }
 
     async getById(id: number): Promise<T | null> {
-        const result = await db.getAllAsync(`SELECT * FROM ${this.table} WHERE id = ?`, [id]);
+        const result = await db.instance.getAllAsync(`SELECT * FROM ${this.table} WHERE id = ?`, [id]);
         return result.length > 0 ? (result[0] as T) : null;
     }
 
@@ -30,7 +39,7 @@ export default abstract class BaseRepository<T extends BaseEntity> {
         const placeholders = Object.keys(entity).map(() => '?').join(', ');
         const values = Object.values(entity);
 
-        const result = await db.runAsync(
+        const result = await db.instance.runAsync(
             `INSERT INTO ${this.table} (${keys}) VALUES (${placeholders})`,
             values
         );
@@ -44,10 +53,10 @@ export default abstract class BaseRepository<T extends BaseEntity> {
             .join(', ');
         const values = [...Object.values(updates), id];
 
-        await db.runAsync(`UPDATE ${this.table} SET ${setClause} WHERE id = ?`, values);
+        await db.instance.runAsync(`UPDATE ${this.table} SET ${setClause} WHERE id = ?`, values);
     }
 
     async delete(id: number): Promise<void> {
-        await db.runAsync(`DELETE FROM ${this.table} WHERE id = ?`, [id]);
+        await db.instance.runAsync(`DELETE FROM ${this.table} WHERE id = ?`, [id]);
     }
 }

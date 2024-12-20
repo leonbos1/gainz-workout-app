@@ -131,8 +131,8 @@ async function getOrCreateWorkout(db: SQLite.SQLiteDatabase, date: string): Prom
         return workoutRows[0].id;
     }
 
-    const insertWorkoutStatement = await db.prepareAsync('INSERT INTO workout (starttime, endtime) VALUES (?, ?)');
-    const insertResult = await insertWorkoutStatement.executeAsync([date, date]);
+    const insertWorkoutStatement = await db.prepareAsync('INSERT INTO workout (starttime, endtime, createdAt, updatedAt) VALUES (?, ?, ?, ?)');
+    const insertResult = await insertWorkoutStatement.executeAsync([date, date, new Date().toISOString(), new Date().toISOString()]);
     workoutCache[date] = insertResult.lastInsertRowId;
     return insertResult.lastInsertRowId;
 }
@@ -153,8 +153,8 @@ async function getOrCreateExercise(db: SQLite.SQLiteDatabase, name: string): Pro
         return exerciseRows[0].id;
     }
 
-    const insertExerciseStatement = await db.prepareAsync('INSERT INTO exercise (name) VALUES (?)');
-    const insertResult = await insertExerciseStatement.executeAsync([exerciseName]);
+    const insertExerciseStatement = await db.prepareAsync('INSERT INTO exercise (name, createdAt, updatedAt) VALUES (?, ?, ?)');
+    const insertResult = await insertExerciseStatement.executeAsync([exerciseName, new Date().toISOString(), new Date().toISOString()]);
     exerciseCache[exerciseName] = insertResult.lastInsertRowId;
     return insertResult.lastInsertRowId;
 }
@@ -173,9 +173,10 @@ async function getOrCreateEquipment(db: SQLite.SQLiteDatabase, name: string): Pr
         return equipmentRows[0].id;
     }
 
-    const insertEquipmentStatement = await db.prepareAsync('INSERT INTO equipment (name) VALUES (?)');
-    const insertResult = await insertEquipmentStatement.executeAsync([name]);
+    const insertEquipmentStatement = await db.prepareAsync('INSERT INTO equipment (name, createdAt, updatedAt) VALUES (?, ?, ?)');
+    const insertResult = await insertEquipmentStatement.executeAsync([name, new Date().toISOString(), new Date().toISOString()]);
     equipmentCache[name] = insertResult.lastInsertRowId;
+    console.log('Inserted equipment:', name, insertResult.lastInsertRowId);
     return insertResult.lastInsertRowId;
 }
 
@@ -183,7 +184,7 @@ async function getOrCreateAttachment(db: SQLite.SQLiteDatabase, name: string): P
     if (name.length === 0) {
         return 0;
     }
-    
+
     if (attachmentCache[name]) {
         return attachmentCache[name];
     }
@@ -197,8 +198,8 @@ async function getOrCreateAttachment(db: SQLite.SQLiteDatabase, name: string): P
         return attachmentRows[0].id;
     }
 
-    const insertAttachmentStatement = await db.prepareAsync('INSERT INTO attachment (name) VALUES (?)');
-    const insertResult = await insertAttachmentStatement.executeAsync([name]);
+    const insertAttachmentStatement = await db.prepareAsync('INSERT INTO attachment (name, createdAt, updatedAt) VALUES (?, ?, ?)');
+    const insertResult = await insertAttachmentStatement.executeAsync([name, new Date().toISOString(), new Date().toISOString()]);
     attachmentCache[name] = insertResult.lastInsertRowId;
     return insertResult.lastInsertRowId;
 }
