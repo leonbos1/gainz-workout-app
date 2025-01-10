@@ -1,10 +1,10 @@
 import { GraphType } from "@/datamodels/GraphType";
 import BaseRepository from "./base/BaseRepository";
-import db from "@/database/database";
+import { db } from "@/database/database";
 
 export class GraphTypeRepository extends BaseRepository<GraphType> {
-    async initTable(): Promise<void> {
-        await db.runAsync(`
+  async initTable(): Promise<void> {
+    await db.instance.runAsync(`
       CREATE TABLE IF NOT EXISTS ${this.table} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -12,5 +12,5 @@ export class GraphTypeRepository extends BaseRepository<GraphType> {
         updatedAt TEXT NOT NULL
       )
     `);
-    }
+  }
 }

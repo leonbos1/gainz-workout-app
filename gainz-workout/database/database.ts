@@ -1,6 +1,15 @@
 import * as SQLite from 'expo-sqlite';
 import data from '../database_seed/data.json';
-import { repositories } from '@/import';
+import { attachmentRepository, equipmentRepository, exerciseEquipmentRepository, exerciseRepository, graphDurationRepository, graphRepository, graphTypeRepository, muscleGroupRepository, repositories, seedStatusRepository } from '@/import';
+import { SeedStatus } from '@/datamodels/SeedStatus';
+import { MuscleGroup } from '@/datamodels/MuscleGroup';
+import { Exercise } from '@/datamodels/Exercise';
+import { GraphDuration } from '@/datamodels/GraphDuration';
+import { GraphType } from '@/datamodels/GraphType';
+import { Graph } from '@/datamodels/Graph';
+import { Equipment } from '@/datamodels/Equipment';
+import { Attachment } from '@/datamodels/Attachment';
+import { ExerciseEquipment } from '@/datamodels/ExerciseEquipment';
 
 export const dropTables = async () => {
   try {
@@ -14,8 +23,8 @@ export const dropTables = async () => {
 };
 
 export const createTables = async () => {
-  repositories.forEach(repo => {
-    repo.initTable();
+  repositories.forEach(async repo => {
+    await repo.initTable();
   });
 };
 
@@ -25,56 +34,34 @@ type seedStatusRow = {
 }
 
 export const seedDatabase = async () => {
-  const db = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: true });
-
-  const selectStatement = await db.getFirstAsync('SELECT * FROM seed_status where id = 1') as seedStatusRow;
+  const selectStatement = await db.instance.getFirstAsync('SELECT * FROM seedStatus where id = 1') as seedStatusRow;
 
   if (selectStatement && selectStatement.status === 'seeded') {
     return;
   }
 
-  await db.runAsync('INSERT INTO seed_status (id, status) VALUES (1, "seeded")');
-
-  await db.execAsync(`
-    INSERT INTO musclegroup (name) VALUES ${data.musclegroups.map((name) => `("${name}")`).join(', ')};
-
-    INSERT INTO exercise (name, musclegroupid) VALUES ${data.exercises.map((exercise) => {
-    const musclegroupid = data.musclegroups.indexOf(exercise.musclegroup) + 1;
-    return `("${exercise.name}", ${musclegroupid})`;
-  }).join(', ')};
-
-    INSERT INTO graph_duration (name, value) VALUES ${data.graph_durations.map((duration) => `("${duration.name}", ${duration.value})`).join(', ')};
-
-    INSERT INTO graph_type (name) VALUES ${data.graph_types.map((graphType) => `("${graphType.name}")`).join(', ')};
-
-    INSERT INTO graph (graph_typeid, exerciseid, graph_durationid, enabled) VALUES ${data.graphs.map((graph) => `(${graph.graph_type_id}, ${graph.exercise_id}, ${graph.graph_duration_id}, ${graph.enabled})`).join(', ')};
-
-    INSERT INTO equipment (name) VALUES ${data.equipment.map((name) => `("${name}")`).join(', ')};
-
-    INSERT INTO attachment (name) VALUES ${data.attachments.map((name) => `("${name}")`).join(', ')};
-
-    INSERT INTO exercise_equipment(exerciseid, equipmentid) VALUES ${data.exerciseEquipment.map((equipment) => {
-    //TODO: this assumes when data is seeded, database is empty and it assumes that everything is inserted correctly
-    const exerciseid = data.exercises.findIndex((exercise) => exercise.name === equipment.exercise) + 1;
-    const equipmentid = data.equipment.indexOf(equipment.equipment) + 1;
-
-    return `(${exerciseid}, ${equipmentid})`;
-  }).join(', ')
-    };
-  `);
+  await seedStatusRepository.create(new SeedStatus(1, "seeded"));
+  var musclegroups = data.musclegroups.map(async (mg) => await muscleGroupRepository.create(new MuscleGroup(mg.id, mg.name)))
+  var exercises = data.exercises.map(async (ex) => await exerciseRepository.create(new Exercise(ex.id, ex.name, ex.description, ex.musclegroupid)))
+  var graph_durations = data.graph_durations.map(async (gd) => await graphDurationRepository.create(new GraphDuration(gd.id, gd.name, gd.value)))
+  var graph_types = data.graph_types.map(async (gd) => await graphTypeRepository.create(new GraphType(gd.id, gd.name)))
+  var graphs = data.graphs.map(async (g) => await graphRepository.create(new Graph(g.id, g.graph_type_id, g.exercise_id, g.enabled, g.graph_duration_id)))
+  var equipment = data.equipment.map(async (e) => await equipmentRepository.create(new Equipment(e.id, e.name)))
+  var attachments = data.attachments.map(async (e) => await attachmentRepository.create(new Attachment(e.id, e.name)))
+  var exercise_equipments = data.exerciseEquipment.map(async (eq) => await exerciseEquipmentRepository.create(new ExerciseEquipment(eq.id, eq.exerciseid, eq.equipmentid)))
 }
 
 let _db: SQLite.SQLiteDatabase | null = null;
 
 (async () => {
-    _db = await SQLite.openDatabaseAsync('gainz.db');
+  _db = await SQLite.openDatabaseAsync('gainz.db');
 })();
 
 export const db = {
-    get instance(): SQLite.SQLiteDatabase {
-        if (!_db) {
-            throw new Error("Database has not been initialized yet");
-        }
-        return _db;
+  get instance(): SQLite.SQLiteDatabase {
+    if (!_db) {
+      throw new Error("Database has not been initialized yet");
     }
+    return _db;
+  }
 };

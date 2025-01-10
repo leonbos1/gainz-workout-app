@@ -1,10 +1,10 @@
 import BaseRepository from "./base/BaseRepository";
-import db from "@/database/database";
+import { db } from "@/database/database";
 import { Workout } from "@/datamodels/Workout";
 
 export class WorkoutRepository extends BaseRepository<Workout> {
-    async initTable(): Promise<void> {
-        await db.runAsync(`
+  async initTable(): Promise<void> {
+    await db.instance.runAsync(`
       CREATE TABLE IF NOT EXISTS ${this.table} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -12,5 +12,5 @@ export class WorkoutRepository extends BaseRepository<Workout> {
         updatedAt TEXT NOT NULL
       )
     `);
-    }
+  }
 }

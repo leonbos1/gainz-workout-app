@@ -1,10 +1,10 @@
 import { Graph } from "@/datamodels/Graph";
 import BaseRepository from "./base/BaseRepository";
-import db from "@/database/database";
+import { db } from "@/database/database";
 
 export class GraphRepository extends BaseRepository<Graph> {
   async initTable(): Promise<void> {
-    await db.runAsync(`
+    await db.instance.runAsync(`
       CREATE TABLE IF NOT EXISTS ${this.table} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         graph_typeid INTEGER NOT NULL,

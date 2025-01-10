@@ -25,6 +25,7 @@ export const graphRepository = new GraphRepository('graphs');
 export const seedStatusRepository = new SeedStatusRepository('seedStatus');
 
 export const repositories = [
+    seedStatusRepository,
     muscleGroupRepository,
     exerciseRepository,
     workoutRepository,
@@ -35,7 +36,6 @@ export const repositories = [
     attachmentRepository,
     equipmentRepository,
     exerciseEquipmentRepository,
-    graphRepository,
-    seedStatusRepository
+    graphRepository
 ]
 
