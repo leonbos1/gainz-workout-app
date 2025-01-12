@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   addExerciseContainer: {
     margin: 10,
     padding: 10,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: Colors.backgroundSecondary,
     borderColor: Colors.white,
     borderRadius: 25,
   },

@@ -31,7 +31,7 @@ export function RmCalculator() {
           keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
-          placeholderTextColor={Colors.light.text}
+          placeholderTextColor={Colors.text}
         />
       </View>
 
@@ -43,7 +43,7 @@ export function RmCalculator() {
           keyboardType="numeric"
           value={reps}
           onChangeText={setReps}
-          placeholderTextColor={Colors.light.text}
+          placeholderTextColor={Colors.text}
         />
       </View>
 
@@ -61,7 +61,7 @@ export function RmCalculator() {
 const styles = StyleSheet.create({
   container: {
       padding: 40,
-      backgroundColor: Colors.light.background,
+      backgroundColor: Colors.background,
       borderRadius: 10,
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 5 },
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
       fontSize: 28,
       fontWeight: 'bold',
       marginBottom: 30,
-      color: Colors.light.text,
+      color: Colors.text,
       textAlign: 'center',
   },
   inputContainer: {
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   label: {
       fontSize: 16,
       marginBottom: 10,
-      color: Colors.light.text,
+      color: Colors.text,
   },
   input: {
       height: 50,
@@ -90,11 +90,11 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       paddingHorizontal: 15,
       borderRadius: 10,
-      color: Colors.light.text,
-      backgroundColor: Colors.light.background,
+      color: Colors.text,
+      backgroundColor: Colors.background,
   },
   button: {
-      backgroundColor: Colors.light.textButton,
+      backgroundColor: Colors.textButton,
       paddingVertical: 15,
       borderRadius: 10,
       alignItems: 'center',
@@ -108,12 +108,12 @@ const styles = StyleSheet.create({
   result: {
       fontSize: 20,
       marginTop: 30,
-      color: Colors.light.text,
+      color: Colors.text,
       textAlign: 'center',
   },
   resultValue: {
       fontWeight: 'bold',
       fontSize: 24,
-      color: Colors.light.text,
+      color: Colors.text,
   },
 });

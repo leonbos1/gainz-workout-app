@@ -19,6 +19,7 @@ export default function ExerciseItem({
     onDelete,
 }: ExerciseItemProps) {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const handleDelete = () => {
         setIsModalVisible(false);
@@ -29,17 +30,33 @@ export default function ExerciseItem({
         <View style={styles.exerciseItem}>
             <Text style={styles.exerciseName}>{exercise.name}</Text>
             <Text style={styles.exerciseDescription}>{exercise.description}</Text>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={() => onDetails(exercise)}>
-                    <Ionicons name="newspaper" size={24} color={Colors.white} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => onEdit(exercise)}>
-                    <Ionicons name="pencil" size={24} color={Colors.white} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setIsModalVisible(true)}>
-                    <Ionicons name="trash" size={24} color={Colors.white} />
-                </TouchableOpacity>
-            </View>
+
+            {/* Expandable Button */}
+            <TouchableOpacity
+                style={styles.expandButton}
+                onPress={() => setIsExpanded(!isExpanded)}
+            >
+                <Ionicons
+                    name={isExpanded ? "chevron-up" : "chevron-down"}
+                    size={24}
+                    color={Colors.white}
+                />
+            </TouchableOpacity>
+
+            {/* Expanded Button Section */}
+            {isExpanded && (
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity onPress={() => onDetails(exercise)} style={styles.actionButton}>
+                        <Ionicons name="newspaper" size={24} color={Colors.white} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => onEdit(exercise)} style={styles.actionButton}>
+                        <Ionicons name="pencil" size={24} color={Colors.white} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setIsModalVisible(true)} style={styles.actionButton}>
+                        <Ionicons name="trash" size={24} color={Colors.white} />
+                    </TouchableOpacity>
+                </View>
+            )}
 
             <Modal
                 transparent={true}
@@ -51,8 +68,8 @@ export default function ExerciseItem({
                     <View style={styles.modalContent}>
                         <Text style={styles.modalText}>Are you sure you want to delete this exercise?</Text>
                         <View style={styles.modalButtonContainer}>
-                            <IconButton iconName='ban' text='Cancel' onPress={() => setIsModalVisible(false)} />
-                            <IconButton iconName='trash' text='Delete' onPress={handleDelete} />
+                            <IconButton iconName="ban" text="Cancel" onPress={() => setIsModalVisible(false)} />
+                            <IconButton iconName="trash" text="Delete" onPress={handleDelete} />
                         </View>
                     </View>
                 </View>
@@ -63,55 +80,64 @@ export default function ExerciseItem({
 
 const styles = StyleSheet.create({
     exerciseItem: {
-        padding: 10,
-        marginVertical: 5,
-        backgroundColor: Colors.light.card,
-        borderRadius: 10,
-        color: Colors.light.text,
+        padding: 15,
+        marginVertical: 8,
+        backgroundColor: Colors.primary,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+        elevation: 3,
     },
     exerciseName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: Colors.light.text,
+        fontSize: 20,
+        fontWeight: '600',
+        color: Colors.text,
     },
     exerciseDescription: {
-        fontSize: 16,
+        fontSize: 14,
+        color: Colors.text,
+        marginVertical: 5,
+    },
+    expandButton: {
+        alignItems: 'center',
+        paddingVertical: 5,
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-around',
+        marginTop: 10,
+    },
+    actionButton: {
+        padding: 8,
+        backgroundColor: Colors.secundary,
+        borderRadius: 8,
+        marginHorizontal: 5,
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
     },
     modalContent: {
-        width: 300,
-        padding: 20,
-        backgroundColor: Colors.light.card,
-        borderRadius: 10,
+        width: 320,
+        padding: 25,
+        backgroundColor: Colors.card,
+        borderRadius: 12,
         alignItems: 'center',
     },
     modalText: {
         fontSize: 18,
-        marginBottom: 20,
-        color: Colors.light.text,
+        fontWeight: '500',
+        color: Colors.text,
+        textAlign: 'center',
+        marginBottom: 15,
     },
     modalButtonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         width: '100%',
-    },
-    modalButton: {
-        padding: 10,
-        width: '45%',
-        backgroundColor: Colors.light.trinairy,
-        borderRadius: 5,
-    },
-    modalButtonText: {
-        color: Colors.light.text,
-        textAlign: 'center',
     },
 });

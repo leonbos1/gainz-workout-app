@@ -92,22 +92,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: Colors.light.text,
+    color: Colors.text,
   },
   description: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
-    color: Colors.light.text,
+    color: Colors.text,
   },
   button: {
-    backgroundColor: Colors.light.trinairy,
+    backgroundColor: Colors.trinairy,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -123,6 +123,6 @@ const styles = StyleSheet.create({
   progress: {
     marginTop: 10,
     fontSize: 16,
-    color: Colors.light.text,
+    color: Colors.text,
   },
 });

@@ -17,7 +17,7 @@ export default function DangerTextButton({ title, onPress }: DangerTextButtonPro
 
 const styles = StyleSheet.create({
     text: {
-        color: Colors.light.dangerButton,
+        color: Colors.dangerButton,
         fontSize: 16,
         margin: 10,
     },

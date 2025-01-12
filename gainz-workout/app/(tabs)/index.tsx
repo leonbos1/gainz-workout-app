@@ -105,7 +105,7 @@ export default function ProfileScreen() {
             <Ionicons
               name="settings-outline"
               size={25}
-              color={Colors.light.text}
+              color={Colors.text}
               style={{ marginLeft: 15 }}
             />
           </Link>
@@ -130,7 +130,7 @@ export default function ProfileScreen() {
           <Ionicons
             name={isChartSelectorVisible ? "chevron-up-outline" : "chevron-down-outline"}
             size={25}
-            color={Colors.light.text}
+            color={Colors.text}
             style={{ marginLeft: 15 }}
           />
         </TouchableOpacity>
@@ -156,23 +156,23 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
   },
   screenTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: Colors.text,
   },
   contentContainer: {
     paddingTop: 20,
     paddingHorizontal: 5,
     paddingBottom: 40,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
     width: screenWidth,
   },
   animatedContainer: {
     width: "100%",
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
     padding: 20,
     borderRadius: 10,
     overflow: "hidden",

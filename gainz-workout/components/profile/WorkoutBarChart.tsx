@@ -21,19 +21,19 @@ export const WorkoutBarChart: React.FC<{ workoutWeekData: WorkoutWeekData }> = (
         showBarTops={true}
         fromZero={true}
         chartConfig={{
-          backgroundGradientFrom: Colors.light.background,
-          backgroundGradientTo: Colors.light.background,
-          color: (opacity = 1) => Colors.light.secundary,
-          labelColor: (opacity = 1) => Colors.light.text,
+          backgroundGradientFrom: Colors.background,
+          backgroundGradientTo: Colors.background,
+          color: (opacity = 1) => Colors.secundary,
+          labelColor: (opacity = 1) => Colors.text,
           barPercentage: 0.6,
-          fillShadowGradient: Colors.light.secundary,
+          fillShadowGradient: Colors.secundary,
           fillShadowGradientOpacity: 1,
           decimalPlaces: 0,
           style: {
             borderRadius: 16,
           },
           propsForBackgroundLines: {
-            stroke: Colors.light.backgroundSecondary,
+            stroke: Colors.backgroundSecondary,
             strokeDasharray: '',
           },
           propsForLabels: {
@@ -50,12 +50,12 @@ const styles = StyleSheet.create({
   chartContainer: {
     alignItems: 'center',
     marginVertical: 16,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
   },
   chart: {
     borderRadius: 16,
-    backgroundColor: Colors.light.backgroundSecondary,
-    shadowColor: Colors.light.backgroundSecondary,
+    backgroundColor: Colors.backgroundSecondary,
+    shadowColor: Colors.backgroundSecondary,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   chartTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.light.text,
+    color: Colors.text,
     padding: 10,
   },
 });

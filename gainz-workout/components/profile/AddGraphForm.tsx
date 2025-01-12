@@ -86,10 +86,10 @@ const AddGraphForm: React.FC<FormProps> = ({ toggleFormVisibility }) => {
             </Picker>
             <View style={styles.btnContainer}>
                 <View style={{ margin: 5, width: '50%' }}>
-                    <Button title="Add Graph" onPress={handleAddGraph} color={Colors.light.secundary} />
+                    <Button title="Add Graph" onPress={handleAddGraph} color={Colors.secundary} />
                 </View>
                 <View style={{ margin: 5, width: '50%' }}>
-                    <Button title="Close" onPress={() => toggleFormVisibility('AddGraphForm')} color={Colors.light.secundary} />
+                    <Button title="Close" onPress={() => toggleFormVisibility('AddGraphForm')} color={Colors.secundary} />
                 </View>
             </View>
         </View>
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     container: {
-        backgroundColor: Colors.light.card,
+        backgroundColor: Colors.card,
         padding: 20,
         borderRadius: 5,
         margin: 20,
@@ -111,13 +111,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: Colors.light.text,
+        color: Colors.text,
         textAlign: 'center',
         marginBottom: 20,
     },
     picker: {
         color: 'white',
-        backgroundColor: Colors.light.input,
+        backgroundColor: Colors.input,
         borderRadius: 5,
         marginBottom: 20,
         paddingHorizontal: 10,

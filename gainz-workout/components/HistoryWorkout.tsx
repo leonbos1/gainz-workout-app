@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: Colors.light.text,
+        color: Colors.text,
         marginBottom: 5,
     },
     headerRow: {
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 16,
         fontWeight: '600',
-        color: Colors.light.text,
+        color: Colors.text,
         marginRight: 10,
     },
     exerciseRow: {
@@ -76,11 +76,11 @@ const styles = StyleSheet.create({
     },
     exerciseText: {
         fontSize: 16,
-        color: Colors.light.text,
+        color: Colors.text,
         marginRight: 10,
     },
     bestSetText: {
         fontSize: 16,
-        color: Colors.light.text,
+        color: Colors.text,
     },
 });

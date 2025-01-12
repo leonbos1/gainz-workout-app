@@ -18,7 +18,7 @@ export default function TextButton({ title, onPress, disabled }: TextButtonProps
 
 const styles = StyleSheet.create({
     text: {
-        color: Colors.light.textButton,
+        color: Colors.textButton,
         fontSize: 16,
         margin: 10,
     },

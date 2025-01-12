@@ -9,7 +9,7 @@ interface EndWorkoutButtonProps {
 export const EndWorkoutButton: React.FC<EndWorkoutButtonProps> = ({ onEndWorkout }) => {
   return (
     <View>
-      <Button title="End Workout" onPress={onEndWorkout} color={Colors.light.secundary} />
+      <Button title="End Workout" onPress={onEndWorkout} color={Colors.secundary} />
     </View>
   );
 };

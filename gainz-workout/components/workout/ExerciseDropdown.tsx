@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   dropdown: {
-    backgroundColor: Colors.light.card,
+    backgroundColor: Colors.card,
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: Colors.light.card,
+    borderColor: Colors.card,
   },
   dropdownText: {
-    color: Colors.light.text,
+    color: Colors.text,
   },
   modalContainer: {
     flex: 1,
@@ -80,38 +80,38 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '80%',
     height: '80%',
-    backgroundColor: Colors.light.card,
+    backgroundColor: Colors.card,
     padding: 20,
     borderRadius: 10,
   },
   item: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.card,
+    borderBottomColor: Colors.card,
   },
   itemText: {
-    color: Colors.light.text,
+    color: Colors.text,
   },
   addButton: {
     marginTop: 10,
     padding: 10,
-    backgroundColor: Colors.light.primary,
-    color: Colors.light.text,
+    backgroundColor: Colors.primary,
+    color: Colors.text,
     borderRadius: 5,
     alignItems: 'center',
   },
   addButtonText: {
-    color: Colors.light.text,
+    color: Colors.text,
     fontWeight: 'bold',
   },
   closeButton: {
     marginTop: 10,
     padding: 10,
-    backgroundColor: Colors.light.card,
+    backgroundColor: Colors.card,
     borderRadius: 5,
     alignItems: 'center',
   },
   closeButtonText: {
-    color: Colors.light.text,
+    color: Colors.text,
   },
 });

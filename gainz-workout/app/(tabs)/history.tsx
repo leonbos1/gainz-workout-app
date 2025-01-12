@@ -149,7 +149,7 @@ export default function HistoryScreen() {
             <Text style={styles.screenTitle}>History</Text>
           </View>
         }
-        ListFooterComponent={loading ? <ActivityIndicator size="large" color={Colors.light.text} /> : null}
+        ListFooterComponent={loading ? <ActivityIndicator size="large" color={Colors.text} /> : null}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
         initialNumToRender={10}
@@ -165,24 +165,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
   },
   screenTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.light.text,
-    backgroundColor: Colors.light.background,
+    color: Colors.text,
+    backgroundColor: Colors.background,
   },
   contentContainer: {
     paddingTop: 20,
     paddingHorizontal: 5,
     paddingBottom: 40,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
     width: screenWidth,
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
   },
   errorContainer: {
     padding: 20,

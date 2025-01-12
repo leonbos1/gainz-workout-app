@@ -48,7 +48,7 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
               <TextInput
                 style={styles.searchTextInput}
                 placeholder="Search exercise"
-                placeholderTextColor={Colors.light.text}
+                placeholderTextColor={Colors.text}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
@@ -80,14 +80,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   dropdown: {
-    backgroundColor: Colors.light.card,
+    backgroundColor: Colors.card,
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: Colors.light.card,
+    borderColor: Colors.card,
   },
   dropdownText: {
-    color: Colors.light.text,
+    color: Colors.text,
   },
   modalContainer: {
     flex: 1,
@@ -98,37 +98,37 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '80%',
     height: '80%',
-    backgroundColor: Colors.light.card,
+    backgroundColor: Colors.card,
     padding: 20,
     borderRadius: 10,
   },
   item: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.card,
+    borderBottomColor: Colors.card,
   },
   itemText: {
-    color: Colors.light.text,
+    color: Colors.text,
   },
   closeButton: {
     marginTop: 10,
     padding: 10,
-    backgroundColor: Colors.light.card,
+    backgroundColor: Colors.card,
     borderRadius: 5,
     alignItems: 'center',
   },
   closeButtonText: {
-    color: Colors.light.text,
+    color: Colors.text,
   },
   searchContainer: {
     marginBottom: 10,
     borderWidth: 0.5,
     borderRadius: 8,
-    borderColor: Colors.light.text,
-    color: Colors.light.text,
+    borderColor: Colors.text,
+    color: Colors.text,
   },
   searchTextInput: {
     padding: 10,
-    color: Colors.light.text,
+    color: Colors.text,
   },
 });

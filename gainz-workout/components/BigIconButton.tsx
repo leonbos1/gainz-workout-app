@@ -28,9 +28,9 @@ const styles = StyleSheet.create({
     buttonContainer: {
         width: '90%',
         padding: 10,
-        backgroundColor: Colors.light.trinairy,
+        backgroundColor: Colors.secundary,
         borderRadius: 5,
-        borderColor: Colors.light.text,
+        borderColor: Colors.text,
         alignItems: 'center',
     },
     buttonContent: {
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     buttonText: {
-        color: Colors.light.text,
+        color: Colors.text,
         marginLeft: 10,
         fontSize: 16,
     },

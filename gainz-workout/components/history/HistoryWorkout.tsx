@@ -29,7 +29,6 @@ export function HistoryWorkout({ viewmodel, onDelete }: HistoryWorkoutProps): JS
 
   const deleteWorkout = async () => {
     console.log('Delete workout:', viewmodel);
-    // show confirmation dialog
     Alert.alert("Are you sure you want to delete this workout?", "This action cannot be undone.", [
       {
         text: "Cancel",
@@ -51,37 +50,54 @@ export function HistoryWorkout({ viewmodel, onDelete }: HistoryWorkoutProps): JS
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={deleteWorkout} style={ styles.deleteButton }>
-        <FontAwesome name="trash" size={24} color={Colors.light.text} />
+      <TouchableOpacity onPress={deleteWorkout} style={styles.deleteButton}>
+        <FontAwesome name="trash" size={24} color={Colors.text} />
       </TouchableOpacity>
       <View style={styles.header}>
         <Text style={styles.title}>{viewmodel.title}</Text>
         <Text style={styles.date}>
-          <FontAwesome name="calendar" size={16} color={Colors.light.text} /> {viewmodel.startTime.toLocaleDateString()}
+          <FontAwesome name="calendar" size={16} color={Colors.text} /> {viewmodel.startTime.toLocaleDateString()}
         </Text>
         <Text style={styles.duration}>
-          <FontAwesome name="clock-o" size={16} color={Colors.light.text} /> {`Duration: ${viewmodel.duration} seconds`}
+          <FontAwesome name="clock-o" size={16} color={Colors.text} /> {`Duration: ${viewmodel.duration} seconds`}
         </Text>
       </View>
       {heaviestSets.map((set, index) => (
         <View key={index} style={styles.setContainer}>
-          <Text style={styles.setText}>
-          <MaterialCommunityIcons name="dumbbell" size={16} color={Colors.light.text} /> {`Exercise: ${set.exerciseName}`}
-          </Text>
-          <Text style={styles.setText}>
-            <FontAwesome name="repeat" size={16} color={Colors.light.text} /> {`Reps: ${set.amount}`}
-          </Text>
-          <Text style={styles.setText}>
-            <FontAwesome name="balance-scale" size={16} color={Colors.light.text} /> {`Weight: ${set.weight} kg`}
-          </Text>
-          {set.rpe !== null && (
+          <View style={styles.textRow}>
+            <MaterialCommunityIcons style={styles.icon} name="dumbbell" size={16} color={Colors.text} />
             <Text style={styles.setText}>
-              <FontAwesome name="heartbeat" size={16} color={Colors.light.text} /> {`RPE: ${set.rpe}`}
+              {`${set.exerciseName}`}
             </Text>
-          )}
+          </View>
+          <View style={styles.textRow}>
+            <FontAwesome style={styles.icon} name="repeat" size={16} color={Colors.text} />
+
+            <Text style={styles.setText}>
+              {`${set.amount} Reps`}
+            </Text>
+          </View>
+          <View style={styles.textRow}>
+            <FontAwesome style={styles.icon} name="balance-scale" size={16} color={Colors.text} />
+            <Text style={styles.setText}>
+              {`${set.weight} kg`}
+            </Text>
+          </View>
+          {
+            set.rpe !== null && (
+              <View style={styles.textRow}>
+                <FontAwesome style={styles.icon} name="heartbeat" size={16} color={Colors.text} />
+                <Text style={styles.setText}>
+                  {`${set.rpe} RPE`}
+                </Text>
+              </View>
+            )
+          }
+
         </View>
-      ))}
-    </View>
+      ))
+      }
+    </View >
   );
 }
 
@@ -92,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 15,
     paddingHorizontal: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
     marginBottom: 20,
     borderRadius: 10,
     shadowColor: '#000',
@@ -101,42 +117,29 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     borderWidth: 1,
-    borderColor: Colors.light.backgroundSecondary,
+    borderColor: Colors.background,
   },
   header: {
     marginBottom: 15,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.backgroundSecondary,
+    borderBottomColor: Colors.background,
     paddingBottom: 10,
     width: '100%',
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: Colors.light.text,
+    color: Colors.text,
     marginBottom: 5,
   },
   date: {
     fontSize: 16,
-    color: Colors.light.text,
+    color: Colors.text,
     marginBottom: 5,
   },
   duration: {
     fontSize: 16,
-    color: Colors.light.text,
-  },
-  setContainer: {
-    marginVertical: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: Colors.light.card,
-    borderRadius: 8,
-    width: '100%',
-  },
-  setText: {
-    fontSize: 16,
-    color: Colors.light.text,
-    marginBottom: 5,
+    color: Colors.text,
   },
   deleteButton: {
     position: 'absolute',
@@ -145,5 +148,27 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     zIndex: 1,
+  },
+  setContainer: {
+    marginVertical: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: Colors.white,
+  },
+  setText: {
+    fontSize: 16,
+    color: Colors.text,
+    marginBottom: 5,
+  },
+  icon: {
+    height: 25,
+    width: 45
+  },
+  textRow: {
+    flex: 1,
+    flexDirection: 'row',
   },
 });

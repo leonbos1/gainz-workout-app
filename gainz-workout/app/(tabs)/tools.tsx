@@ -31,14 +31,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   text: {
-    color: Colors.light.text,
+    color: Colors.text,
     fontSize: 20,
   },
   contentContainer: {
     paddingTop: 20,
     paddingHorizontal: 5,
     paddingBottom: 40,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
     width: screenWidth,
   },
   titleContainer: {
@@ -46,12 +46,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
   },
   screenTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.light.text,
-    backgroundColor: Colors.light.background,
+    color: Colors.text,
+    backgroundColor: Colors.background,
   },
 });

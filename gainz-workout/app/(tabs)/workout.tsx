@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 5,
     paddingBottom: 40,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
     width: screenWidth,
     height: '100%',
   },
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.light.text,
+    color: Colors.text,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   },
   popOverContainer: {
     padding: 20,
-    backgroundColor: Colors.light.card,
+    backgroundColor: Colors.card,
     borderRadius: 5,
     margin: 20,
   },

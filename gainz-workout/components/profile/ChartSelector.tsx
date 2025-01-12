@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 26,
         fontWeight: '700',
-        color: Colors.light.text,
+        color: Colors.text,
         marginBottom: 20,
     },
     scrollView: {
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         padding: 15,
         marginVertical: 5,
         width: '100%',
-        backgroundColor: Colors.light.card,
+        backgroundColor: Colors.card,
         borderRadius: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     },
     graphTitle: {
         fontSize: 18,
-        color: Colors.light.text,
+        color: Colors.text,
         flex: 1,
         marginLeft: 15,
     },

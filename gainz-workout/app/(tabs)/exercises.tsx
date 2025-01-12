@@ -118,13 +118,13 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.light.text,
+    color: Colors.text,
   },
   contentContainer: {
     paddingTop: 20,
     paddingHorizontal: 5,
     paddingBottom: 40,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.background,
     width: screenWidth,
     height: '100%',
   },
@@ -134,6 +134,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderColor: '#ccc',
-    color: Colors.light.text,
+    color: Colors.text,
   },
 });
