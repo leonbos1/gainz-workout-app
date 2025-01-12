@@ -1,16 +1,16 @@
 import db from '@/database/database';
-import BaseEntity from './base/BaseEntity';
 
 type MuscleGroupRow = {
   id: number;
   name: string;
 };
 
-export class MuscleGroup extends BaseEntity {
+export class MuscleGroup {
+  id: number;
   name: string;
 
   constructor(id: number, name: string) {
-    super(id, new Date(), new Date());
+    this.id = id;
     this.name = name
   }
 
