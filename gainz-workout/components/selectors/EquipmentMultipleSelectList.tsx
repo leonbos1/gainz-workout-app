@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { MultipleSelectList } from 'react-native-dropdown-select-list';
-import { Equipment } from '@/datamodels/Equipment';
+import { Equipment } from '@/models/Equipment';
 import { Ionicons } from '@expo/vector-icons';
 
 interface EquipmentMultipleSelectListProps {

@@ -1,5 +1,4 @@
 import db from '@/database/database';
-import BaseEntity from '../models/base/BaseEntity';
 
 export type GraphDurationRow = {
     id: number;
@@ -7,12 +6,13 @@ export type GraphDurationRow = {
     value: number;
 };
 
-export class GraphDuration extends BaseEntity {
+export class GraphDuration {
+    id: number;
     name: string;
     value: number;
 
     constructor(id: number, name: string, value: number) {
-        super(id, new Date(), new Date());
+        this.id = id;
         this.name = name;
         this.value = value;
     }

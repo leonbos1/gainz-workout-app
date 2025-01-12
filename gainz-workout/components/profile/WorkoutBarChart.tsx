@@ -2,7 +2,7 @@ import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { Colors } from '@/constants/Colors';
-import { WorkoutWeekData } from '@/datamodels/Workout';
+import { WorkoutWeekData } from '@/models/Workout';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

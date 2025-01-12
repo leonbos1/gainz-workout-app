@@ -1,4 +1,4 @@
-import { Attachment } from "@/datamodels/Attachment";
+import { Attachment } from "@/models/Attachment";
 import BaseRepository from "./base/BaseRepository";
 import db from "@/database/database";
 

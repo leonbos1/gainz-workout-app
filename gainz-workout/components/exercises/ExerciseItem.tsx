@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Button } from 'react-native';
-import { Exercise } from '@/datamodels/Exercise';
+import { Exercise } from '@/models/Exercise';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../buttons/IconButton';

@@ -1,7 +1,6 @@
-import { ChartDataset } from '../models/ChartDataset';
+import { ChartDataset } from './ChartDataset';
 import db from '@/database/database';
 import { round } from 'lodash';
-import BaseEntity from '../models/base/BaseEntity';
 
 export type SetRow = {
   id: number;
@@ -12,7 +11,8 @@ export type SetRow = {
   batchid: number;
 };
 
-export class Set extends BaseEntity {
+export class Set {
+  id: number;
   exerciseid: number;
   amount: number;
   weight: number;
@@ -21,7 +21,7 @@ export class Set extends BaseEntity {
   exerciseName: string | undefined;
 
   constructor(id: number, exerciseid: number, amount: number, weight: number, rpe: number, batchid: number) {
-    super(id, new Date(), new Date());
+    this.id = id;
     this.exerciseid = exerciseid;
     this.amount = amount;
     this.weight = weight;

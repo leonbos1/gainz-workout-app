@@ -1,5 +1,5 @@
 // HistoryWorkoutViewmodel.ts
-import { Set } from '@/datamodels/Set';
+import { Set } from '@/models/Set';
 
 export interface ExerciseBatchViewmodel {
   batchId: number;

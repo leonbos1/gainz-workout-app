@@ -1,16 +1,16 @@
 import db from '@/database/database';
-import BaseEntity from '../models/base/BaseEntity';
 
 export type GraphTypeRow = {
     id: number;
     name: string;
 };
 
-export class GraphType extends BaseEntity {
+export class GraphType {
+    id: number;
     name: string;
 
     constructor(id: number, name: string) {
-        super(id, new Date(), new Date());
+        this.id = id;
         this.name = name;
     }
 

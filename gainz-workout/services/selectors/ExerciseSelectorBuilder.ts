@@ -1,6 +1,6 @@
-import { Exercise } from '@/datamodels/Exercise';
-import { Equipment } from '@/datamodels/Equipment';
-import { Attachment } from '@/datamodels/Attachment';
+import { Exercise } from '@/models/Exercise';
+import { Equipment } from '@/models/Equipment';
+import { Attachment } from '@/models/Attachment';
 
 export class ExerciseSelectorBuilder {
     private equipmentId?: number;

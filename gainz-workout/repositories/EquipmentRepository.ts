@@ -1,4 +1,4 @@
-import { Equipment } from "@/datamodels/Equipment";
+import { Equipment } from "@/models/Equipment";
 import BaseRepository from "./base/BaseRepository";
 import db from "@/database/database";
 

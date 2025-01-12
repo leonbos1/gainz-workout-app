@@ -1,6 +1,6 @@
 import BaseRepository from "./base/BaseRepository";
 import db from "@/database/database";
-import { MuscleGroup } from "@/datamodels/MuscleGroup";
+import { MuscleGroup } from "@/models/MuscleGroup";
 
 export class MuscleGroupRepository extends BaseRepository<MuscleGroup> {
   async initTable(): Promise<void> {

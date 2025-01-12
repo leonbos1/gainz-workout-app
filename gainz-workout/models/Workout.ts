@@ -1,5 +1,5 @@
 import db from '@/database/database';
-import BaseEntity from '../models/base/BaseEntity';
+import * as SQLite from 'expo-sqlite';
 
 export type WorkoutRow = {
   id: number;
@@ -19,7 +19,8 @@ export class WorkoutWeekData {
   datasets: { data: number[]; }[] = [];
 }
 
-export class Workout extends BaseEntity {
+export class Workout {
+  id: number;
   title: string;
   starttime: string;
   endtime: string;
@@ -27,7 +28,7 @@ export class Workout extends BaseEntity {
   endtimeDate: Date;
 
   constructor(id: number, title: string, starttime: string, endtime: string) {
-    super(id, new Date(), new Date());
+    this.id = id;
     this.title = title;
     this.starttime = starttime;
     this.endtime = endtime;

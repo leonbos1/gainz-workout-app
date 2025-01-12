@@ -1,17 +1,16 @@
-import BaseEntity from "../models/base/BaseEntity";
-
 export type ExerciseEquipmentRow = {
     id: number;
     exerciseid: number;
     equipmentid: number;
 };
 
-export class ExerciseEquipment extends BaseEntity {
+export class ExerciseEquipment {
+    id: number;
     exerciseid: number;
     equipmentid: number;
 
     constructor(id: number, exerciseid: number, equipmentid: number) {
-        super(id, new Date(), new Date());
+        this.id = id;
         this.exerciseid = exerciseid;
         this.equipmentid = equipmentid;
     }
