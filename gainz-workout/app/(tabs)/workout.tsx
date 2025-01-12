@@ -6,7 +6,7 @@ import { Set } from '@/models/Set';
 import { StartWorkoutButton } from '@/components/workout/StartWorkoutButton';
 import { BatchList } from '@/components/workout/BatchList';
 import { Colors } from '@/constants/Colors';
-import IconButton from '@/components/buttons/IconButton';
+import IconButton from '@/components/IconButton';
 import { Equipment } from '@/models/Equipment';
 import { Attachment } from '@/models/Attachment';
 import { getExerciseNameFromExerciseString } from '@/helpers/csvHelper';
@@ -14,9 +14,6 @@ import { ExerciseSelectList } from '@/components/selectors/ExerciseSelectList';
 import { EquipmentDropdown } from '@/components/workout/EquipmentDropdown';
 import { AttachmentDropdown } from '@/components/workout/AttachmentDropdown';
 import { Batch } from '@/models/Batch';
-import { EquipmentSelectList } from '@/components/selectors/EquipmentSelectList';
-import { AttachmentSelectList } from '@/components/selectors/AttachmentSelectList';
-import { attachmentRepository } from '@/import';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -60,7 +57,7 @@ export default function WorkoutScreen() {
 
   const fetchAttachments = async () => {
     try {
-      const fetchedAttachments = await attachmentRepository.getAll();
+      const fetchedAttachments = await Attachment.findAll();
       setAttachments(fetchedAttachments);
     } catch (error) {
       Logger.log_error('Error fetching attachments:', error as string);
@@ -204,7 +201,7 @@ export default function WorkoutScreen() {
             exercises={exercises}
           />
           {selectedExercise && (
-            <EquipmentSelectList
+            <EquipmentDropdown
               selectedEquipment={selectedEquipment}
               setSelectedEquipment={setSelectedEquipment}
               equipment={filteredEquipment}
@@ -212,7 +209,7 @@ export default function WorkoutScreen() {
           )}
           {selectedEquipment &&
             equipment.find(e => e.id === parseInt(selectedEquipment))?.name === 'Cable' && (
-              <AttachmentSelectList
+              <AttachmentDropdown
                 selectedAttachment={selectedAttachment}
                 setSelectedAttachment={setSelectedAttachment}
                 attachments={attachments}

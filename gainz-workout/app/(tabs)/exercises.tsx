@@ -4,7 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { Exercise } from '@/models/Exercise';
 import { MuscleGroup } from '@/models/MuscleGroup';
-import BigIconButton from '@/components/buttons/BigIconButton';
+import BigIconButton from '@/components/BigIconButton';
 import AddExerciseMenu from '@/components/exercises/AddExerciseMenu';
 import { Equipment } from '@/models/Equipment';
 import ExerciseItem from '@/components/exercises/ExerciseItem';

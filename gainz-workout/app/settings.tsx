@@ -4,7 +4,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { Colors } from '@/constants/Colors';
 import { processCSVRowsInBatch, CSVRow } from '@/helpers/csvHelper';
-import db, { createTables, dropTables, seedDatabase } from '@/database/database';
+import { createTables, Database, dropTables, seedDatabase } from '@/database/database';
 
 export default function SettingsScreen() {
   const [loading, setLoading] = useState(false);
@@ -13,6 +13,8 @@ export default function SettingsScreen() {
 
   const importCSV = async () => {
     setLoading(true);
+    const db = await Database.getDbConnection();
+
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: 'text/comma-separated-values',

@@ -1,7 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { Equipment } from './Equipment';
 import db from '@/database/database';
-import BaseEntity from './base/BaseEntity';
 
 export type ExerciseRow = {
   id: number;
@@ -10,7 +9,8 @@ export type ExerciseRow = {
   musclegroupid: number;
 };
 
-export class Exercise extends BaseEntity {
+export class Exercise {
+  id: number;
   name: string;
   description: string;
   musclegroupid: number;
@@ -18,7 +18,7 @@ export class Exercise extends BaseEntity {
   value: string;
 
   constructor(id: number, name: string, description: string, musclegroupid: number) {
-    super(id, new Date(), new Date());
+    this.id = id;
     this.name = name;
     this.description = description;
     this.musclegroupid = musclegroupid;

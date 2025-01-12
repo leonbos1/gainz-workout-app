@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { SearchInput } from '../SearchSelectList';
 
 interface ExerciseSelectListProps {
   selectedExercise: string | null;
@@ -44,11 +43,16 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <SearchInput
-              value={searchQuery}
-              onChangeText={(text) => setSearchQuery(text)}
-              placeholder="Search for exercises..."
-            />
+            {/* Search input */}
+            <View style={styles.searchContainer}>
+              <TextInput
+                style={styles.searchTextInput}
+                placeholder="Search exercise"
+                placeholderTextColor={Colors.light.text}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+            </View>
 
             <FlatList
               data={filteredExercises}
