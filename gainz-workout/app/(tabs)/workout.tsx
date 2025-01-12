@@ -10,7 +10,7 @@ import IconButton from '@/components/IconButton';
 import { Equipment } from '@/models/Equipment';
 import { Attachment } from '@/models/Attachment';
 import { getExerciseNameFromExerciseString } from '@/helpers/csvHelper';
-import { ExerciseDropdown } from '@/components/workout/ExerciseDropdown';
+import { ExerciseSelectList } from '@/components/selectors/ExerciseSelectList';
 import { EquipmentDropdown } from '@/components/workout/EquipmentDropdown';
 import { AttachmentDropdown } from '@/components/workout/AttachmentDropdown';
 import { Batch } from '@/models/Batch';
@@ -195,18 +195,16 @@ export default function WorkoutScreen() {
         onRequestClose={() => toggleFormVisibility(null)}
       >
         <View style={styles.popOverContainer}>
-          <ExerciseDropdown
+          <ExerciseSelectList
             selectedExercise={selectedExercise}
             setSelectedExercise={handleExerciseWrapper}
             exercises={exercises}
-            addExercise={() => { }}
           />
           {selectedExercise && (
             <EquipmentDropdown
               selectedEquipment={selectedEquipment}
               setSelectedEquipment={setSelectedEquipment}
               equipment={filteredEquipment}
-              addEquipment={() => { }}
             />
           )}
           {selectedEquipment &&
@@ -215,7 +213,6 @@ export default function WorkoutScreen() {
                 selectedAttachment={selectedAttachment}
                 setSelectedAttachment={setSelectedAttachment}
                 attachments={attachments}
-                addAttachment={() => { }}
               />
             )}
           <View style={styles.buttonContainer}>

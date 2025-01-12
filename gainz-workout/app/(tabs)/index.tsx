@@ -101,7 +101,7 @@ export default function ProfileScreen() {
       <View style={styles.titleContainer}>
         <Text style={styles.screenTitle}>Profile</Text>
         <TouchableOpacity>
-          <Link href="./Settings">
+          <Link href="../settings">
             <Ionicons
               name="settings-outline"
               size={25}

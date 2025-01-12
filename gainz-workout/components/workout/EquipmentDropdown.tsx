@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import { Modal, StyleSheet, TouchableOpacity, View, Text, FlatList } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Attachment } from '@/models/Attachment';
+import { Equipment } from '@/models/Equipment';
 
 interface EquipmentDropdownProps {
     selectedEquipment: string | null;
     setSelectedEquipment: React.Dispatch<React.SetStateAction<string | null>>;
-    equipment: Attachment[];
-    addEquipment: () => void;
+    equipment: Equipment[];
 }
 
 export const EquipmentDropdown: React.FC<EquipmentDropdownProps> = ({
     selectedEquipment,
     setSelectedEquipment,
     equipment,
-    addEquipment,
 }) => {
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -116,4 +115,3 @@ const styles = StyleSheet.create({
         color: Colors.light.text,
     },
 });
-
