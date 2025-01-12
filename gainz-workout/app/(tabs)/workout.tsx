@@ -16,7 +16,7 @@ import { AttachmentDropdown } from '@/components/workout/AttachmentDropdown';
 import { Batch } from '@/datamodels/Batch';
 import { EquipmentSelectList } from '@/components/selectors/EquipmentSelectList';
 import { AttachmentSelectList } from '@/components/selectors/AttachmentSelectList';
-import { attachmentRepository, equipmentRepository } from '@/import';
+import { attachmentRepository } from '@/import';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -51,7 +51,7 @@ export default function WorkoutScreen() {
 
   const fetchEquipment = async () => {
     try {
-      const fetchedEquipment = await equipmentRepository.getAll();
+      const fetchedEquipment = await Equipment.findAll();
       setEquipment(fetchedEquipment);
     } catch (error) {
       Logger.log_error('Error fetching equipment:', error as string);

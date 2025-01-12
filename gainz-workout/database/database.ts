@@ -64,17 +64,6 @@ export const seedDatabase = async () => {
   `);
 }
 
-let _db: SQLite.SQLiteDatabase | null = null;
+const db = SQLite.openDatabaseSync('gainz.db');
 
-(async () => {
-    _db = await SQLite.openDatabaseAsync('gainz.db');
-})();
-
-export const db = {
-    get instance(): SQLite.SQLiteDatabase {
-        if (!_db) {
-            throw new Error("Database has not been initialized yet");
-        }
-        return _db;
-    }
-};
+export default db;
