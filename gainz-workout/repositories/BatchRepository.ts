@@ -5,7 +5,7 @@ import db from "@/database/database";
 export class BatchRepository extends BaseRepository<Batch> {
     async initTable(): Promise<void> {
         await db.runAsync(`
-      CREATE TABLE IF NOT EXISTS ${this.table} (
+      CREATE TABLE IF NOT EXISTS batches (
         id INTEGER PRIMARY KEY AUTOINCREMENT
         workout_id INTEGER NOT NULL,
         note TEXT NOT NULL,

@@ -1,6 +1,6 @@
 import db from '@/database/database';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
-import BaseEntity from './base/BaseEntity';
+import BaseEntity from '../models/base/BaseEntity';
 
 export type GraphRow = {
     id: number;

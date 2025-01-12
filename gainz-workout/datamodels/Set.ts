@@ -1,7 +1,7 @@
 import { ChartDataset } from '../models/ChartDataset';
 import db from '@/database/database';
 import { round } from 'lodash';
-import BaseEntity from './base/BaseEntity';
+import BaseEntity from '../models/base/BaseEntity';
 
 export type SetRow = {
   id: number;
