@@ -1,432 +1,293 @@
 {
     "musclegroups": [
-        {
-            "id": 1,
-            "name": "Chest"
-        },
-        {
-            "id": 2,
-            "name": "Back"
-        },
-        {
-            "id": 3,
-            "name": "Shoulders"
-        },
-        {
-            "id": 4,
-            "name": "Legs"
-        },
-        {
-            "id": 5,
-            "name": "Arms"
-        },
-        {
-            "id": 6,
-            "name": "Abs"
-        }
+        "Chest",
+        "Back",
+        "Shoulders",
+        "Legs",
+        "Arms",
+        "Abs"
     ],
     "exercises": [
         {
-            "id": 1,
-            "description": "",
             "name": "Bench Press",
-            "musclegroupid": 1
+            "musclegroup": "Chest"
         },
         {
-            "id": 2,
-            "description": "",
             "name": "Incline Bench Press",
-            "musclegroupid": 1
+            "musclegroup": "Chest"
         },
         {
-            "id": 3,
-            "description": "",
             "name": "Decline Bench Press",
-            "musclegroupid": 1
+            "musclegroup": "Chest"
         },
         {
-            "id": 4,
-            "description": "",
             "name": "Bench Press - Close Grip",
-            "musclegroupid": 1
+            "musclegroup": "Chest"
         },
         {
-            "id": 5,
-            "description": "",
             "name": "Bench Press - Wide Grip",
-            "musclegroupid": 1
+            "musclegroup": "Chest"
         },
         {
-            "id": 6,
-            "description": "",
             "name": "Flyes",
-            "musclegroupid": 1
+            "musclegroup": "Chest"
         },
         {
-            "id": 7,
-            "description": "",
             "name": "Pushups",
-            "musclegroupid": 1
+            "musclegroup": "Chest"
         },
         {
-            "id": 8,
-            "description": "",
             "name": "Pullups",
-            "musclegroupid": 2
+            "musclegroup": "Back"
         },
         {
-            "id": 9,
-            "description": "",
             "name": "Deadlift",
-            "musclegroupid": 2
+            "musclegroup": "Back"
         },
         {
-            "id": 10,
-            "description": "",
             "name": "Bent Over Row",
-            "musclegroupid": 2
+            "musclegroup": "Back"
         },
         {
-            "id": 11,
-            "description": "",
             "name": "Lat Pulldown",
-            "musclegroupid": 2
+            "musclegroup": "Back"
         },
         {
-            "id": 12,
-            "description": "",
             "name": "Shoulder Press",
-            "musclegroupid": 3
+            "musclegroup": "Shoulders"
         },
         {
-            "id": 13,
-            "description": "",
             "name": "Lateral Raise",
-            "musclegroupid": 3
+            "musclegroup": "Shoulders"
         },
         {
-            "id": 14,
-            "description": "",
             "name": "Front Raise",
-            "musclegroupid": 3
+            "musclegroup": "Shoulders"
         },
         {
-            "id": 15,
-            "description": "",
             "name": "Leg Press",
-            "musclegroupid": 4
+            "musclegroup": "Legs"
         },
         {
-            "id": 16,
-            "description": "",
             "name": "Squat",
-            "musclegroupid": 4
+            "musclegroup": "Legs"
         },
         {
-            "id": 17,
-            "description": "",
             "name": "Seated Leg Curl",
-            "musclegroupid": 4
+            "musclegroup": "Legs"
         },
         {
-            "id": 18,
-            "description": "",
             "name": "Bicep Curl",
-            "musclegroupid": 5
+            "musclegroup": "Arms"
         },
         {
-            "id": 19,
-            "description": "",
             "name": "Triceps Extension",
-            "musclegroupid": 5
+            "musclegroup": "Arms"
         },
         {
-            "id": 20,
-            "description": "",
             "name": "Hammer Curl",
-            "musclegroupid": 5
+            "musclegroup": "Arms"
         },
         {
-            "id": 21,
-            "description": "",
             "name": "Skull Crusher",
-            "musclegroupid": 5
+            "musclegroup": "Arms"
         },
         {
-            "id": 22,
-            "description": "",
             "name": "Crunch",
-            "musclegroupid": 6
+            "musclegroup": "Abs"
         },
         {
-            "id": 23,
-            "description": "",
             "name": "Reverse fly",
-            "musclegroupid": 3
+            "musclegroup": "Shoulders"
         },
         {
-            "id": 24,
-            "description": "",
             "name": "Shrug",
-            "musclegroupid": 3
+            "musclegroup": "Shoulders"
         }
     ],
     "equipment": [
-        {
-            "id": 1,
-            "name": "Barbell"
-        },
-        {
-            "id": 2,
-            "name": "Dumbbell"
-        },
-        {
-            "id": 3,
-            "name": "Machine"
-        },
-        {
-            "id": 4,
-            "name": "Bodyweight"
-        },
-        {
-            "id": 5,
-            "name": "Cable"
-        }
+        "Barbell",
+        "Dumbbell",
+        "Machine",
+        "Bodyweight",
+        "Cable"
     ],
     "attachments": [
-        {
-            "id": 1,
-            "name": "V-Bar"
-        },
-        {
-            "id": 2,
-            "name": "Straight Bar"
-        },
-        {
-            "id": 3,
-            "name": "Rope"
-        },
-        {
-            "id": 4,
-            "name": "D-Handle"
-        },
-        {
-            "id": 5,
-            "name": "Single Handle"
-        },
-        {
-            "id": 6,
-            "name": "Double Handle"
-        }
+        "V-Bar",
+        "Straight Bar",
+        "Rope",
+        "D-Handle",
+        "Single Handle",
+        "Double Handle"
     ],
     "exerciseEquipment": [
         {
-            "id": 1,
-            "exerciseid": 1,
-            "equipmentid": 1
+            "exercise": "Bench Press",
+            "equipment": "Barbell"
         },
         {
-            "id": 2,
-            "exerciseid": 1,
-            "equipmentid": 2
+            "exercise": "Bench Press",
+            "equipment": "Dumbbell"
         },
         {
-            "id": 3,
-            "exerciseid": 2,
-            "equipmentid": 1
+            "exercise": "Incline Bench Press",
+            "equipment": "Barbell"
         },
         {
-            "id": 4,
-            "exerciseid": 2,
-            "equipmentid": 2
+            "exercise": "Incline Bench Press",
+            "equipment": "Dumbbell"
         },
         {
-            "id": 5,
-            "exerciseid": 3,
-            "equipmentid": 1
+            "exercise": "Decline Bench Press",
+            "equipment": "Barbell"
         },
         {
-            "id": 6,
-            "exerciseid": 3,
-            "equipmentid": 2
+            "exercise": "Decline Bench Press",
+            "equipment": "Dumbbell"
         },
         {
-            "id": 7,
-            "exerciseid": 6,
-            "equipmentid": 2
+            "exercise": "Flyes",
+            "equipment": "Dumbbell"
         },
         {
-            "id": 8,
-            "exerciseid": 6,
-            "equipmentid": 5
+            "exercise": "Flyes",
+            "equipment": "Cable"
         },
         {
-            "id": 9,
-            "exerciseid": 7,
-            "equipmentid": 4
+            "exercise": "Pushups",
+            "equipment": "Bodyweight"
         },
         {
-            "id": 10,
-            "exerciseid": 8,
-            "equipmentid": 4
+            "exercise": "Pullups",
+            "equipment": "Bodyweight"
         },
         {
-            "id": 11,
-            "exerciseid": 9,
-            "equipmentid": 1
+            "exercise": "Deadlift",
+            "equipment": "Barbell"
         },
         {
-            "id": 12,
-            "exerciseid": 10,
-            "equipmentid": 1
+            "exercise": "Bent Over Row",
+            "equipment": "Barbell"
         },
         {
-            "id": 13,
-            "exerciseid": 11,
-            "equipmentid": 3
+            "exercise": "Lat Pulldown",
+            "equipment": "Machine"
         },
         {
-            "id": 14,
-            "exerciseid": 12,
-            "equipmentid": 1
+            "exercise": "Shoulder Press",
+            "equipment": "Barbell"
         },
         {
-            "id": 15,
-            "exerciseid": 13,
-            "equipmentid": 2
+            "exercise": "Lateral Raise",
+            "equipment": "Dumbbell"
         },
         {
-            "id": 16,
-            "exerciseid": 14,
-            "equipmentid": 2
+            "exercise": "Front Raise",
+            "equipment": "Dumbbell"
         },
         {
-            "id": 17,
-            "exerciseid": 15,
-            "equipmentid": 3
+            "exercise": "Leg Press",
+            "equipment": "Machine"
         },
         {
-            "id": 18,
-            "exerciseid": 16,
-            "equipmentid": 1
+            "exercise": "Squat",
+            "equipment": "Barbell"
         },
         {
-            "id": 19,
-            "exerciseid": 17,
-            "equipmentid": 3
+            "exercise": "Seated Leg Curl",
+            "equipment": "Machine"
         },
         {
-            "id": 20,
-            "exerciseid": 18,
-            "equipmentid": 1
+            "exercise": "Bicep Curl",
+            "equipment": "Barbell"
         },
         {
-            "id": 21,
-            "exerciseid": 19,
-            "equipmentid": 1
+            "exercise": "Triceps Extension",
+            "equipment": "Barbell"
         },
         {
-            "id": 22,
-            "exerciseid": 20,
-            "equipmentid": 2
+            "exercise": "Hammer Curl",
+            "equipment": "Dumbbell"
         },
         {
-            "id": 23,
-            "exerciseid": 21,
-            "equipmentid": 1
+            "exercise": "Skull Crusher",
+            "equipment": "Barbell"
         },
         {
-            "id": 24,
-            "exerciseid": 22,
-            "equipmentid": 4
+            "exercise": "Crunch",
+            "equipment": "Bodyweight"
         },
         {
-            "id": 25,
-            "exerciseid": 23,
-            "equipmentid": 2
+            "exercise": "Reverse fly",
+            "equipment": "Dumbbell"
         },
         {
-            "id": 26,
-            "exerciseid": 24,
-            "equipmentid": 1
+            "exercise": "Shrug",
+            "equipment": "Barbell"
         }
     ],
     "graph_types": [
         {
-            "id": 1,
             "name": "Estimated 1RM"
         },
         {
-            "id": 2,
             "name": "Volume"
         }
     ],
     "graph_durations": [
         {
-            "id": 1,
             "name": "1 Week",
             "value": 1
         },
         {
-            "id": 2,
             "name": "1 Month",
             "value": 30
         },
         {
-            "id": 3,
             "name": "3 Months",
             "value": 90
         },
         {
-            "id": 4,
             "name": "6 Months",
             "value": 180
         },
         {
-            "id": 5,
             "name": "1 Year",
             "value": 365
         },
         {
-            "id": 6,
             "name": "2 Years",
             "value": 730
         },
         {
-            "id": 7,
             "name": "3 Years",
             "value": 1095
         },
         {
-            "id": 8,
             "name": "4 Years",
             "value": 1460
         },
         {
-            "id": 9,
             "name": "5 Years",
             "value": 1825
         },
         {
-            "id": 10,
             "name": "6 Years",
             "value": 2190
         }
     ],
     "graphs": [
         {
-            "id": 1,
             "graph_type_id": 1,
             "graph_duration_id": 4,
             "exercise_id": 1,
-            "enabled": true
+            "enabled": "true"
         },
         {
-            "id": 2,
             "graph_type_id": 2,
             "graph_duration_id": 4,
             "exercise_id": 1,
-            "enabled": true
+            "enabled": "true"
         }
     ]
 }

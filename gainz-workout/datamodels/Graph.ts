@@ -25,22 +25,16 @@ export class Graph extends BaseEntity {
     }
 
     static async findAll(): Promise<Graph[]> {
-        const rows = await db.instance.getAllAsync('SELECT * FROM graphs') as GraphRow[];
+        const rows = await db.instance.getAllAsync('SELECT * FROM graph') as GraphRow[];
 
         return rows.map(row => new Graph(row.id, row.graph_typeid, row.exerciseid, row.enabled, row.graph_durationid));
     }
 
     static async create(graph_typeid: number, exerciseid: number, enabled: boolean, graph_durationid: number): Promise<Graph> {
-        try {
-            const existingGraph = await db.instance.getFirstAsync('SELECT * FROM graphs WHERE graph_typeid = ? AND exerciseid = ? AND graph_durationid = ?', [graph_typeid, exerciseid, graph_durationid]);
+        const existingGraph = await db.instance.getFirstAsync('SELECT * FROM graph WHERE graph_typeid = ? AND exerciseid = ? AND graph_durationid = ?', [graph_typeid, exerciseid, graph_durationid]);
 
-            if (existingGraph) {
-                throw new Error('Graph with the same type and exercise already exists');
-            }
-        }
-
-        catch (err) {
-            console.log(err);
+        if (existingGraph) {
+            throw new Error('Graph with the same type and exercise already exists');
         }
 
         const result = await db.instance.runAsync(
@@ -52,14 +46,14 @@ export class Graph extends BaseEntity {
     }
 
     static async findAllEnabled(): Promise<Graph[]> {
-        const rows = await db.instance.getAllAsync('SELECT * FROM graphs WHERE enabled = 1') as GraphRow[];
+        const rows = await db.instance.getAllAsync('SELECT * FROM graph WHERE enabled = 1') as GraphRow[];
 
         return rows.map(row => new Graph(row.id, row.graph_typeid, row.exerciseid, row.enabled, row.graph_durationid));
     }
 
     static async findAllAsViewModel(): Promise<GraphViewModel[]> {
         try {
-            const rows = await db.instance.getAllAsync('SELECT * FROM graphs') as GraphRow[];
+            const rows = await db.instance.getAllAsync('SELECT * FROM graph') as GraphRow[];
 
             const viewModels = await Promise.all(
                 rows.map(row => GraphViewModel.create(row))
@@ -74,7 +68,7 @@ export class Graph extends BaseEntity {
     }
 
     static async updateEnabled(id: number, enabled: boolean): Promise<void> {
-        await db.instance.runAsync('UPDATE graphs SET enabled = ? WHERE id = ?', [enabled, id]);
+        await db.instance.runAsync('UPDATE graph SET enabled = ? WHERE id = ?', [enabled, id]);
 
         console.log('updated graph enabled with id:', id);
     }

@@ -2,10 +2,11 @@ import BaseEntity from '@/datamodels/base/BaseEntity';
 import { db } from '@/database/database';
 
 export default abstract class BaseRepository<T extends BaseEntity> {
-    public table: string;
+    protected table: string;
 
     constructor(table: string) {
         this.table = table;
+        this.initTable();
     }
 
     abstract initTable(): Promise<void>;
@@ -13,7 +14,7 @@ export default abstract class BaseRepository<T extends BaseEntity> {
     async dropTable(): Promise<void> {
         console.log(`Dropping table ${this.table}`);
         try {
-            await db.instance.execAsync(`DROP TABLE ${this.table}`);
+            await db.instance.runAsync(`DROP TABLE ${this.table}`);
         }
         catch (error) {
             console.error(`Error dropping table ${this.table}: ${error}`);

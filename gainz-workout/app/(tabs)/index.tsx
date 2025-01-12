@@ -20,22 +20,14 @@ export default function ProfileScreen() {
   const [isChartSelectorVisible, setIsChartSelectorVisible] = useState(false);
   const [chartSelectorHeight, setChartSelectorHeight] = useState(0);
   const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
-  const [activeForm, setActiveForm] = useState<string | null>(null);
+    const [activeForm, setActiveForm] = useState<string | null>(null);
 
   const animationValue = useRef(new Animated.Value(0)).current;
 
   const seedData = async () => {
-    console.log('seeding')
-    try {
-      await createTables();
-      await seedDatabase();
-      setIsDataSeeded(true);
-    }
-    catch (err) {
-      console.log("error during seeding");
-
-      console.log(err);
-    }
+    await createTables();
+    await seedDatabase();
+    setIsDataSeeded(true);
   };
 
   const toggleFormVisibility = (formName: string | null) => {
@@ -100,6 +92,10 @@ export default function ProfileScreen() {
     }),
   };
 
+  useEffect(() => {
+    fetchGraphs();
+    seedData();
+  }, [fetchGraphs]);
   return (
     <View style={styles.contentContainer}>
       <View style={styles.titleContainer}>

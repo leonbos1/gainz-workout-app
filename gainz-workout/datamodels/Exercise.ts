@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { Equipment } from './Equipment';
-import { db } from '@/database/database';
+import db from '@/database/database';
 import BaseEntity from './base/BaseEntity';
 
 export type ExerciseRow = {
@@ -28,14 +28,14 @@ export class Exercise extends BaseEntity {
   }
 
   static async create(name: string, description: string, musclegroupid: number) {
-    const existingExercise = await db.instance.getFirstAsync('SELECT * FROM exercises WHERE name = ?', [name]);
+    const existingExercise = await db.getFirstAsync('SELECT * FROM exercise WHERE name = ?', [name]);
 
     if (existingExercise) {
       throw new Error('Exercise with the same name already exists');
     }
 
-    const result = await db.instance.runAsync(
-      `INSERT INTO exercises (name, description, musclegroupid) VALUES (?, ?, ?);`,
+    const result = await db.runAsync(
+      `INSERT INTO exercise (name, description, musclegroupid) VALUES (?, ?, ?);`,
       [name, description, musclegroupid]
     );
 
@@ -43,24 +43,24 @@ export class Exercise extends BaseEntity {
   }
 
   static async findAll(): Promise<Exercise[]> {
-    const rows = await db.instance.getAllAsync('SELECT * FROM exercises') as ExerciseRow[];
+    const rows = await db.getAllAsync('SELECT * FROM exercise') as ExerciseRow[];
     return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
   }
 
   static async removeAll() {
-    await db.instance.runAsync('DELETE FROM exercises');
+    await db.runAsync('DELETE FROM exercise');
 
     return true;
   }
 
   static async findIdByName(name: string): Promise<number | null> {
-    const result = await db.instance.getFirstAsync('SELECT id FROM exercises WHERE name = ?', [name]) as { id: number };
+    const result = await db.getFirstAsync('SELECT id FROM exercise WHERE name = ?', [name]) as { id: number };
     return result.id;
   }
 
   static async findRecent(limit: number): Promise<ExerciseRow[]> {
-    const lastWorkouts = await db.instance.getAllAsync(
-      `SELECT id FROM workouts ORDER BY id DESC LIMIT ?`,
+    const lastWorkouts = await db.getAllAsync(
+      `SELECT id FROM workout ORDER BY id DESC LIMIT ?`,
       [limit]
     ) as Array<{ id: number }>;
 
@@ -70,21 +70,21 @@ export class Exercise extends BaseEntity {
 
     const workoutIds = lastWorkouts.map(workout => workout.id).join(',');
 
-    const rows = await db.instance.getAllAsync(
-      `SELECT exercise.* FROM exercises
-       JOIN sets ON exercise.id = exercisesets.exerciseid
-       JOIN batches ON exercisesets.batchid = batches.id
-       JOIN workouts ON batches.workoutid = workouts.id
-       WHERE workouts.id IN (${workoutIds})
+    const rows = await db.getAllAsync(
+      `SELECT exercise.* FROM exercise
+       JOIN exerciseset ON exercise.id = exerciseset.exerciseid
+       JOIN batch ON exerciseset.batchid = batch.id
+       JOIN workout ON batch.workoutid = workout.id
+       WHERE workout.id IN (${workoutIds})
        GROUP BY exercise.id
-       ORDER BY MAX(workouts.starttime) DESC`
+       ORDER BY MAX(workout.starttime) DESC`
     ) as ExerciseRow[];
 
     return rows.slice(0, limit);
   }
 
   static async getEquipmentsForExercise(exerciseId: number): Promise<Equipment[]> {
-    const rows = await db.instance.getAllAsync(
+    const rows = await db.getAllAsync(
       `SELECT equipment.* FROM equipment
        JOIN exercise_equipment ON equipment.id = exercise_equipment.equipmentid
        WHERE exercise_equipment.exerciseid = ?`,
@@ -95,20 +95,20 @@ export class Exercise extends BaseEntity {
   }
 
   static async delete(id: number) {
-    await db.instance.runAsync('DELETE FROM exercises WHERE id = ?', [id]);
+    await db.runAsync('DELETE FROM exercise WHERE id = ?', [id]);
 
     return true;
   }
 
   static async findById(id: number): Promise<Exercise> {
-    const row = await db.instance.getFirstAsync('SELECT * FROM exercises WHERE id = ?', [id]) as ExerciseRow;
+    const row = await db.getFirstAsync('SELECT * FROM exercise WHERE id = ?', [id]) as ExerciseRow;
 
     return new Exercise(row.id, row.name, row.description, row.musclegroupid);
   }
 
   static async findByEquipment(equipmentId: number): Promise<Exercise[]> {
-    const rows = await db.instance.getAllAsync(
-      `SELECT exercises.* FROM exercises
+    const rows = await db.getAllAsync(
+      `SELECT exercise.* FROM exercise
        JOIN exercise_equipment ON exercise.id = exercise_equipment.exerciseid
        WHERE exercise_equipment.equipmentid = ?`,
       [equipmentId]
@@ -118,14 +118,14 @@ export class Exercise extends BaseEntity {
   }
 
   static async findByMuscleGroup(muscleGroupId: number): Promise<Exercise[]> {
-    const rows = await db.instance.getAllAsync('SELECT * FROM exercises WHERE musclegroupid = ?', [muscleGroupId]) as ExerciseRow[];
+    const rows = await db.getAllAsync('SELECT * FROM exercise WHERE musclegroupid = ?', [muscleGroupId]) as ExerciseRow[];
 
     return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
   }
 
   static async findByAttachment(attachmentId: number): Promise<Exercise[]> {
-    const rows = await db.instance.getAllAsync(
-      `SELECT exercise.* FROM exercises
+    const rows = await db.getAllAsync(
+      `SELECT exercise.* FROM exercise
        JOIN exercise_attachment ON exercise.id = exercise_attachment.exerciseid
        WHERE exercise_attachment.attachmentid = ?`,
       [attachmentId]
@@ -135,8 +135,8 @@ export class Exercise extends BaseEntity {
   }
 
   static async findByEquipmentAndAttachment(equipmentId: number, attachmentId: number): Promise<Exercise[]> {
-    const rows = await db.instance.getAllAsync(
-      `SELECT exercise.* FROM exercises
+    const rows = await db.getAllAsync(
+      `SELECT exercise.* FROM exercise
        JOIN exercise_equipment ON exercise.id = exercise_equipment.exerciseid
        JOIN exercise_attachment ON exercise.id = exercise_attachment.exerciseid
        WHERE exercise_equipment.equipmentid = ? AND exercise_attachment.attachmentid = ?`,

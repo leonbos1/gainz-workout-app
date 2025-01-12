@@ -1,4 +1,4 @@
-import { db } from '@/database/database';
+import db from '@/database/database';
 import BaseEntity from './base/BaseEntity';
 
 export type GraphDurationRow = {
@@ -18,13 +18,13 @@ export class GraphDuration extends BaseEntity {
     }
 
     static async findAll(): Promise<GraphDuration[]> {
-        const rows = await db.instance.getAllAsync('SELECT * FROM graphDurations') as GraphDurationRow[];
+        const rows = await db.getAllAsync('SELECT * FROM graph_duration') as GraphDurationRow[];
 
         return rows.map(row => new GraphDuration(row.id, row.name, row.value));
     }
 
     static async findById(id: number): Promise<GraphDuration> {
-        const row = await db.instance.getFirstAsync('SELECT * FROM graphDurations WHERE id = ?', [id]) as GraphDurationRow;
+        const row = await db.getFirstAsync('SELECT * FROM graph_duration WHERE id = ?', [id]) as GraphDurationRow;
 
         return new GraphDuration(row.id, row.name, row.value);
     }
