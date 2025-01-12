@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { Equipment } from './Equipment';
-import db from '@/database/database';
+import { Database } from '@/database/database';
 
 export type ExerciseRow = {
   id: number;
@@ -28,6 +28,8 @@ export class Exercise {
   }
 
   static async create(name: string, description: string, musclegroupid: number) {
+    const db = await Database.getDbConnection();
+
     const existingExercise = await db.getFirstAsync('SELECT * FROM exercise WHERE name = ?', [name]);
 
     if (existingExercise) {
@@ -43,22 +45,30 @@ export class Exercise {
   }
 
   static async findAll(): Promise<Exercise[]> {
+    const db = await Database.getDbConnection();
+
     const rows = await db.getAllAsync('SELECT * FROM exercise') as ExerciseRow[];
     return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
   }
 
   static async removeAll() {
+    const db = await Database.getDbConnection();
+
     await db.runAsync('DELETE FROM exercise');
 
     return true;
   }
 
   static async findIdByName(name: string): Promise<number | null> {
+    const db = await Database.getDbConnection();
+
     const result = await db.getFirstAsync('SELECT id FROM exercise WHERE name = ?', [name]) as { id: number };
     return result.id;
   }
 
   static async findRecent(limit: number): Promise<ExerciseRow[]> {
+    const db = await Database.getDbConnection();
+
     const lastWorkouts = await db.getAllAsync(
       `SELECT id FROM workout ORDER BY id DESC LIMIT ?`,
       [limit]
@@ -84,6 +94,8 @@ export class Exercise {
   }
 
   static async getEquipmentsForExercise(exerciseId: number): Promise<Equipment[]> {
+    const db = await Database.getDbConnection();
+
     const rows = await db.getAllAsync(
       `SELECT equipment.* FROM equipment
        JOIN exercise_equipment ON equipment.id = exercise_equipment.equipmentid
@@ -95,54 +107,18 @@ export class Exercise {
   }
 
   static async delete(id: number) {
+    const db = await Database.getDbConnection();
+
     await db.runAsync('DELETE FROM exercise WHERE id = ?', [id]);
 
     return true;
   }
 
   static async findById(id: number): Promise<Exercise> {
+    const db = await Database.getDbConnection();
+
     const row = await db.getFirstAsync('SELECT * FROM exercise WHERE id = ?', [id]) as ExerciseRow;
 
     return new Exercise(row.id, row.name, row.description, row.musclegroupid);
-  }
-
-  static async findByEquipment(equipmentId: number): Promise<Exercise[]> {
-    const rows = await db.getAllAsync(
-      `SELECT exercise.* FROM exercise
-       JOIN exercise_equipment ON exercise.id = exercise_equipment.exerciseid
-       WHERE exercise_equipment.equipmentid = ?`,
-      [equipmentId]
-    ) as ExerciseRow[];
-
-    return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
-  }
-
-  static async findByMuscleGroup(muscleGroupId: number): Promise<Exercise[]> {
-    const rows = await db.getAllAsync('SELECT * FROM exercise WHERE musclegroupid = ?', [muscleGroupId]) as ExerciseRow[];
-
-    return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
-  }
-
-  static async findByAttachment(attachmentId: number): Promise<Exercise[]> {
-    const rows = await db.getAllAsync(
-      `SELECT exercise.* FROM exercise
-       JOIN exercise_attachment ON exercise.id = exercise_attachment.exerciseid
-       WHERE exercise_attachment.attachmentid = ?`,
-      [attachmentId]
-    ) as ExerciseRow[];
-
-    return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
-  }
-
-  static async findByEquipmentAndAttachment(equipmentId: number, attachmentId: number): Promise<Exercise[]> {
-    const rows = await db.getAllAsync(
-      `SELECT exercise.* FROM exercise
-       JOIN exercise_equipment ON exercise.id = exercise_equipment.exerciseid
-       JOIN exercise_attachment ON exercise.id = exercise_attachment.exerciseid
-       WHERE exercise_equipment.equipmentid = ? AND exercise_attachment.attachmentid = ?`,
-      [equipmentId, attachmentId]
-    ) as ExerciseRow[];
-
-    return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
   }
 }

@@ -1,4 +1,4 @@
-import db from '@/database/database';
+import { Database } from '@/database/database';
 
 export type GraphTypeRow = {
     id: number;
@@ -15,12 +15,16 @@ export class GraphType {
     }
 
     static async findAll(): Promise<GraphType[]> {
+        const db = await Database.getDbConnection();
+
         const rows = await db.getAllAsync('SELECT * FROM graph_type') as GraphTypeRow[];
 
         return rows.map(row => new GraphType(row.id, row.name as string));
     }
 
     static async findById(id: number): Promise<GraphType> {
+        const db = await Database.getDbConnection();
+
         const row = await db.getFirstAsync('SELECT * FROM graph_type WHERE id = ?', [id]) as GraphTypeRow;
 
         return new GraphType(row.id, row.name);

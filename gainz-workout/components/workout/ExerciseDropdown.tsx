@@ -1,40 +1,34 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
-interface ExerciseSelectListProps {
+interface ExerciseDropdownProps {
   selectedExercise: string | null;
   setSelectedExercise: (exercise: string | null) => void;
   exercises: Array<{ label: string, value: string }>;
+  addExercise: () => void;
 }
 
-export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
+export const ExerciseDropdown: React.FC<ExerciseDropdownProps> = ({
   selectedExercise,
   setSelectedExercise,
   exercises,
+  addExercise,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSelectExercise = (value: string) => {
     setSelectedExercise(value);
     setModalVisible(false);
   };
 
-  const filteredExercises = exercises.filter((exercise) =>
-    exercise.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.dropdown} onPress={() => setModalVisible(true)}>
         <Text style={styles.dropdownText}>
-          {selectedExercise
-            ? exercises.find(ex => ex.value === selectedExercise)?.label
-            : 'Select an exercise'}
+          {selectedExercise ? exercises.find(ex => ex.value === selectedExercise)?.label : 'Select an exercise'}
         </Text>
       </TouchableOpacity>
-
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -43,19 +37,8 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            {/* Search input */}
-            <View style={styles.searchContainer}>
-              <TextInput
-                style={styles.searchTextInput}
-                placeholder="Search exercise"
-                placeholderTextColor={Colors.light.text}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-            </View>
-
             <FlatList
-              data={filteredExercises}
+              data={exercises}
               keyExtractor={(item) => item.value}
               renderItem={({ item }) => (
                 <TouchableOpacity style={styles.item} onPress={() => handleSelectExercise(item.value)}>
@@ -63,7 +46,6 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
                 </TouchableOpacity>
               )}
             />
-
             <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
@@ -110,6 +92,18 @@ const styles = StyleSheet.create({
   itemText: {
     color: Colors.light.text,
   },
+  addButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: Colors.light.primary,
+    color: Colors.light.text,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: Colors.light.text,
+    fontWeight: 'bold',
+  },
   closeButton: {
     marginTop: 10,
     padding: 10,
@@ -118,17 +112,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButtonText: {
-    color: Colors.light.text,
-  },
-  searchContainer: {
-    marginBottom: 10,
-    borderWidth: 0.5,
-    borderRadius: 8,
-    borderColor: Colors.light.text,
-    color: Colors.light.text,
-  },
-  searchTextInput: {
-    padding: 10,
     color: Colors.light.text,
   },
 });

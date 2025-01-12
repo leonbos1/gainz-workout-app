@@ -7,12 +7,14 @@ interface AttachmentDropdownProps {
     selectedAttachment: string | null;
     setSelectedAttachment: React.Dispatch<React.SetStateAction<string | null>>;
     attachments: Attachment[];
+    addAttachment: () => void;
 }
 
 export const AttachmentDropdown: React.FC<AttachmentDropdownProps> = ({
     selectedAttachment,
     setSelectedAttachment,
     attachments,
+    addAttachment,
 }) => {
     const [modalVisible, setModalVisible] = useState(false);
 

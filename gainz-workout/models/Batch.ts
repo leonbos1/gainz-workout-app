@@ -1,4 +1,5 @@
-import db from '../database/database';
+import * as SQLite from 'expo-sqlite';
+import { Database } from '../database/database';
 
 export type BatchRow = {
   id: number;
@@ -24,6 +25,8 @@ export class Batch {
   }
 
   static async create(workoutid: number, note: string, equipmentid: number, attachmentid: number = 0): Promise<Batch> {
+    const db = await Database.getDbConnection();
+
     if (attachmentid === 0) {
       const result = await db.runAsync(
         `INSERT INTO batch (workoutid, note, equipmentid) VALUES (?, ?, ?);`,
@@ -44,16 +47,22 @@ export class Batch {
   }
 
   static async findAll(): Promise<Batch[]> {
+    const db = await Database.getDbConnection();
+
     const rows = await db.getAllAsync('SELECT * FROM batch') as BatchRow[];
     return rows.map(row => new Batch(row.id, row.workoutid, row.note, row.equipmentid, row.attachmentid));
   }
 
   static async findByWorkoutId(workoutId: number): Promise<Batch[]> {
+    const db = await Database.getDbConnection();
+
     const rows = await db.getAllAsync('SELECT * FROM batch WHERE workoutid = ?', [workoutId]) as BatchRow[];
     return rows.map(row => new Batch(row.id, row.workoutid, row.note, row.equipmentid, row.attachmentid));
   }
 
   static async removeAll() {
+    const db = await Database.getDbConnection();
+
     await db.runAsync('DELETE FROM batch');
 
     return true;

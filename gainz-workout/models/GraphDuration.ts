@@ -1,4 +1,5 @@
-import db from '@/database/database';
+import { Database } from '@/database/database';
+import * as SQLite from 'expo-sqlite';
 
 export type GraphDurationRow = {
     id: number;
@@ -18,12 +19,16 @@ export class GraphDuration {
     }
 
     static async findAll(): Promise<GraphDuration[]> {
+        const db = await Database.getDbConnection();
+
         const rows = await db.getAllAsync('SELECT * FROM graph_duration') as GraphDurationRow[];
 
         return rows.map(row => new GraphDuration(row.id, row.name, row.value));
     }
 
     static async findById(id: number): Promise<GraphDuration> {
+        const db = await Database.getDbConnection();
+
         const row = await db.getFirstAsync('SELECT * FROM graph_duration WHERE id = ?', [id]) as GraphDurationRow;
 
         return new GraphDuration(row.id, row.name, row.value);

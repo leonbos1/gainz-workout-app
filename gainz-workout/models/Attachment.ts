@@ -1,4 +1,5 @@
-import db from '@/database/database';
+import { Database } from '@/database/database';
+import * as SQLite from 'expo-sqlite';
 
 export type AttachmentRow = {
     id: number;
@@ -19,6 +20,8 @@ export class Attachment {
     }
 
     static async findAll(): Promise<Attachment[]> {
+        const db = await Database.getDbConnection();
+
         const rows = await db.getAllAsync('SELECT * FROM attachment') as AttachmentRow[];
         return rows.map(row => new Attachment(row.id, row.name));
     }

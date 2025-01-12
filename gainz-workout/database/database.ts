@@ -164,6 +164,14 @@ export const seedDatabase = async () => {
   `);
 }
 
-const db = SQLite.openDatabaseSync('gainz.db');
+export class Database {
+  static _dbInstance: SQLite.SQLiteDatabase | null = null;
 
-export default db;
+  static async getDbConnection(): Promise<SQLite.SQLiteDatabase> {
+    if (Database._dbInstance) {
+      return Database._dbInstance;
+    }
+    Database._dbInstance = await SQLite.openDatabaseAsync('gainz.db', { useNewConnection: false });
+    return Database._dbInstance;
+  }
+}
