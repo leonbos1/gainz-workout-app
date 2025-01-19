@@ -45,7 +45,6 @@ export function ChartSelector({
 
                                 setEnabledGraphVms(updatedEnabledGraphs);
                             }}
-                            style={styles.checkBoxItem}
                         />
                         <Text style={styles.graphTitle}>{graphVm.graphTitle}</Text>
                     </View>
@@ -58,7 +57,9 @@ export function ChartSelector({
                     onPress={() => {
                         toggleFormVisibility('AddGraphForm');
                     }}
-                    style={styles.iconButton}
+                    style={
+                        styles.iconButton
+                    }
                 />
             </View>
         </View >
@@ -80,26 +81,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 15,
+        padding: 10,
         marginVertical: 5,
         width: '100%',
-        backgroundColor: Colors.card,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
+        backgroundColor: Colors.secundary,
+        borderRadius: 5,
     },
     graphTitle: {
-        fontSize: 18,
+        fontSize: 16,
         color: Colors.text,
         flex: 1,
         marginLeft: 15,
-    },
-    checkBoxItem: {
-        width: 24,
-        height: 24,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -108,6 +100,6 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     iconButton: {
-        marginHorizontal: 10,
-    },
+        width: '100%'
+    }
 });

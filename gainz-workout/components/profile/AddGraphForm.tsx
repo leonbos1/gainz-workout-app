@@ -6,10 +6,10 @@ import { Exercise } from '@/models/Exercise';
 import { GraphType } from '@/models/GraphType';
 import { GraphDuration } from '@/models/GraphDuration';
 import { Colors } from '@/constants/Colors';
-import { FormProps } from '@/app/props/formProps';
+import formProps from '@/app/props/formProps';
 
 
-const AddGraphForm: React.FC<FormProps> = ({ toggleFormVisibility }) => {
+const AddGraphForm: React.FC<formProps> = ({ toggleFormVisibility }) => {
     const [graphType, setGraphType] = useState<number | null>(null);
     const [exercise, setExercise] = useState<number | null>(null);
     const [enabled, setEnabled] = useState<boolean>(true);
