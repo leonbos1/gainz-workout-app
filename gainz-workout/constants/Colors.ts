@@ -13,6 +13,8 @@ export const Colors = {
   dangerButton: '#c61010',
   input: '#292938',
 
+  border: '#ffffff',
+
   tint: tintColorLight,
   icon: '#687076',
   tabIconDefault: '#687076',

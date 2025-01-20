@@ -20,7 +20,7 @@ export default function ProfileScreen() {
   const [isChartSelectorVisible, setIsChartSelectorVisible] = useState(false);
   const [chartSelectorHeight, setChartSelectorHeight] = useState(0);
   const [addGraphFormVisible, setAddGraphFormVisible] = useState(false);
-    const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [activeForm, setActiveForm] = useState<string | null>(null);
 
   const animationValue = useRef(new Animated.Value(0)).current;
 
@@ -63,7 +63,7 @@ export default function ProfileScreen() {
         toValue: 0,
         duration: 300,
         easing: Easing.ease,
-        useNativeDriver: false, // Use false because we're animating height
+        useNativeDriver: false,
       }).start(() => setIsChartSelectorVisible(false));
     } else {
       setIsChartSelectorVisible(true);
@@ -74,6 +74,17 @@ export default function ProfileScreen() {
         useNativeDriver: false,
       }).start();
     }
+  };
+
+  const rotationStyle = {
+    transform: [
+      {
+        rotate: animationValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: ['0deg', '180deg'],
+        }),
+      },
+    ],
   };
 
   useEffect(() => {
@@ -126,14 +137,16 @@ export default function ProfileScreen() {
         </View>
       </Modal>
       <View>
-        <TouchableOpacity onPress={toggleChartSelector}>
-          <Ionicons
-            name={isChartSelectorVisible ? "chevron-up-outline" : "chevron-down-outline"}
-            size={25}
-            color={Colors.text}
-            style={{ marginLeft: 15 }}
-          />
-        </TouchableOpacity>
+        <View style={styles.collapsedContainer}>
+          <TouchableOpacity onPress={toggleChartSelector} style={styles.dropdownToggle}>
+            <Text style={styles.dropdownLabel}>
+              {isChartSelectorVisible ? 'Hide Chart Selector' : 'Show Chart Selector'}
+            </Text>
+            <Animated.View style={rotationStyle}>
+              <Ionicons name="chevron-down-outline" size={20} color={Colors.text} />
+            </Animated.View>
+          </TouchableOpacity>
+        </View>
         <Animated.View style={[styles.animatedContainer, chartSelectorStyle]}>
           <ChartSelector
             enabledGraphVms={enabledGraphVms}
@@ -187,5 +200,38 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 1000,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-  }
+  },
+  collapsedContainer: {
+    marginTop: 15,
+    backgroundColor: Colors.card,
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    // borderColor: Colors.border,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    width: '90%',
+    alignSelf: 'center'
+  },
+  dropdownToggle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  dropdownLabel: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: Colors.text,
+  },
+  chevronIcon: {
+    marginLeft: 10,
+    transform: [{ rotate: "0deg" }],
+  },
+  iconExpanded: {
+    transform: [{ rotate: "180deg" }],
+  },
 });
