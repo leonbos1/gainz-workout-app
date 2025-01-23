@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text, Modal, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Dimensions, Text, Animated, TouchableOpacity } from 'react-native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
 import { Set } from '@/models/Set';
@@ -31,11 +31,29 @@ export default function WorkoutScreen() {
   const [filteredEquipment, setFilteredEquipment] = useState<Array<Equipment>>([]);
   const [filteredAttachments, setFilteredAttachments] = useState<Array<Attachment>>([]);
 
+  const animationValue = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     fetchExercises();
     fetchEquipment();
     fetchAttachments();
   }, []);
+
+  useEffect(() => {
+    if (activeForm) {
+      Animated.timing(animationValue, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    } else {
+      Animated.timing(animationValue, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [activeForm]);
 
   const fetchExercises = async () => {
     try {
@@ -99,7 +117,6 @@ export default function WorkoutScreen() {
   };
 
   const handleAddSet = async (batchId: number) => {
-    console
     const batch = batches.find(b => b.id === batchId);
     const exerciseName = getExerciseNameFromExerciseString(batch!.name);
 
@@ -127,8 +144,7 @@ export default function WorkoutScreen() {
       var newBatch: Batch;
       if (selectedAttachment) {
         newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment), parseInt(selectedAttachment));
-      }
-      else {
+      } else {
         newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment));
       }
       setBatches([...batches, {
@@ -139,7 +155,7 @@ export default function WorkoutScreen() {
     } else {
       Logger.log_error('Error adding exercise:', 'Exercise and equipment must be selected');
     }
-  }
+  };
 
   const handleExerciseSelection = async (exerciseId: string) => {
     const exerciseName = getExerciseNameFromExerciseString(exerciseId);
@@ -170,8 +186,22 @@ export default function WorkoutScreen() {
     updateBatch(batchId, { sets: [], reps: '', weight: '', rpe: '' });
   };
 
+  const [showForm, setShowForm] = useState(false);
+
   const toggleFormVisibility = (formName: string | null) => {
-    setActiveForm((prev) => (prev === formName ? null : formName));
+    if (formName) {
+      setShowForm(true);
+      setActiveForm(formName);
+    } else {
+      Animated.timing(animationValue, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start(() => {
+        setShowForm(false);
+        setActiveForm(null);
+      });
+    }
   };
 
   const handleExerciseWrapper = (exerciseId: string | null) => {
@@ -183,18 +213,23 @@ export default function WorkoutScreen() {
     }
   };
 
+  const popOverHeight = animationValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 150],
+  });
+
+  const popOverOpacity = animationValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
   return (
     <View style={styles.contentContainer}>
       <View style={styles.titleContainer}>
         <Text style={styles.screenTitle}>Workout</Text>
       </View>
-      <Modal
-        visible={activeForm !== null}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => toggleFormVisibility(null)}
-      >
-        <View style={styles.popOverContainer}>
+      {showForm && (
+        <Animated.View style={[styles.popOverContainer, { height: popOverHeight, opacity: popOverOpacity }]}>
           <ExerciseSelectList
             selectedExercise={selectedExercise}
             setSelectedExercise={handleExerciseWrapper}
@@ -219,8 +254,8 @@ export default function WorkoutScreen() {
             <IconButton iconName="close-circle-outline" text="Close" onPress={() => toggleFormVisibility(null)} />
             <IconButton iconName="checkmark-circle-outline" text="Add" onPress={() => handleAddExercise()} />
           </View>
-        </View>
-      </Modal>
+        </Animated.View>
+      )}
       {!workoutStarted ? (
         <StartWorkoutButton onStartWorkout={handleStartWorkout} />
       ) : (
@@ -231,12 +266,15 @@ export default function WorkoutScreen() {
             onInputChange={handleInputChange}
             onFinishExercise={handleFinishExercise}
           />
-          <TouchableOpacity
-            style={styles.floatingButton}
-            onPress={() => toggleFormVisibility('AddExerciseForm')}
-          >
-            <Text style={styles.floatingButtonText}>+</Text>
-          </TouchableOpacity>
+          {!activeForm && (
+            <TouchableOpacity
+              style={styles.floatingButton}
+              onPress={() => toggleFormVisibility('AddExerciseForm')}
+            >
+              <Text style={styles.floatingButtonText}>+</Text>
+            </TouchableOpacity>
+          )}
+
           <View style={styles.buttonContainer}>
             <IconButton iconName="close-circle-outline" text="Cancel" onPress={() => handleCancelWorkout()} />
             <IconButton iconName="checkmark-circle-outline" text="Finish" onPress={() => handleEndWorkout()} />
@@ -302,5 +340,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.card,
     borderRadius: 5,
     margin: 20,
+    overflow: 'hidden',
   },
 });

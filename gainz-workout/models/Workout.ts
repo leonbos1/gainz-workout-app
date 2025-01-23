@@ -39,7 +39,6 @@ export class Workout {
   public static async create(starttime: string, endtime: string) {
     const db = await Database.getDbConnection();
 
-
     const result = await db.runAsync(
       `INSERT INTO workout (starttime, endtime) VALUES (?, ?);`,
       [starttime, endtime]
@@ -50,7 +49,6 @@ export class Workout {
   public static async findAll(): Promise<Workout[]> {
     try {
       const db = await Database.getDbConnection();
-
 
       const rows = await db.getAllAsync('SELECT * FROM workout') as WorkoutRow[];
       return rows.map(row => new Workout(row.id, "sample title", row.starttime, row.endtime));
@@ -64,7 +62,6 @@ export class Workout {
   static async removeAll() {
     const db = await Database.getDbConnection();
 
-
     await db.runAsync('DELETE FROM workout');
 
     return true;
@@ -72,7 +69,6 @@ export class Workout {
 
   static async endWorkout(id: number, endtime: string) {
     const db = await Database.getDbConnection();
-
 
     await db.runAsync('UPDATE workout SET endtime = ? WHERE id = ?', [endtime, id]);
 
@@ -82,7 +78,6 @@ export class Workout {
   static async findAllFinished(limit: number, page: number): Promise<Workout[]> {
     try {
       const db = await Database.getDbConnection();
-
 
       const offset = (page - 1) * limit;
       const rows = await db.getAllAsync(
@@ -99,7 +94,6 @@ export class Workout {
 
   static async delete(id: number) {
     const db = await Database.getDbConnection();
-
 
     await db.runAsync('DELETE FROM workout WHERE id = ?', [id]);
 
@@ -168,7 +162,6 @@ export class Workout {
 
   static async deleteFullWorkout(workoutId: number) {
     const db = await Database.getDbConnection();
-
 
     // first delete all batches and sets, then delete the workout
     const batchIds = await db.getAllAsync('SELECT id FROM batch WHERE workoutid = ?', [workoutId]) as { id: number }[];
