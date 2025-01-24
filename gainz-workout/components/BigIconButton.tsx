@@ -26,23 +26,26 @@ const ButtonComponent: React.FC<ButtonProps> = ({ iconName, text, onPress }) => 
 
 const styles = StyleSheet.create({
     buttonContainer: {
-        width: '90%',
-        padding: 10,
+        width: '100%',
+        paddingVertical: 10,
+        paddingHorizontal: 50,
         backgroundColor: Colors.secundary,
         borderRadius: 5,
         borderColor: Colors.text,
         alignItems: 'center',
+        alignSelf: 'center',
     },
     buttonContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         width: '100%',
     },
     buttonText: {
         color: Colors.text,
         marginLeft: 10,
         fontSize: 16,
+        textAlign: 'left',
     },
 });
 

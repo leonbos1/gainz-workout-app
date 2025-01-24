@@ -8,7 +8,7 @@ interface StartWorkoutButtonProps {
 
 export const StartWorkoutButton: React.FC<StartWorkoutButtonProps> = ({ onStartWorkout }) => {
   return (
-    <View style={{ alignItems: 'center' }}>
+    <View>
       <BigIconButton iconName="play" text="Start Workout" onPress={onStartWorkout} />
     </View>
   );
