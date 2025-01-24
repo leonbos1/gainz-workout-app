@@ -46,7 +46,7 @@ export function Chart({ data, title }: ChartProps): JSX.Element {
                         r: '0',
                     },
                     propsForBackgroundLines: {
-                        stroke: Colors.backgroundSecondary,
+                        stroke: Colors.background,
                         strokeDasharray: '',
                     },
                     propsForLabels: {
@@ -68,8 +68,8 @@ const styles = StyleSheet.create({
     },
     chart: {
         borderRadius: 16,
-        backgroundColor: Colors.backgroundSecondary,
-        shadowColor: Colors.backgroundSecondary,
+        backgroundColor: Colors.background,
+        shadowColor: Colors.background,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 8,

@@ -56,6 +56,7 @@ export const createTables = async () => {
       note TEXT,
       equipmentid INTEGER,
       attachmentid INTEGER,
+      completed BIT,
       FOREIGN KEY (equipmentid) REFERENCES equipment(id),
       FOREIGN KEY (attachmentid) REFERENCES attachment(id),
       FOREIGN KEY (workoutid) REFERENCES workout(id)
@@ -68,6 +69,7 @@ export const createTables = async () => {
       weight REAL,
       rpe REAL,
       batchid INTEGER NOT NULL,
+      completed BIT,
       FOREIGN KEY (exerciseid) REFERENCES exercise(id),
       FOREIGN KEY (batchid) REFERENCES batch(id)
     );

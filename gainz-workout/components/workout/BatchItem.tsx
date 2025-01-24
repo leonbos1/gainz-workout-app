@@ -2,16 +2,25 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Set } from '@/models/Set';
 import { Colors } from '@/constants/Colors';
-import { Icon } from 'react-native-vector-icons/Icon';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface BatchItemProps {
-  batch: { id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string };
-  onAddSet: (batchId: number) => void;
+  batch: { id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string, completed: boolean };
+  onAddSet: (batchId: number, completed: boolean) => void;
   onInputChange: (batchId: number, field: string, value: string) => void;
   onFinishExercise: (batchId: number) => void;
+  onToggleSetCompletion: (setId: number) => void;
+  updateBatch: (batchId: number, updatedFields: Partial<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>) => void;
 }
 
-export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputChange, onFinishExercise }) => {
+export const BatchItem: React.FC<BatchItemProps> = ({
+  batch,
+  onAddSet,
+  onInputChange,
+  onFinishExercise,
+  onToggleSetCompletion,
+  updateBatch
+}) => {
   const [isExerciseFinished, setIsExerciseFinished] = useState(false);
   const isAddEnabled = batch.reps.trim() !== '' && batch.weight.trim() !== '';
 
@@ -24,24 +33,42 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
     onFinishExercise(batch.id);
   };
 
+  const toggleDone = async (setId: number) => {
+    await onToggleSetCompletion(setId);
+
+    const updatedSets = batch.sets.map((set) => {
+      if (set.id === setId) {
+        return {
+          ...set,
+          completed: !set.completed,
+        } as Set;
+      }
+      return set;
+    });
+
+    updateBatch(batch.id, { sets: updatedSets });
+  };
+
   return (
     <View style={styles.batchContainer}>
       <Text style={styles.batchTitle}>{batch.name}</Text>
       <View>
-        {/* Header row with column labels */}
-        <View style={styles.setInputRow}>
-          <View style={styles.inputContainer}>
+        <View style={[styles.setInputRow, styles.headerRow]}>
+          <View style={styles.inputContainerHeader}>
             <Text style={styles.columnLabel}>Reps</Text>
           </View>
-          <View style={styles.inputContainer}>
+          <View style={styles.inputContainerHeader}>
             <Text style={styles.columnLabel}>Weight (kg)</Text>
           </View>
-          <View style={styles.inputContainer}>
+          <View style={styles.inputContainerHeader}>
             <Text style={styles.columnLabel}>RPE</Text>
+          </View>
+          <View style={styles.inputContainerHeader}>
+            <Text style={styles.columnLabel}>Done</Text>
           </View>
         </View>
 
-        {batch.sets.length > 0 ? (
+        {batch.sets.length > 0 && (
           <FlatList
             data={batch.sets}
             keyExtractor={(set) => set.id.toString()}
@@ -56,13 +83,21 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
                 <View style={styles.inputContainer}>
                   <Text style={styles.resultValue}>{set.rpe ? set.rpe : '-'}</Text>
                 </View>
+                <View style={styles.inputContainer}>
+                  <TouchableOpacity onPress={async () => await toggleDone(set.id)}>
+                    <Icon
+                      name={set.completed ? 'checkmark-circle' : 'ellipse-outline'}
+                      size={24}
+                      color={set.completed ? Colors.green : Colors.text}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
             )}
           />
-        ) : (
-          <View></View>
         )}
       </View>
+
       {!isExerciseFinished && (
         <>
           <View style={styles.inputRow}>
@@ -96,14 +131,24 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
                 keyboardType="number-pad"
                 returnKeyType="done"
                 onChangeText={(value) => onInputChange(batch.id, 'rpe', value)}
-                onSubmitEditing={() => isAddEnabled && onAddSet(batch.id)}
               />
+            </View>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity
+                onPress={() => onAddSet(batch.id, true)}
+              >
+                <Icon
+                  name={batch.completed ? 'checkmark-circle' : 'ellipse-outline'}
+                  size={24}
+                  color={batch.completed ? Colors.green : Colors.text}
+                />
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={[styles.button, !isAddEnabled && styles.buttonDisabled]}
-              onPress={() => onAddSet(batch.id)}
+              onPress={() => onAddSet(batch.id, false)}
               disabled={!isAddEnabled}
             >
               <Text style={styles.buttonText}>Add Set</Text>
@@ -119,6 +164,7 @@ export const BatchItem: React.FC<BatchItemProps> = ({ batch, onAddSet, onInputCh
           </View>
         </>
       )}
+
       {isExerciseFinished && (
         <TouchableOpacity
           style={styles.button}
@@ -139,42 +185,16 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 5,
   },
-  placeholderRow: {
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  placeholderText: {
-    fontSize: 16,
-    color: Colors.text,
-    fontStyle: 'italic',
-  },
   batchContainer: {
     marginBottom: 20,
     padding: 15,
-    backgroundColor: Colors.backgroundSecondary,
-    color: Colors.text,
+    backgroundColor: Colors.background,
     borderRadius: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  },
-  setDetailsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginVertical: 5,
-  },
-  setLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text,
-  },
-  setValue: {
-    fontSize: 16,
-    fontWeight: 'normal',
-    color: Colors.text,
   },
   batchTitle: {
     fontSize: 18,
@@ -186,42 +206,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  inputContainerHeader: {
+    flex: 1,
+    marginHorizontal: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   inputContainer: {
     flex: 1,
     marginHorizontal: 5,
+    justifyContent: 'center',
   },
   input: {
     padding: 10,
-    marginBottom: 10,
     borderRadius: 8,
     fontSize: 16,
     color: Colors.text,
     backgroundColor: Colors.card,
+    textAlign: 'center',
   },
-  setText: {
-    fontSize: 16,
-    marginTop: 5,
-    color: Colors.text,
-  },
-  label: {
-    fontSize: 16,
-    color: Colors.text,
-    marginBottom: 5,
+  boolInput: {
+    textAlign: 'center',
   },
   buttonContainer: {
-    flexDirection: 'column',
     alignItems: 'center',
     marginBottom: 10,
   },
   button: {
-    marginVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
+    backgroundColor: Colors.primary,
   },
   buttonDisabled: {
-    marginVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 20,
     backgroundColor: Colors.background,
   },
   buttonText: {
@@ -235,9 +252,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 5,
   },
+  headerRow: {
+    marginBottom: 10,
+  },
   resultValue: {
     padding: 10,
-    marginBottom: 10,
     borderRadius: 8,
     fontSize: 16,
     color: Colors.text,

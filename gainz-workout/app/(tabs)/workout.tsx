@@ -22,14 +22,14 @@ const screenHeight = Dimensions.get('window').height;
 export default function WorkoutScreen() {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutId, setWorkoutId] = useState<number | null>(null);
-  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [activeForm, setActiveForm] = useState<string | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<string | null>(null);
   const [exercises, setExercises] = useState<Array<Exercise>>([]);
   const [equipment, setEquipment] = useState<Array<Equipment>>([]);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
-  const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string }>>([]); //TODO: wtf is this?
+  const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string, completed: boolean }>>([]); //TODO: wtf is this?
   const [filteredEquipment, setFilteredEquipment] = useState<Array<Equipment>>([]);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
@@ -126,6 +126,12 @@ export default function WorkoutScreen() {
     }
   };
 
+  const resetSelections = () => {
+    setSelectedAttachment(null);
+    setSelectedEquipment(null);
+    setSelectedExercise(null);
+  }
+
   const fetchAttachments = async () => {
     try {
       const fetchedAttachments = await Attachment.findAll();
@@ -140,6 +146,7 @@ export default function WorkoutScreen() {
       const newWorkout = await Workout.create(new Date().toISOString(), '');
       setWorkoutId(newWorkout.id);
       setWorkoutStarted(true);
+      resetSelections();
     } catch (error) {
       console.error('Error starting workout:', error);
     }
@@ -150,11 +157,14 @@ export default function WorkoutScreen() {
     await Workout.endWorkout(workoutId!, new Date().toISOString());
     resetWorkoutState();
     setWorkoutStarted(false);
+    resetSelections();
   };
 
   const handleCancelWorkout = () => {
     setShowCancelModal(false);
     setWorkoutStarted(false);
+    resetWorkoutState();
+    resetSelections();
   };
 
   const resetWorkoutState = () => {
@@ -163,7 +173,7 @@ export default function WorkoutScreen() {
     setBatches([]);
   };
 
-  const handleAddSet = async (batchId: number) => {
+  const handleAddSet = async (batchId: number, completed: boolean) => {
     const batch = batches.find(b => b.id === batchId);
     const exerciseName = getExerciseNameFromExerciseString(batch!.name);
 
@@ -176,7 +186,8 @@ export default function WorkoutScreen() {
           parseInt(batch.reps),
           parseFloat(batch.weight),
           parseFloat(batch.rpe),
-          batchId
+          batchId,
+          completed
         );
 
         updateBatch(batchId, { sets: [...batch.sets, newSet], reps: '', weight: '', rpe: '' });
@@ -190,18 +201,19 @@ export default function WorkoutScreen() {
     if (selectedExercise && selectedEquipment) {
       var newBatch: Batch;
       if (selectedAttachment) {
-        newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment), parseInt(selectedAttachment));
+        newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment), parseInt(selectedAttachment), false);
       } else {
-        newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment));
+        newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment), 0, false);
       }
       setBatches([...batches, {
         id: newBatch.id, name: exercises.find(e => e.id === parseInt(selectedExercise))!.name + ' (' + equipment.find(e => e.id === parseInt(selectedEquipment))!.name + ')',
-        sets: [], reps: '', weight: '', rpe: ''
+        sets: [], reps: '', weight: '', rpe: '', completed: false
       }]);
       toggleFormVisibility(null);
     } else {
       Logger.log_error('Error adding exercise:', 'Exercise and equipment must be selected');
     }
+    resetSelections();
   };
 
   const handleExerciseSelection = async (exerciseId: string) => {
@@ -229,9 +241,14 @@ export default function WorkoutScreen() {
     updateBatch(batchId, { [field]: value });
   };
 
-  const handleFinishExercise = (batchId: number) => {
-    updateBatch(batchId, { sets: [], reps: '', weight: '', rpe: '' });
+  const handleFinishExercise = async (batchId: number) => {
+    await Batch.toggleCompletion(batchId);
   };
+
+  const onToggleSetCompletion = async (setId: number) => {
+    console.log("toggle set completion set id: ", setId);
+    await Set.toggleCompletion(setId);
+  }
 
   const [showForm, setShowForm] = useState(false);
 
@@ -267,7 +284,7 @@ export default function WorkoutScreen() {
 
   const popOverHeight = popOverAnimationValue.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 150],
+    outputRange: [0, 220],
   });
 
   const popOverOpacity = popOverAnimationValue.interpolate({
@@ -382,6 +399,8 @@ export default function WorkoutScreen() {
               onAddSet={handleAddSet}
               onInputChange={handleInputChange}
               onFinishExercise={handleFinishExercise}
+              onToggleSetCompletion={onToggleSetCompletion}
+              updateBatch={updateBatch}
             />
 
             <View style={styles.buttonContainer}>

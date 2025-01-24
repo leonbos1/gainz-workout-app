@@ -11,7 +11,6 @@ const ChartList: React.FC<ChartListProps> = ({ enabledGraphVms }) => {
   const renderItem = ({ item }: { item: GraphViewModel }) => (
     <View key={item.graph.id}>
       <Chart data={item.data} title={item.graphTitle} />
-      <Text>{item.graphTitle}</Text>
     </View>
   );
 
