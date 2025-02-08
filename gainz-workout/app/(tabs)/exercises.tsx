@@ -80,7 +80,7 @@ export default function ExercisesScreen() {
       <View style={styles.titleContainer}>
         <Text style={styles.screenTitle}>Exercises</Text>
       </View>
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: 'center', marginBottom: 10 }}>
         <BigIconButton iconName="add-circle" text="Add" onPress={() => setIsAddMode(true)} />
       </View>
       <ScrollView>
