@@ -13,24 +13,24 @@ import { Exercise } from '@/models/Exercise';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../IconButton';
+import { useRouter } from 'expo-router';
 
-// Enable LayoutAnimation on Android
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 }
 
+const router = useRouter();
+
 interface ExerciseItemProps {
   exercise: Exercise;
-  onDetails: (exercise: Exercise) => void;
   onEdit: (exercise: Exercise) => void;
   onDelete: (exercise: Exercise) => void;
 }
 
 export default function ExerciseItem({
   exercise,
-  onDetails,
   onEdit,
   onDelete,
 }: ExerciseItemProps) {
@@ -46,6 +46,10 @@ export default function ExerciseItem({
   const handleDelete = () => {
     setIsModalVisible(false);
     onDelete(exercise);
+  };
+
+  const handleDetails = (exercise: Exercise) => {
+    router.navigate(`../exercises/${exercise.id.toString()}`);
   };
 
   return (
@@ -65,7 +69,7 @@ export default function ExerciseItem({
       {actionMenuVisible && (
         <View style={styles.actionMenu}>
           <TouchableOpacity
-            onPress={() => onDetails(exercise)}
+            onPress={() => handleDetails(exercise)}
             style={styles.actionMenuItem}
           >
             <Ionicons name="newspaper" size={20} color={Colors.white} />

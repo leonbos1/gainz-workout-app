@@ -40,4 +40,12 @@ export class MuscleGroup {
 
     return true;
   }
+
+  static async findById(id: number): Promise<MuscleGroup> {
+    const db = await Database.getDbConnection();
+
+    const row = await db.getFirstAsync('SELECT * FROM musclegroup WHERE id = ?', [id]) as MuscleGroupRow;
+
+    return new MuscleGroup(row.id, row.name);
+  }
 }

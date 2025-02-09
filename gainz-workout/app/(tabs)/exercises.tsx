@@ -67,10 +67,6 @@ export default function ExercisesScreen() {
     console.log('Editing exercise:', exercise);
   };
 
-  const handleOnDetails = async (exercise: Exercise) => {
-    console.log('Viewing details for exercise:', exercise);
-  };
-
   useEffect(() => {
     fetchExercises();
   }, []);
@@ -85,7 +81,7 @@ export default function ExercisesScreen() {
       </View>
       <ScrollView>
         {exercises.map((exercise, index) => (
-          <ExerciseItem key={index} exercise={exercise} onEdit={handleOnEdit} onDelete={handleOnDelete} onDetails={handleOnDetails}
+          <ExerciseItem key={index} exercise={exercise} onEdit={handleOnEdit} onDelete={handleOnDelete}
           />
         ))}
       </ScrollView>

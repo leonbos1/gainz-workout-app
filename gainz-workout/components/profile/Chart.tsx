@@ -50,7 +50,7 @@ export function Chart({ data, title }: ChartProps): JSX.Element {
                         strokeDasharray: '',
                     },
                     propsForLabels: {
-                        fontSize: 12,
+                        fontSize: 10,
                     },
                 }}
                 bezier
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 16,
         backgroundColor: Colors.background,
+        width: '100%'
     },
     chart: {
         borderRadius: 16,
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     chartTitle: {
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 'bold',
         color: Colors.text,
         padding: 10,

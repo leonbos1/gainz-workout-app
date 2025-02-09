@@ -50,6 +50,7 @@ export function ChartSelector({
                     </View>
                 ))}
             </View>
+
             <View style={styles.buttonContainer}>
                 <IconButton
                     text="Add Chart"

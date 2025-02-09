@@ -118,6 +118,7 @@ export class Set {
   static async getEstimated1RM(exerciseId: number, weeks: number): Promise<ChartDataset> {
     const db = await Database.getDbConnection();
 
+    // Assuming you have a round() function; otherwise, use Math.round
     weeks = round(weeks);
 
     const rows = await db.getAllAsync(`
@@ -132,23 +133,29 @@ export class Set {
       LIMIT ?
     `, [exerciseId, weeks]) as { monday: string, estimated1RM: number }[];
 
-    const data: number[] = new Array(9).fill(0);
-    const labels: string[] = new Array(9).fill('');
+    // Reverse rows for chronological order.
+    rows.reverse();
+
+    const data: number[] = [];
+    const labels: string[] = [];
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     rows.forEach((row, index) => {
       data[index] = row.estimated1RM;
       const date = new Date(row.monday);
-      labels[index] = `${date.getMonth() + 1}/${date.getDate()}`;
+      const year = date.getFullYear();
+      const monthLabel = monthNames[date.getMonth()];
+      // If it's January, append the year; otherwise, show just the month.
+      const label = (date.getMonth() === 0) ? `${monthLabel} ${year}` : monthLabel;
+      labels[index] = label;
     });
 
-    data.reverse();
-    labels.reverse();
-
+    const totalLabelsToShow = 8;
+    const interval = Math.ceil(labels.length / totalLabelsToShow);
     for (let i = 0; i < labels.length; i++) {
-      if (i % 5 !== 0) {
+      if (i % interval !== 0) {
         labels[i] = '';
       }
-      //TODO: iets toevoegen dat jaartallen er in komen
     }
 
     const exercise = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };
@@ -161,21 +168,22 @@ export class Set {
 
     weeks = Math.round(weeks);
 
-    // Generate the date range for the last `weeks` weeks
-    const endDate = new Date(); // Current date
+    // Generate the date range for the last `weeks` weeks.
+    const endDate = new Date(); // current date
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - weeks * 7);
 
     const dateRange: { monday: string; volume: number }[] = [];
     let currentMonday = new Date(startDate);
-    currentMonday.setDate(currentMonday.getDate() - currentMonday.getDay() + 1); // Ensure it's a Monday
+    // Adjust to Monday (assuming Monday is the first day of the week)
+    currentMonday.setDate(currentMonday.getDate() - currentMonday.getDay() + 1);
 
     while (currentMonday <= endDate) {
       dateRange.push({ monday: currentMonday.toISOString().split('T')[0], volume: 0 });
-      currentMonday.setDate(currentMonday.getDate() + 7); // Move to the next Monday
+      currentMonday.setDate(currentMonday.getDate() + 7); // next Monday
     }
 
-    // Query the database for volume data
+    // Query the database for volume data.
     const rows = await db.getAllAsync(
       `
       SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 
@@ -190,39 +198,31 @@ export class Set {
       [exerciseId]
     ) as { monday: string; volume: number }[];
 
-    // Merge database results with the date range
     const data: number[] = [];
     const labels: string[] = [];
     let cumulativeVolume = 0;
-    let previousYear: number | null = null;
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     dateRange.forEach((week) => {
       const match = rows.find((row) => row.monday === week.monday);
       const weeklyVolume = match ? match.volume : 0;
       cumulativeVolume += weeklyVolume;
-
       data.push(cumulativeVolume);
 
       const date = new Date(week.monday);
       const year = date.getFullYear();
-      const monthDay = `${date.getMonth() + 1}/${date.getDate()}`;
-
-      // Include the year whenever it changes
-      if (previousYear !== year) {
-        labels.push(`${monthDay}/${year}`);
-        previousYear = year;
-      } else {
-        labels.push(monthDay); // Show only the month and day otherwise
-      }
+      const monthLabel = monthNames[date.getMonth()];
+      // Always include the year if it's January.
+      const label = (date.getMonth() === 0) ? `${monthLabel} ${year}` : monthLabel;
+      labels.push(label);
     });
 
-    // Ensure there are a consistent number of labels (e.g., 6)
-    const totalLabels = 6;
-    const interval = Math.ceil(labels.length / totalLabels);
-
+    // (Optional) Show only a subset of labels, for example every nh label.
+    const totalLabelsToShow = 8;
+    const interval = Math.ceil(labels.length / totalLabelsToShow);
     for (let i = 0; i < labels.length; i++) {
       if (i % interval !== 0) {
-        labels[i] = ''; // Clear labels not on the interval
+        labels[i] = '';
       }
     }
 
@@ -230,4 +230,5 @@ export class Set {
 
     return new ChartDataset(data, labels, exercise.name);
   }
+
 }
