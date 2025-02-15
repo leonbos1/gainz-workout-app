@@ -26,36 +26,38 @@ export function Chart({ data, title }: ChartProps): JSX.Element {
     return (
         <View style={styles.chartContainer}>
             <Text style={styles.chartTitle}>{title}</Text>
-            <LineChart
-                data={chartData}
-                width={screenWidth - 20}
-                height={screenHeight / 4}
-                chartConfig={{
-                    backgroundGradientFrom: Colors.background,
-                    backgroundGradientTo: Colors.background,
-                    color: (opacity = 1) => Colors.secundary,
-                    labelColor: (opacity = 1) => Colors.text,
-                    barPercentage: 0.5,
-                    fillShadowGradient: Colors.secundary,
-                    fillShadowGradientOpacity: 1,
-                    decimalPlaces: 0,
-                    style: {
-                        borderRadius: 16,
-                    },
-                    propsForDots: {
-                        r: '0',
-                    },
-                    propsForBackgroundLines: {
-                        stroke: Colors.background,
-                        strokeDasharray: '',
-                    },
-                    propsForLabels: {
-                        fontSize: 10,
-                    },
-                }}
-                bezier
-                style={styles.chart}
-            />
+            {chartData.datasets.length > 0 && (
+                <LineChart
+                    data={chartData}
+                    width={screenWidth - 20}
+                    height={screenHeight / 4}
+                    chartConfig={{
+                        backgroundGradientFrom: Colors.background,
+                        backgroundGradientTo: Colors.background,
+                        color: (opacity = 1) => Colors.secundary,
+                        labelColor: (opacity = 1) => Colors.text,
+                        barPercentage: 0.5,
+                        fillShadowGradient: Colors.secundary,
+                        fillShadowGradientOpacity: 1,
+                        decimalPlaces: 0,
+                        style: {
+                            borderRadius: 16,
+                        },
+                        propsForDots: {
+                            r: '0',
+                        },
+                        propsForBackgroundLines: {
+                            stroke: Colors.background,
+                            strokeDasharray: '',
+                        },
+                        propsForLabels: {
+                            fontSize: 10,
+                        },
+                    }}
+                    bezier
+                    style={styles.chart}
+                />
+            )}
         </View>
     );
 }

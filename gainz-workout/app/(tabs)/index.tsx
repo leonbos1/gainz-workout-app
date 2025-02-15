@@ -37,8 +37,8 @@ export default function ProfileScreen() {
   }, []);
 
   useEffect(() => {
-    fetchGraphs();
     seedData();
+    fetchGraphs();
   }, [fetchGraphs]);
 
   const toggleChartSelector = () => {

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { FlatList, View, Text } from 'react-native';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
 import { Chart } from './Chart';
@@ -23,4 +23,4 @@ const ChartList: React.FC<ChartListProps> = ({ enabledGraphVms }) => {
   );
 };
 
-export default memo(ChartList);
+export default ChartList;

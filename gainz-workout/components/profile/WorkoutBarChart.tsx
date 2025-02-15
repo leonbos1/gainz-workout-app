@@ -11,37 +11,39 @@ export const WorkoutBarChart: React.FC<{ workoutWeekData: WorkoutWeekData }> = (
   return (
     <View style={styles.chartContainer}>
       <Text style={styles.chartTitle}>{workoutWeekData.title}</Text>
-      <BarChart
-        data={workoutWeekData}
-        width={screenWidth - 20}
-        height={screenHeight / 4}
-        yAxisLabel=""
-        yAxisSuffix=""
-        yAxisInterval={1}
-        showBarTops={true}
-        fromZero={true}
-        chartConfig={{
-          backgroundGradientFrom: Colors.background,
-          backgroundGradientTo: Colors.background,
-          color: (opacity = 1) => Colors.secundary,
-          labelColor: (opacity = 1) => Colors.text,
-          barPercentage: 0.6,
-          fillShadowGradient: Colors.secundary,
-          fillShadowGradientOpacity: 1,
-          decimalPlaces: 0,
-          style: {
-            borderRadius: 16,
-          },
-          propsForBackgroundLines: {
-            stroke: Colors.backgroundSecondary,
-            strokeDasharray: '',
-          },
-          propsForLabels: {
-            fontSize: 12,
-          },
-        }}
-        style={styles.chart}
-      />
+      {workoutWeekData.datasets.length > 0 && (
+        <BarChart
+          data={workoutWeekData}
+          width={screenWidth - 20}
+          height={screenHeight / 4}
+          yAxisLabel=""
+          yAxisSuffix=""
+          yAxisInterval={1}
+          showBarTops={true}
+          fromZero={true}
+          chartConfig={{
+            backgroundGradientFrom: Colors.background,
+            backgroundGradientTo: Colors.background,
+            color: (opacity = 1) => Colors.secundary,
+            labelColor: (opacity = 1) => Colors.text,
+            barPercentage: 0.6,
+            fillShadowGradient: Colors.secundary,
+            fillShadowGradientOpacity: 1,
+            decimalPlaces: 0,
+            style: {
+              borderRadius: 16,
+            },
+            propsForBackgroundLines: {
+              stroke: Colors.background,
+              strokeDasharray: '',
+            },
+            propsForLabels: {
+              fontSize: 12,
+            },
+          }}
+          style={styles.chart}
+        />
+      )}
     </View>
   );
 };
@@ -54,8 +56,8 @@ const styles = StyleSheet.create({
   },
   chart: {
     borderRadius: 16,
-    backgroundColor: Colors.backgroundSecondary,
-    shadowColor: Colors.backgroundSecondary,
+    backgroundColor: Colors.background,
+    shadowColor: Colors.background,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
