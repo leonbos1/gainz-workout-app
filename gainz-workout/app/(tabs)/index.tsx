@@ -98,7 +98,6 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Dropdown and ChartSelector */}
       <View>
         <View style={styles.collapsedContainer}>
           <TouchableOpacity onPress={toggleChartSelector} style={styles.dropdownToggle}>
@@ -120,9 +119,11 @@ export default function ProfileScreen() {
             toggleFormVisibility={toggleFormVisibility}
           />
         </Animated.View>
+        {addGraphFormVisible && (
+          <Text>Form popover here</Text>
+        )}
       </View>
 
-      {/* Scrollable ChartList */}
       <View style={styles.chartListContainer}>
         <ChartList enabledGraphVms={enabledGraphVms} />
       </View>
