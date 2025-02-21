@@ -119,8 +119,8 @@ export default function ProfileScreen() {
             toggleFormVisibility={toggleFormVisibility}
           />
         </Animated.View>
-        {addGraphFormVisible && (
-          <Text>Form popover here</Text>
+        {activeForm == 'AddGraphForm' && (
+          <AddGraphForm toggleFormVisibility={toggleFormVisibility} />
         )}
       </View>
 

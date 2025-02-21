@@ -20,7 +20,7 @@ export function ChartSelector({
     setEnabledGraphVms,
     allChartVms,
     setAllChartVms,
-    toggleFormVisibility,
+    toggleFormVisibility
 }: ChartSelectorProps) {
     const enabledGraphIds = new Set(enabledGraphVms.map(vm => vm.graph.id));
 
