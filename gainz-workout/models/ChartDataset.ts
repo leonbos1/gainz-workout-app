@@ -47,17 +47,20 @@ export class ChartDataset {
     try {
       weeks = round(weeks);
 
-      const rows = await db.getAllAsync(`
-      SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 
-             MAX(es.weight * (1 + (es.amount * 0.0333))) as estimated1RM
-      FROM exerciseset es
-      JOIN batch b ON es.batchid = b.id
-      JOIN workout w ON b.workoutid = w.id
-      WHERE es.exerciseid = ?
-      GROUP BY monday
-      ORDER BY monday DESC
-      LIMIT ?
-    `, [exerciseId, weeks]) as { monday: string, estimated1RM: number }[];
+      const rows = await db.getAllAsync(
+        `
+        SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 
+               MAX(es.weight * (1 + (es.amount * 0.0333))) as estimated1RM
+        FROM exerciseset es
+        JOIN batch b ON es.batchid = b.id
+        JOIN workout w ON b.workoutid = w.id
+        WHERE es.exerciseid = ?
+        GROUP BY monday
+        ORDER BY monday DESC
+        LIMIT ?
+        `,
+        [exerciseId, weeks]
+      ) as { monday: string, estimated1RM: number }[];
 
       // Reverse rows for chronological order.
       rows.reverse();
@@ -76,6 +79,13 @@ export class ChartDataset {
         labels[index] = label;
       });
 
+      // If no rows were returned, ensure at least two data points to avoid division by zero in the chart.
+      if (data.length === 0) {
+        data.push(0, 0);
+        labels.push('', '');
+      }
+
+      // Optionally adjust labels to show only a subset.
       const totalLabelsToShow = 8;
       const interval = Math.ceil(labels.length / totalLabelsToShow);
       for (let i = 0; i < labels.length; i++) {
@@ -84,7 +94,15 @@ export class ChartDataset {
         }
       }
 
-      const exercise = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };
+      const exercise = await db.getFirstAsync(
+        'SELECT name FROM exercise WHERE id = ?',
+        [exerciseId]
+      ) as { name: string };
+
+      console.log(data);
+      console.log(labels);
+      console.log(exercise);
+      console.log("1RM");
 
       return new ChartDataset(data, labels, exercise.name);
     }
@@ -159,6 +177,10 @@ export class ChartDataset {
       }
 
       const exercise = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };
+      console.log(data);
+      console.log(labels);
+      console.log(exercise);
+      console.log("Volume");
 
       return new ChartDataset(data, labels, exercise.name);
     }

@@ -9,7 +9,7 @@ import { Colors } from '@/constants/Colors';
 import formProps from '@/app/props/formProps';
 
 
-const AddGraphForm: React.FC<formProps> = ({ toggleFormVisibility }) => {
+const AddGraphForm: React.FC<formProps> = ({ fetchGraphs, toggleFormVisibility }) => {
     const [graphType, setGraphType] = useState<number | null>(null);
     const [exercise, setExercise] = useState<number | null>(null);
     const [enabled, setEnabled] = useState<boolean>(true);
@@ -38,10 +38,12 @@ const AddGraphForm: React.FC<formProps> = ({ toggleFormVisibility }) => {
             if (graphType !== null && exercise !== null && time !== null) {
                 await Graph.create(graphType, exercise, enabled, time);
                 alert('Graph added successfully!');
+                await fetchGraphs();
             } else {
                 alert('Please select a graph type, exercise, and time.');
             }
             alert('Graph added successfully!');
+            await fetchGraphs();
         } else {
             alert('Please select a graph type and exercise.');
         }
@@ -107,6 +109,8 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 5,
         margin: 20,
+        position: 'absolute',
+        zIndex: 10000,
     },
     title: {
         fontSize: 20,

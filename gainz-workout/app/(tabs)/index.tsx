@@ -109,19 +109,19 @@ export default function ProfileScreen() {
             </Animated.View>
           </TouchableOpacity>
         </View>
-        <Animated.View style={[styles.animatedContainer, chartSelectorStyle]}>
-          <ChartSelector
-            enabledGraphVms={enabledGraphVms}
-            setEnabledGraphVms={setEnabledGraphVms}
-            toggleGraphEnabled={() => { }}
-            allChartVms={allChartVms}
-            setAllChartVms={setAllChartVms}
-            toggleFormVisibility={toggleFormVisibility}
-          />
-        </Animated.View>
-        {activeForm == 'AddGraphForm' && (
-          <AddGraphForm toggleFormVisibility={toggleFormVisibility} />
-        )}
+          <Animated.View style={[styles.animatedContainer, chartSelectorStyle]}>
+            <ChartSelector
+              enabledGraphVms={enabledGraphVms}
+              setEnabledGraphVms={setEnabledGraphVms}
+              toggleGraphEnabled={() => { }}
+              allChartVms={allChartVms}
+              setAllChartVms={setAllChartVms}
+              toggleFormVisibility={toggleFormVisibility}
+            />
+          </Animated.View>
+          {activeForm == 'AddGraphForm' && (
+            <AddGraphForm fetchGraphs={fetchGraphs} toggleFormVisibility={toggleFormVisibility} />
+          )}
       </View>
 
       <View style={styles.chartListContainer}>
@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     overflow: 'hidden',
+    height: '100%'
   },
   chartListContainer: {
     flex: 1,

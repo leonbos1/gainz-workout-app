@@ -110,14 +110,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: Colors.background,
     marginBottom: 20,
-    borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    borderWidth: 1,
-    borderColor: Colors.background,
   },
   header: {
     marginBottom: 15,
@@ -155,8 +152,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 8,
     width: '100%',
-    borderWidth: 1,
-    borderColor: Colors.white,
+    backgroundColor: Colors.card
   },
   setText: {
     fontSize: 16,

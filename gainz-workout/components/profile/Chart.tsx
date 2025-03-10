@@ -8,83 +8,87 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
 interface ChartProps {
-    data: ChartDataset;
-    title: string;
+  data: ChartDataset;
+  title: string;
 }
 
 export function Chart({ data, title }: ChartProps): JSX.Element {
-    const chartData = {
-        labels: data.labels,
-        datasets: [
-            {
-                data: data.data,
-                strokeWidth: data.strokeWidth || 2,
-            },
-        ],
-    };
+  // Sanitize data values to prevent any Infinity or NaN issues
+  const safeData = data.data.map((value: number) =>
+    Number.isFinite(value) ? value : 0
+  );
 
-    return (
-        <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>{title}</Text>
-            {chartData.datasets.length > 0 && (
-                <LineChart
-                    data={chartData}
-                    width={screenWidth - 20}
-                    height={screenHeight / 4}
-                    chartConfig={{
-                        backgroundGradientFrom: Colors.background,
-                        backgroundGradientTo: Colors.background,
-                        color: (opacity = 1) => Colors.secundary,
-                        labelColor: (opacity = 1) => Colors.text,
-                        barPercentage: 0.5,
-                        fillShadowGradient: Colors.secundary,
-                        fillShadowGradientOpacity: 1,
-                        decimalPlaces: 0,
-                        style: {
-                            borderRadius: 16,
-                        },
-                        propsForDots: {
-                            r: '0',
-                        },
-                        propsForBackgroundLines: {
-                            stroke: Colors.background,
-                            strokeDasharray: '',
-                        },
-                        propsForLabels: {
-                            fontSize: 10,
-                        },
-                    }}
-                    bezier
-                    style={styles.chart}
-                />
-            )}
-        </View>
-    );
+  const chartData = {
+    labels: data.labels,
+    datasets: [
+      {
+        data: safeData,
+        strokeWidth: data.strokeWidth || 2,
+      },
+    ],
+  };
+
+  return (
+    <View style={styles.chartContainer}>
+      <Text style={styles.chartTitle}>{title}</Text>
+      {chartData.datasets.length > 0 && (
+        <LineChart
+          data={chartData}
+          width={screenWidth - 20}
+          height={screenHeight / 4}
+          chartConfig={{
+            backgroundGradientFrom: Colors.background,
+            backgroundGradientTo: Colors.background,
+            color: (opacity = 1) => Colors.secundary,
+            labelColor: (opacity = 1) => Colors.text,
+            barPercentage: 0.5,
+            fillShadowGradient: Colors.secundary,
+            fillShadowGradientOpacity: 1,
+            decimalPlaces: 0,
+            style: {
+              borderRadius: 16,
+            },
+            propsForDots: {
+              r: '0',
+            },
+            propsForBackgroundLines: {
+              stroke: Colors.background,
+              strokeDasharray: '',
+            },
+            propsForLabels: {
+              fontSize: 10,
+            },
+          }}
+          bezier
+          style={styles.chart}
+        />
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    chartContainer: {
-        alignItems: 'center',
-        marginVertical: 16,
-        backgroundColor: Colors.background,
-        width: '100%'
-    },
-    chart: {
-        borderRadius: 16,
-        backgroundColor: Colors.background,
-        shadowColor: Colors.background,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    chartTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: Colors.text,
-        padding: 10,
-    },
+  chartContainer: {
+    alignItems: 'center',
+    marginVertical: 16,
+    backgroundColor: Colors.background,
+    width: '100%',
+  },
+  chart: {
+    borderRadius: 16,
+    backgroundColor: Colors.background,
+    shadowColor: Colors.background,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  chartTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.text,
+    padding: 10,
+  },
 });
-
 
 export { ChartDataset };

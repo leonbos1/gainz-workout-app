@@ -1,3 +1,5 @@
+import { BMICalculator } from '@/components/BmiCalculator';
+import { BMRCalculator } from '@/components/BmrCalculator';
 import { RmCalculator } from '@/components/RmCalculator';
 import { RpeCalculator } from '@/components/RpeCalculator';
 import { Colors } from '@/constants/Colors';
@@ -13,13 +15,10 @@ export default function ToolsScreen() {
       <View style={styles.titleContainer}>
         <Text style={styles.screenTitle}>Tools</Text>
       </View>
-      <TouchableOpacity>
-        <Link href="/databaseManagement">
-          <Text style={styles.text}>Database Management</Text>
-        </Link>
-      </TouchableOpacity>
       <RmCalculator />
       <RpeCalculator />
+      <BMICalculator />
+      <BMRCalculator />
     </ScrollView>
   );
 }

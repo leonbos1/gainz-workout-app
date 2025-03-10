@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 interface ExerciseSelectListProps {
   selectedExercise: string | null;
@@ -43,7 +44,17 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            {/* Search input */}
+            {/* Icon Row */}
+            <View style={styles.iconContainer}>
+              <TouchableOpacity style={styles.iconButton}>
+                <FontAwesome name="filter" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconButton}>
+                <FontAwesome name="sort-amount-desc" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Search Input */}
             <View style={styles.searchContainer}>
               <TextInput
                 style={styles.searchTextInput}
@@ -54,6 +65,7 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
               />
             </View>
 
+            {/* Exercises List */}
             <FlatList
               data={filteredExercises}
               keyExtractor={(item) => item.value}
@@ -64,10 +76,12 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
               )}
             />
 
+            {/* Close Button */}
             <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
+
         </View>
       </Modal>
     </View>
@@ -78,6 +92,15 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     marginBottom: 20,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  iconButton: {
+    padding: 10,
   },
   dropdown: {
     backgroundColor: Colors.card,
