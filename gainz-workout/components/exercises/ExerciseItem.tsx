@@ -1,27 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Modal,
-  LayoutAnimation,
-  Platform,
-  UIManager,
 } from 'react-native';
 import { Exercise } from '@/models/Exercise';
 import { Colors } from '@/constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
-import IconButton from '../IconButton';
 import { useRouter } from 'expo-router';
-
-if (Platform.OS === 'android') {
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-}
-
-const router = useRouter();
+import { MuscleGroup } from '@/models/MuscleGroup';
 
 interface ExerciseItemProps {
   exercise: Exercise;
@@ -29,24 +16,26 @@ interface ExerciseItemProps {
   onDelete: (exercise: Exercise) => void;
 }
 
-export default function ExerciseItem({
-  exercise,
-  onEdit,
-  onDelete,
-}: ExerciseItemProps) {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [actionMenuVisible, setActionMenuVisible] = useState(false);
+export default function ExerciseItem({ exercise }: ExerciseItemProps) {
+  const router = useRouter();
+  const [musclegroup, setMusclegroup] = useState<MuscleGroup | null>(null);
 
-  const toggleActionMenu = () => {
-    // Animate the next layout change
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setActionMenuVisible(!actionMenuVisible);
-  };
+  useEffect(() => {
+    fetchMusclegroup();
+  }, []);
 
-  const handleDelete = () => {
-    setIsModalVisible(false);
-    onDelete(exercise);
-  };
+  const fetchMusclegroup = async () => {
+    try {
+      if (exercise == null || exercise.musclegroupid == null) {
+        return;
+      }
+      const mg = await MuscleGroup.findById(exercise.musclegroupid);
+      setMusclegroup(mg);
+    }
+    catch (error) {
+      console.error('Error fetching musclegroup:', error);
+    }
+  }
 
   const handleDetails = (exercise: Exercise) => {
     router.navigate(`../exercises/${exercise.id.toString()}`);
@@ -55,86 +44,28 @@ export default function ExerciseItem({
   return (
     <View style={styles.exerciseItem}>
       {/* Exercise Name and Description */}
-      <View style={styles.headerContainer}>
-        <View>
-          <Text style={styles.exerciseName}>{exercise.name}</Text>
-          <Text style={styles.exerciseDescription}>{exercise.description}</Text>
-        </View>
-        <TouchableOpacity onPress={toggleActionMenu} style={styles.menuButton}>
-          <Ionicons name="ellipsis-horizontal" size={24} color={Colors.white} />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={() => handleDetails(exercise)} style={styles.menuButton}>
+        <View style={styles.headerContainer}>
+          <View style={styles.exerciseView}>
+            <Text style={styles.exerciseName}>{exercise.name}</Text>
+            <Text style={styles.muscleGroupName}>{musclegroup?.name}</Text>
 
-      {/* Action Menu */}
-      {actionMenuVisible && (
-        <View style={styles.actionMenu}>
-          <TouchableOpacity
-            onPress={() => handleDetails(exercise)}
-            style={styles.actionMenuItem}
-          >
-            <Ionicons name="newspaper" size={20} color={Colors.white} />
-            <Text style={styles.actionText}>Details</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => onEdit(exercise)}
-            style={styles.actionMenuItem}
-          >
-            <Ionicons name="pencil" size={20} color={Colors.white} />
-            <Text style={styles.actionText}>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setIsModalVisible(true)}
-            style={styles.actionMenuItem}
-          >
-            <Ionicons name="trash" size={20} color={Colors.white} />
-            <Text style={styles.actionText}>Delete</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        transparent
-        visible={isModalVisible}
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>
-              Are you sure you want to delete this exercise?
-            </Text>
-            <View style={styles.modalButtonContainer}>
-              <IconButton
-                iconName="ban"
-                text="Cancel"
-                onPress={() => setIsModalVisible(false)}
-              />
-              <IconButton
-                iconName="trash"
-                text="Delete"
-                onPress={handleDelete}
-                style={styles.deleteButton}
-              />
-            </View>
           </View>
         </View>
-      </Modal>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  exerciseView: {
+    marginLeft: 10,
+  },
   exerciseItem: {
     padding: 5,
     marginVertical: 8,
-    backgroundColor: Colors.secundary,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
+    // backgroundColor: Colors.primary,
+    borderRadius: 6,
     zIndex: 1,
   },
   headerContainer: {
@@ -143,8 +74,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   exerciseName: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '600',
+    color: Colors.text,
+  },
+  muscleGroupName: {
+    fontSize: 14,
+    fontWeight: '400',
     color: Colors.text,
   },
   exerciseDescription: {
@@ -154,11 +90,8 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     padding: 8,
-    backgroundColor: Colors.secundary,
-    borderRadius: 8,
   },
   actionMenu: {
-    borderRadius: 12,
     padding: 10,
     marginTop: 10,
   },
@@ -182,7 +115,6 @@ const styles = StyleSheet.create({
     width: 320,
     padding: 25,
     backgroundColor: Colors.card,
-    borderRadius: 12,
     alignItems: 'center',
   },
   modalText: {

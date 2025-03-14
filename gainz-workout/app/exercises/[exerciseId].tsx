@@ -108,7 +108,7 @@ export default function ExerciseDetailsScreen() {
 
         {/* Charts Tab */}
         <View style={[styles.page, { width: screenWidth }]}>
-          {chartDataFirst && <Chart data={chartDataFirst} title="aEstimated 1RM" />}
+          {chartDataFirst && <Chart data={chartDataFirst} title="Estimated 1 Rep Max" />}
           {chartDataSecond && <Chart data={chartDataSecond} title="Volume" />}
         </View>
 

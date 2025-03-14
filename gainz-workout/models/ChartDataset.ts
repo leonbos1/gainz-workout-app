@@ -99,11 +99,6 @@ export class ChartDataset {
         [exerciseId]
       ) as { name: string };
 
-      console.log(data);
-      console.log(labels);
-      console.log(exercise);
-      console.log("1RM");
-
       return new ChartDataset(data, labels, exercise.name);
     }
     catch (error) {
@@ -177,10 +172,6 @@ export class ChartDataset {
       }
 
       const exercise = await db.getFirstAsync('SELECT name FROM exercise WHERE id = ?', [exerciseId]) as { name: string };
-      console.log(data);
-      console.log(labels);
-      console.log(exercise);
-      console.log("Volume");
 
       return new ChartDataset(data, labels, exercise.name);
     }

@@ -66,7 +66,7 @@ export class Exercise {
     return result.id;
   }
 
-  static async findRecent(limit: number): Promise<ExerciseRow[]> {
+  static async findRecent(limit: number): Promise<Exercise[]> {
     const db = await Database.getDbConnection();
 
     const lastWorkouts = await db.getAllAsync(
@@ -80,7 +80,7 @@ export class Exercise {
 
     const workoutIds = lastWorkouts.map(workout => workout.id).join(',');
 
-    const rows = await db.getAllAsync(
+    var rows = await db.getAllAsync(
       `SELECT exercise.* FROM exercise
        JOIN exerciseset ON exercise.id = exerciseset.exerciseid
        JOIN batch ON exerciseset.batchid = batch.id
@@ -90,7 +90,9 @@ export class Exercise {
        ORDER BY MAX(workout.starttime) DESC`
     ) as ExerciseRow[];
 
-    return rows.slice(0, limit);
+    rows = rows.slice(0, limit);
+
+    return rows.map(row => new Exercise(row.id, row.name, row.description, row.musclegroupid));
   }
 
   static async getEquipmentsForExercise(exerciseId: number): Promise<Equipment[]> {

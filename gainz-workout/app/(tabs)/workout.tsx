@@ -34,6 +34,7 @@ export default function WorkoutScreen() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
   const [showStopwatchScreen, setShowStopWatchScreen] = useState(false);
+  const [stopwatchText, setStopwatchText] = useState("");
 
   const popOverAnimationValue = useRef(new Animated.Value(0)).current;
 
@@ -279,6 +280,7 @@ export default function WorkoutScreen() {
 
   const handleStopwatchOnPress = () => {
     console.log('Clicked on stopwatch');
+    setStopwatchText("01:22")
     setShowStopWatchScreen(true);
   }
 
@@ -362,6 +364,7 @@ export default function WorkoutScreen() {
             <TouchableOpacity onPress={handleStopwatchOnPress}>
               <Entypo name="stopwatch" size={24} color="white" />
             </TouchableOpacity>
+            <Text>{stopwatchText}</Text>
 
           </View>
           <View style={styles.workoutContainer} >

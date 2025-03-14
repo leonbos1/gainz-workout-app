@@ -13,6 +13,7 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function ExercisesScreen() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [recentExercises, setRecentExercises] = useState<Exercise[]>([]);
   const [isAddMode, setIsAddMode] = useState(false);
   const [newExerciseName, setNewExerciseName] = useState('');
   const [newExerciseDescription, setNewExerciseDescription] = useState('');
@@ -24,6 +25,9 @@ export default function ExercisesScreen() {
       const fetchedExercises = await Exercise.findAll();
       const remainingExercises = fetchedExercises.sort((a, b) => a.name.localeCompare(b.name));
       setExercises([...remainingExercises]);
+
+      const fetchedRecentExercises = await Exercise.findRecent(10);
+      setRecentExercises([...fetchedRecentExercises]);
     } catch (error) {
       console.error('Error fetching exercises:', error);
     }
@@ -38,8 +42,6 @@ export default function ExercisesScreen() {
   };
 
   const handleAddExercise = async () => {
-    console.log('Adding exercise:', newExerciseName, newExerciseDescription, selectedMuscleGroup, selectedEquipment);
-
     if (newExerciseName && selectedMuscleGroup && selectedEquipment.length) {
       try {
         await Exercise.create(newExerciseName, newExerciseDescription, selectedMuscleGroup.id);
@@ -80,6 +82,13 @@ export default function ExercisesScreen() {
         <BigIconButton iconName="add-circle" text="Add" onPress={() => setIsAddMode(true)} />
       </View>
       <ScrollView>
+        <Text style={styles.exerciseHeader}>Recent Exercises</Text>
+
+        {recentExercises.map((exercise, index) => (
+          <ExerciseItem key={index} exercise={exercise} onEdit={handleOnEdit} onDelete={handleOnDelete}
+          />
+        ))}
+        <Text style={styles.exerciseHeader}>All Exercises</Text>
         {exercises.map((exercise, index) => (
           <ExerciseItem key={index} exercise={exercise} onEdit={handleOnEdit} onDelete={handleOnDelete}
           />
@@ -128,8 +137,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
     color: Colors.text,
   },
+  exerciseHeader: {
+    fontSize: 18,
+    color: Colors.text,
+    fontWeight: 500,
+    padding: 5,
+  }
 });
