@@ -5,7 +5,7 @@ export interface CSVRow {
     'Workout Name': string;
     'Exercise Name': string;
     'Set Order': string;
-    Weight: string;
+    'Weight (kg)': string;
     Reps: string;
     RPE: string;
     Notes: string;
@@ -86,7 +86,7 @@ export function getAttachmentFromExerciseString(exerciseString: string): string 
 
 export async function processCSVRow(db: SQLite.SQLiteDatabase, row: CSVRow) {
     try {
-        if (!row.Reps || !row.Weight) {
+        if (!row.Reps || !row['Weight (kg)']) {
             return;
         }
 
@@ -107,11 +107,10 @@ export async function processCSVRow(db: SQLite.SQLiteDatabase, row: CSVRow) {
         await setStatementPrepared.executeAsync([
             exerciseId,
             parseInt(row.Reps),
-            parseFloat(row.Weight),
+            parseFloat(row['Weight (kg)']),
             parseFloat(row.RPE || '0'),
             batchId
         ]);
-
     } catch (error) {
         console.error('Error processing row:', error);
     }
@@ -183,7 +182,7 @@ async function getOrCreateAttachment(db: SQLite.SQLiteDatabase, name: string): P
     if (name.length === 0) {
         return 0;
     }
-    
+
     if (attachmentCache[name]) {
         return attachmentCache[name];
     }

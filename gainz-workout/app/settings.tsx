@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import { Colors } from '@/constants/Colors';
 import { processCSVRowsInBatch, CSVRow } from '@/helpers/csvHelper';
 import { createTables, Database, dropTables, seedDatabase } from '@/database/database';
+import { Set } from '@/models/Set';
 
 export default function SettingsScreen() {
   const [loading, setLoading] = useState(false);
@@ -25,14 +26,14 @@ export default function SettingsScreen() {
         const fileContent = await FileSystem.readAsStringAsync(fileUri);
 
         const rows = fileContent.trim().split('\n').map(row => row.split(';'));
-        const headers = rows[0];
+        const headers = rows[0].map(header => header.trim().replace(/"/g, ''));
 
         const records: CSVRow[] = rows.slice(1).map((row) => {
-          const record: CSVRow = {} as CSVRow;
+          const record = {} as CSVRow;
           headers.forEach((header, index) => {
             const value = row[index];
             if (value !== undefined) {
-              record[header.trim() as keyof CSVRow] = value.trim().replace(/"/g, '');
+              record[header as keyof CSVRow] = value.trim().replace(/"/g, '');
             }
           });
           return record;
@@ -60,6 +61,10 @@ export default function SettingsScreen() {
     await createTables();
     await seedDatabase();
     setLoading(false);
+  };
+
+  const scrubData = async () => {
+    await Set.scrubData();
   }
 
   return (
@@ -73,6 +78,9 @@ export default function SettingsScreen() {
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={deleteData} disabled={loading}>
         <Text style={styles.buttonText}>Delete Data</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={scrubData} disabled={loading}>
+        <Text style={styles.buttonText}>Scrub bad data</Text>
       </TouchableOpacity>
       {loading && (
         <View>

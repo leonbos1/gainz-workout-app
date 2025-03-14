@@ -70,6 +70,7 @@ export const createTables = async () => {
       rpe REAL,
       batchid INTEGER NOT NULL,
       completed BIT,
+      warmup BIT,
       FOREIGN KEY (exerciseid) REFERENCES exercise(id),
       FOREIGN KEY (batchid) REFERENCES batch(id)
     );

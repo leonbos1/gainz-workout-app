@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions, Text, Animated, TouchableOpacity, Modal, Button } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, Animated, TouchableOpacity, Modal } from 'react-native';
 import { Exercise } from '@/models/Exercise';
 import { Workout } from '@/models/Workout';
 import { Set } from '@/models/Set';
@@ -14,7 +14,7 @@ import { ExerciseSelectList } from '@/components/selectors/ExerciseSelectList';
 import { EquipmentDropdown } from '@/components/workout/EquipmentDropdown';
 import { AttachmentDropdown } from '@/components/workout/AttachmentDropdown';
 import { Batch } from '@/models/Batch';
-import { Entypo, Ionicons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -29,16 +29,16 @@ export default function WorkoutScreen() {
   const [exercises, setExercises] = useState<Array<Exercise>>([]);
   const [equipment, setEquipment] = useState<Array<Equipment>>([]);
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
-  const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string, completed: boolean }>>([]); //TODO: wtf is this?
+  const [batches, setBatches] = useState<Array<{ id: number, name: string, sets: Set[], reps: string, weight: string, rpe: string, completed: boolean }>>([]);
   const [filteredEquipment, setFilteredEquipment] = useState<Array<Equipment>>([]);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
   const [showStopwatchScreen, setShowStopWatchScreen] = useState(false);
-  const [stopwatchText, setStopwatchText] = useState("");
+  const [stopwatchTime, setStopwatchTime] = useState(0);
 
   const popOverAnimationValue = useRef(new Animated.Value(0)).current;
-
-  const stopwatchSlideAnimation = useRef(new Animated.Value(screenHeight)).current;
+  // Initialize the stopwatch screen off-screen (above the view)
+  const stopwatchSlideAnimation = useRef(new Animated.Value(-screenHeight)).current;
   const workoutSlideAnimation = useRef(new Animated.Value(screenHeight)).current;
 
   useEffect(() => {
@@ -63,27 +63,13 @@ export default function WorkoutScreen() {
     }
   }, [activeForm]);
 
+  // Animate stopwatch screen sliding down/up based on showStopwatchScreen
   useEffect(() => {
-    if (showStopwatchScreen) {
-      Animated.sequence([
-        Animated.timing(stopwatchSlideAnimation, {
-          toValue: 1000,
-          duration: 0,
-          useNativeDriver: false,
-        }),
-        Animated.timing(stopwatchSlideAnimation, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: false,
-        }),
-      ]).start();
-    } else {
-      Animated.timing(stopwatchSlideAnimation, {
-        toValue: 10000,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-    }
+    Animated.timing(stopwatchSlideAnimation, {
+      toValue: showStopwatchScreen ? 0 : -screenHeight,
+      duration: showStopwatchScreen ? 500 : 300,
+      useNativeDriver: false,
+    }).start();
   }, [showStopwatchScreen]);
 
   useEffect(() => {
@@ -109,6 +95,29 @@ export default function WorkoutScreen() {
     }
   }, [workoutStarted]);
 
+  // Stopwatch timer now runs based on workoutStarted instead of showStopwatchScreen.
+  // This makes sure that the stopwatch continues running even if the stopwatch screen is hidden.
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (workoutStarted) {
+      // Reset stopwatch when the workout starts
+      setStopwatchTime(0);
+      interval = setInterval(() => {
+        setStopwatchTime(prevTime => prevTime + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [workoutStarted]);
+
+  // Format the stopwatch time as MM:SS
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   const fetchExercises = async () => {
     try {
       const fetchedExercises = await Exercise.findAll();
@@ -127,12 +136,6 @@ export default function WorkoutScreen() {
     }
   };
 
-  const resetSelections = () => {
-    setSelectedAttachment(null);
-    setSelectedEquipment(null);
-    setSelectedExercise(null);
-  }
-
   const fetchAttachments = async () => {
     try {
       const fetchedAttachments = await Attachment.findAll();
@@ -140,6 +143,12 @@ export default function WorkoutScreen() {
     } catch (error) {
       Logger.log_error('Error fetching attachments:', error as string);
     }
+  };
+
+  const resetSelections = () => {
+    setSelectedAttachment(null);
+    setSelectedEquipment(null);
+    setSelectedExercise(null);
   };
 
   const handleStartWorkout = async () => {
@@ -206,10 +215,22 @@ export default function WorkoutScreen() {
       } else {
         newBatch = await Batch.create(workoutId!, '', parseInt(selectedEquipment), 0, false);
       }
-      setBatches([...batches, {
-        id: newBatch.id, name: exercises.find(e => e.id === parseInt(selectedExercise))!.name + ' (' + equipment.find(e => e.id === parseInt(selectedEquipment))!.name + ')',
-        sets: [], reps: '', weight: '', rpe: '', completed: false
-      }]);
+      setBatches([
+        ...batches,
+        {
+          id: newBatch.id,
+          name:
+            exercises.find(e => e.id === parseInt(selectedExercise))!.name +
+            ' (' +
+            equipment.find(e => e.id === parseInt(selectedEquipment))!.name +
+            ')',
+          sets: [],
+          reps: '',
+          weight: '',
+          rpe: '',
+          completed: false,
+        },
+      ]);
       toggleFormVisibility(null);
     } else {
       Logger.log_error('Error adding exercise:', 'Exercise and equipment must be selected');
@@ -219,7 +240,6 @@ export default function WorkoutScreen() {
 
   const handleExerciseSelection = async (exerciseId: string) => {
     const exerciseName = getExerciseNameFromExerciseString(exerciseId);
-
     setSelectedExercise(exerciseName);
     try {
       if (exerciseId) {
@@ -249,7 +269,7 @@ export default function WorkoutScreen() {
   const onToggleSetCompletion = async (setId: number) => {
     console.log("toggle set completion set id: ", setId);
     await Set.toggleCompletion(setId);
-  }
+  };
 
   const [showForm, setShowForm] = useState(false);
 
@@ -278,11 +298,10 @@ export default function WorkoutScreen() {
     }
   };
 
+  // When the stopwatch header is pressed, show the stopwatch screen by sliding it down.
   const handleStopwatchOnPress = () => {
-    console.log('Clicked on stopwatch');
-    setStopwatchText("01:22")
     setShowStopWatchScreen(true);
-  }
+  };
 
   const popOverHeight = popOverAnimationValue.interpolate({
     inputRange: [0, 1],
@@ -311,16 +330,10 @@ export default function WorkoutScreen() {
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>Are you sure you want to cancel the workout?</Text>
             <View style={styles.modalButtonContainer}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setShowCancelModal(false)}
-              >
+              <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setShowCancelModal(false)}>
                 <Text style={styles.modalButtonText}>No</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.confirmButton]}
-                onPress={handleCancelWorkout}
-              >
+              <TouchableOpacity style={[styles.modalButton, styles.confirmButton]} onPress={handleCancelWorkout}>
                 <Text style={styles.modalButtonText}>Yes</Text>
               </TouchableOpacity>
             </View>
@@ -339,16 +352,10 @@ export default function WorkoutScreen() {
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>Are you sure you want to finish the workout?</Text>
             <View style={styles.modalButtonContainer}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setShowFinishModal(false)}
-              >
+              <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={() => setShowFinishModal(false)}>
                 <Text style={styles.modalButtonText}>No</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.confirmButton]}
-                onPress={handleFinishWorkout}
-              >
+              <TouchableOpacity style={[styles.modalButton, styles.confirmButton]} onPress={handleFinishWorkout}>
                 <Text style={styles.modalButtonText}>Yes</Text>
               </TouchableOpacity>
             </View>
@@ -360,14 +367,14 @@ export default function WorkoutScreen() {
 
       {workoutStarted && (
         <Animated.View style={[styles.workoutScreen, { transform: [{ translateY: workoutSlideAnimation }] }]}>
-          <View style={styles.workoutHeader} >
-            <TouchableOpacity onPress={handleStopwatchOnPress}>
+          <TouchableOpacity onPress={handleStopwatchOnPress}>
+            <View style={styles.workoutHeader}>
               <Entypo name="stopwatch" size={24} color="white" />
-            </TouchableOpacity>
-            <Text>{stopwatchText}</Text>
+              <Text>{formatTime(stopwatchTime)}</Text>
+            </View>
+          </TouchableOpacity>
 
-          </View>
-          <View style={styles.workoutContainer} >
+          <View style={styles.workoutContainer}>
             {showForm && (
               <Animated.View style={[styles.popOverContainer, { height: popOverHeight, opacity: popOverOpacity }]}>
                 <ExerciseSelectList
@@ -407,38 +414,26 @@ export default function WorkoutScreen() {
             />
 
             <View style={styles.buttonContainer}>
-              <IconButton
-                iconName="close-circle-outline"
-                text="Cancel"
-                onPress={() => setShowCancelModal(true)}
-              />
-              <IconButton
-                iconName="checkmark-circle-outline"
-                text="Finish"
-                onPress={() => setShowFinishModal(true)}
-              />
+              <IconButton iconName="close-circle-outline" text="Cancel" onPress={() => setShowCancelModal(true)} />
+              <IconButton iconName="checkmark-circle-outline" text="Finish" onPress={() => setShowFinishModal(true)} />
             </View>
             {!activeForm && (
-              <TouchableOpacity
-                style={styles.floatingButton}
-                onPress={() => toggleFormVisibility('AddExerciseForm')}
-              >
+              <TouchableOpacity style={styles.floatingButton} onPress={() => toggleFormVisibility('AddExerciseForm')}>
                 <Text style={styles.floatingButtonText}>+</Text>
               </TouchableOpacity>
             )}
           </View>
           <Animated.View style={[styles.stopwatchScreen, { transform: [{ translateY: stopwatchSlideAnimation }] }]}>
             <View>
-              <Text>Insert content here</Text>
-              <TouchableOpacity onPress={() => setShowStopWatchScreen(false)} >
-                <Text style={{ color: Colors.white }}>Close </Text>
+              <Text style={styles.stopwatchText}>{formatTime(stopwatchTime)}</Text>
+              <TouchableOpacity onPress={() => setShowStopWatchScreen(false)}>
+                <Text style={{ color: Colors.white }}>Close</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
         </Animated.View>
-      )
-      }
-    </View >
+      )}
+    </View>
   );
 }
 
@@ -468,7 +463,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     width: screenWidth,
     height: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   titleContainer: {
     flexDirection: 'row',
@@ -571,10 +566,16 @@ const styles = StyleSheet.create({
     height: screenHeight,
     width: '100%',
     backgroundColor: Colors.card,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     elevation: 6,
     paddingBottom: 100,
     zIndex: 2000,
-  }
+  },
+  stopwatchText: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: Colors.text,
+    marginBottom: 20,
+  },
 });

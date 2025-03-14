@@ -15,7 +15,7 @@ const screenWidth = Dimensions.get('window').width;
 export default function HistoryScreen() {
   const [historyWorkoutViewmodels, setHistoryWorkoutViewmodels] = useState<HistoryWorkoutViewmodel[]>([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +32,6 @@ export default function HistoryScreen() {
     setError(null); // Reset error before new fetch attempt
     try {
       const fetchedWorkouts = await Workout.findAllFinished(10, page);
-
       if (fetchedWorkouts.length === 0) {
         setHasMore(false);
         return;
