@@ -237,43 +237,43 @@
     "graph_durations": [
         {
             "name": "1 Week",
-            "value": 1
+            "days": 7
         },
         {
             "name": "1 Month",
-            "value": 30
+            "days": 30
         },
         {
             "name": "3 Months",
-            "value": 90
+            "days": 90
         },
         {
             "name": "6 Months",
-            "value": 180
+            "days": 180
         },
         {
             "name": "1 Year",
-            "value": 365
+            "days": 365
         },
         {
             "name": "2 Years",
-            "value": 730
+            "days": 730
         },
         {
             "name": "3 Years",
-            "value": 1095
+            "days": 1095
         },
         {
             "name": "4 Years",
-            "value": 1460
+            "days": 1460
         },
         {
             "name": "5 Years",
-            "value": 1825
+            "days": 1825
         },
         {
             "name": "6 Years",
-            "value": 2190
+            "days": 2190
         }
     ],
     "graphs": [

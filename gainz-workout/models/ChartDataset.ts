@@ -24,11 +24,11 @@ export class ChartDataset {
     var data = new ChartDataset([], [], "");
 
     if (graphType.id == 1) {
-      data = await this.getEstimated1RM(exercise.id, Math.round(graphDuration.value / 7));
+      data = await this.getEstimated1RM(exercise.id, Math.round(graphDuration.days / 7));
     }
 
     if (graphType.id == 2) {
-      data = await this.getVolume(exercise.id, Math.round(graphDuration.value / 7));
+      data = await this.getVolume(exercise.id, Math.round(graphDuration.days / 7));
     }
 
     return data;
@@ -62,18 +62,15 @@ export class ChartDataset {
         [exerciseId, weeks]
       ) as { monday: string, estimated1RM: number }[];
 
-      // Reverse rows for chronological order.
       rows.reverse();
 
       const data: number[] = [];
       const labels: string[] = [];
 
       if (rows.length > 0) {
-        // Determine the timespan of the data.
         const firstDate = new Date(rows[0].monday);
         const lastDate = new Date(rows[rows.length - 1].monday);
         const oneYearInMs = 365 * 24 * 60 * 60 * 1000;
-        // If the span is greater than one year, use year labels; otherwise, use month labels.
         const labelFormat = (lastDate.getTime() - firstDate.getTime() > oneYearInMs) ? 'year' : 'month';
 
         rows.forEach((row, index) => {
@@ -81,14 +78,12 @@ export class ChartDataset {
           const currentDate = new Date(row.monday);
 
           if (labelFormat === 'year') {
-            // For a multi-year span, only show the year when it changes.
             if (index === 0 || currentDate.getFullYear() !== new Date(rows[index - 1].monday).getFullYear()) {
               labels.push(currentDate.getFullYear().toString());
             } else {
               labels.push('');
             }
           } else {
-            // For a one-year span, display the abbreviated month when it changes.
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             if (index === 0 || currentDate.getMonth() !== new Date(rows[index - 1].monday).getMonth()) {
               labels.push(monthNames[currentDate.getMonth()]);
@@ -98,7 +93,6 @@ export class ChartDataset {
           }
         });
       } else {
-        // In case there are no rows, add a couple of dummy points to avoid errors in the chart.
         data.push(0, 0);
         labels.push('', '');
       }
@@ -120,11 +114,23 @@ export class ChartDataset {
   static async getVolume(exerciseId: number, weeks: number): Promise<ChartDataset> {
     try {
       const db = await Database.getDbConnection();
-  
+
       weeks = Math.round(weeks);
       const endDate = new Date();
-  
-      // Query the database for volume data.
+
+      const computedStartDate = new Date(endDate);
+      computedStartDate.setDate(endDate.getDate() - weeks * 7);
+
+      function getSqlMonday(date: Date): Date {
+        const day = date.getDay();
+        const diff = day === 0 ? 1 : 1 - day;
+        const monday = new Date(date);
+        monday.setDate(date.getDate() + diff);
+        return monday;
+      }
+
+      const startMonday = getSqlMonday(computedStartDate);
+
       const rows = await db.getAllAsync(
         `
         SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 
@@ -133,70 +139,54 @@ export class ChartDataset {
         JOIN batch b ON es.batchid = b.id
         JOIN workout w ON b.workoutid = w.id
         WHERE es.exerciseid = ?
+          AND w.endtime >= ?
         GROUP BY monday
         ORDER BY monday ASC
         `,
-        [exerciseId]
+        [exerciseId, computedStartDate.toISOString()]
       ) as { monday: string; volume: number }[];
-  
-      // Determine the start date for our date range.
-      // If we have data, use the earliest monday from the results.
-      // Otherwise, fall back to (endDate - weeks*7).
-      let startDateForRange: Date;
-      if (rows.length > 0) {
-        startDateForRange = new Date(rows[0].monday);
-      } else {
-        startDateForRange = new Date();
-        startDateForRange.setDate(endDate.getDate() - weeks * 7);
-      }
-  
-      // Generate a weekly date range from startDateForRange to endDate.
+
       const dateRange: { monday: string }[] = [];
-      const current = new Date(startDateForRange);
+      const current = new Date(startMonday);
       while (current <= endDate) {
         dateRange.push({ monday: current.toISOString().split('T')[0] });
         current.setDate(current.getDate() + 7);
       }
-  
-      // Prepare cumulative volume data and dynamic labels.
+
       const data: number[] = [];
       const labels: string[] = [];
       let cumulativeVolume = 0;
-  
-      // Determine label format based on the actual data timespan.
-      const timespan = endDate.getTime() - startDateForRange.getTime();
+
+      const timespan = endDate.getTime() - startMonday.getTime();
       const oneYearInMs = 365 * 24 * 60 * 60 * 1000;
       const labelFormat: 'year' | 'month' = timespan > oneYearInMs ? 'year' : 'month';
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  
+
       dateRange.forEach((week, index) => {
-        // Match a row with the current week’s monday.
         const match = rows.find((row) => row.monday === week.monday);
         const weeklyVolume = match ? match.volume : 0;
         cumulativeVolume += weeklyVolume;
         data.push(cumulativeVolume);
-  
+
         const currentDate = new Date(week.monday);
         let label = "";
         if (labelFormat === 'year') {
-          // For multi-year spans, show the year when it changes.
           if (index === 0 || currentDate.getFullYear() !== new Date(dateRange[index - 1].monday).getFullYear()) {
             label = currentDate.getFullYear().toString();
           }
         } else {
-          // For one-year or less, show the month when it changes.
           if (index === 0 || currentDate.getMonth() !== new Date(dateRange[index - 1].monday).getMonth()) {
             label = monthNames[currentDate.getMonth()];
           }
         }
         labels.push(label);
       });
-  
+
       const exercise = await db.getFirstAsync(
         'SELECT name FROM exercise WHERE id = ?',
         [exerciseId]
       ) as { name: string };
-  
+
       return new ChartDataset(data, labels, exercise.name);
     } catch (error) {
       console.log(error);

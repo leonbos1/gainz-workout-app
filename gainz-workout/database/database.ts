@@ -106,7 +106,7 @@ export const createTables = async () => {
     CREATE TABLE IF NOT EXISTS graph_duration (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      value INTEGER NOT NULL
+      days INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS graph (
@@ -146,7 +146,7 @@ export const seedDatabase = async () => {
     return `("${exercise.name}", ${musclegroupid})`;
   }).join(', ')};
 
-    INSERT INTO graph_duration (name, value) VALUES ${data.graph_durations.map((duration) => `("${duration.name}", ${duration.value})`).join(', ')};
+    INSERT INTO graph_duration (name, days) VALUES ${data.graph_durations.map((duration) => `("${duration.name}", ${duration.days})`).join(', ')};
 
     INSERT INTO graph_type (name) VALUES ${data.graph_types.map((graphType) => `("${graphType.name}")`).join(', ')};
 

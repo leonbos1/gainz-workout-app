@@ -42,7 +42,7 @@ export default function ExerciseDetailsScreen() {
 
       navigation.setOptions({ title: ex.name });
 
-      const graphDuration = await GraphDuration.findById(5);
+      const graphDuration = await GraphDuration.findById(7);
       const graphType1 = await GraphType.findById(1);
       const graphType2 = await GraphType.findById(2);
 

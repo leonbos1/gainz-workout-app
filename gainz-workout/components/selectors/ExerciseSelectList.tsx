@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { ExerciseSelectModal } from './ExerciseSelectModal'; // adjust the path as needed
 
 interface ExerciseSelectListProps {
   selectedExercise: string | null;
   setSelectedExercise: (exercise: string | null) => void;
-  exercises: Array<{ label: string, value: string }>;
+  exercises: Array<{ label: string; value: string }>;
 }
 
 export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
@@ -15,75 +15,28 @@ export const ExerciseSelectList: React.FC<ExerciseSelectListProps> = ({
   exercises,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSelectExercise = (value: string) => {
     setSelectedExercise(value);
     setModalVisible(false);
   };
 
-  const filteredExercises = exercises.filter((exercise) =>
-    exercise.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.dropdown} onPress={() => setModalVisible(true)}>
         <Text style={styles.dropdownText}>
           {selectedExercise
-            ? exercises.find(ex => ex.value === selectedExercise)?.label
+            ? exercises.find((ex) => ex.value === selectedExercise)?.label
             : 'Select an exercise'}
         </Text>
       </TouchableOpacity>
-
-      <Modal
+            
+      <ExerciseSelectModal
         visible={modalVisible}
-        transparent={true}
-        animationType="slide"
+        exercises={exercises}
+        onSelectExercise={handleSelectExercise}
         onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {/* Icon Row */}
-            <View style={styles.iconContainer}>
-              <TouchableOpacity style={styles.iconButton}>
-                <FontAwesome name="filter" size={24} color="black" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton}>
-                <FontAwesome name="sort-amount-desc" size={24} color="black" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Search Input */}
-            <View style={styles.searchContainer}>
-              <TextInput
-                style={styles.searchTextInput}
-                placeholder="Search exercise"
-                placeholderTextColor={Colors.text}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-            </View>
-
-            {/* Exercises List */}
-            <FlatList
-              data={filteredExercises}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.item} onPress={() => handleSelectExercise(item.value)}>
-                  <Text style={styles.itemText}>{item.label}</Text>
-                </TouchableOpacity>
-              )}
-            />
-
-            {/* Close Button */}
-            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-
-        </View>
-      </Modal>
+      />
     </View>
   );
 };
@@ -93,15 +46,6 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
   },
-  iconContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  iconButton: {
-    padding: 10,
-  },
   dropdown: {
     backgroundColor: Colors.card,
     padding: 10,
@@ -110,48 +54,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.card,
   },
   dropdownText: {
-    color: Colors.text,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '80%',
-    height: '80%',
-    backgroundColor: Colors.card,
-    padding: 20,
-    borderRadius: 10,
-  },
-  item: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.card,
-  },
-  itemText: {
-    color: Colors.text,
-  },
-  closeButton: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: Colors.card,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: Colors.text,
-  },
-  searchContainer: {
-    marginBottom: 10,
-    borderWidth: 0.5,
-    borderRadius: 8,
-    borderColor: Colors.text,
-    color: Colors.text,
-  },
-  searchTextInput: {
-    padding: 10,
     color: Colors.text,
   },
 });

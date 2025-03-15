@@ -4,18 +4,18 @@ import * as SQLite from 'expo-sqlite';
 export type GraphDurationRow = {
     id: number;
     name: string;
-    value: number;
+    days: number;
 };
 
 export class GraphDuration {
     id: number;
     name: string;
-    value: number;
+    days: number;
 
-    constructor(id: number, name: string, value: number) {
+    constructor(id: number, name: string, days: number) {
         this.id = id;
         this.name = name;
-        this.value = value;
+        this.days = days;
     }
 
     static async findAll(): Promise<GraphDuration[]> {
@@ -23,7 +23,7 @@ export class GraphDuration {
 
         const rows = await db.getAllAsync('SELECT * FROM graph_duration') as GraphDurationRow[];
 
-        return rows.map(row => new GraphDuration(row.id, row.name, row.value));
+        return rows.map(row => new GraphDuration(row.id, row.name, row.days));
     }
 
     static async findById(id: number): Promise<GraphDuration> {
@@ -31,6 +31,6 @@ export class GraphDuration {
 
         const row = await db.getFirstAsync('SELECT * FROM graph_duration WHERE id = ?', [id]) as GraphDurationRow;
 
-        return new GraphDuration(row.id, row.name, row.value);
+        return new GraphDuration(row.id, row.name, row.days);
     }
 }
