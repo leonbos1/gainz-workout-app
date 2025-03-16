@@ -11,11 +11,16 @@ export class GraphDuration {
     id: number;
     name: string;
     days: number;
+    label: string;
+    value: string;
 
     constructor(id: number, name: string, days: number) {
         this.id = id;
         this.name = name;
         this.days = days;
+
+        this.label = name;
+        this.value = id.toString();
     }
 
     static async findAll(): Promise<GraphDuration[]> {

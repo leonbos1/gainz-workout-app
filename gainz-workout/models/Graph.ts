@@ -27,33 +27,43 @@ export class Graph {
 
     static async findAll(): Promise<Graph[]> {
         const db = await Database.getDbConnection();
+        console.log("sxfgv");
 
         const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
+        console.log(rows);
 
         return rows.map(row => new Graph(row.id, row.graph_typeid, row.exerciseid, row.enabled, row.graph_durationid));
     }
 
     static async create(graph_typeid: number, exerciseid: number, enabled: boolean, graph_durationid: number): Promise<Graph> {
-        const db = await Database.getDbConnection();
+        try {
+            const db = await Database.getDbConnection();
 
-        const existingGraph = await db.getFirstAsync('SELECT * FROM graph WHERE graph_typeid = ? AND exerciseid = ? AND graph_durationid = ?', [graph_typeid, exerciseid, graph_durationid]);
+            const existingGraph = await db.getFirstAsync('SELECT * FROM graph WHERE graph_typeid = ? AND exerciseid = ? AND graph_durationid = ?', [graph_typeid, exerciseid, graph_durationid]);
 
-        if (existingGraph) {
-            throw new Error('Graph with the same type and exercise already exists');
+            if (existingGraph) {
+                throw new Error('Graph with the same type and exercise already exists');
+            }
+
+            const result = await db.runAsync(
+                `INSERT INTO graph (graph_typeid, exerciseid, enabled, graph_durationid) VALUES (?, ?, ?, ?)`,
+                [graph_typeid, exerciseid, enabled, graph_durationid]
+            );
+
+            return new Graph(result.lastInsertRowId, graph_typeid, exerciseid, enabled, graph_durationid);
         }
-
-        const result = await db.runAsync(
-            `INSERT INTO graph (graph_typeid, exerciseid, enabled, graph_durationid) VALUES (?, ?, ?, ?)`,
-            [graph_typeid, exerciseid, enabled, graph_durationid]
-        );
-
-        return new Graph(result.lastInsertRowId, graph_typeid, exerciseid, enabled, graph_durationid);
+        catch (error) {
+            console.error("Error adding graph: ", error);
+            return new Graph(1, 1, 1, false, 1);
+        }
     }
 
     static async findAllEnabled(): Promise<Graph[]> {
         const db = await Database.getDbConnection();
+        console.log("aaa");
 
         const rows = await db.getAllAsync('SELECT * FROM graph WHERE enabled = 1') as GraphRow[];
+        console.log(rows);
 
         return rows.map(row => new Graph(row.id, row.graph_typeid, row.exerciseid, row.enabled, row.graph_durationid));
     }
@@ -61,8 +71,10 @@ export class Graph {
     static async findAllAsViewModel(): Promise<GraphViewModel[]> {
         try {
             const db = await Database.getDbConnection();
+            console.log("SDGFHDFGH");
 
             const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
+            console.log("swgrsgsdg:", rows);
 
             const viewModels = await Promise.all(
                 rows.map(row => GraphViewModel.create(row))
@@ -71,7 +83,7 @@ export class Graph {
             return viewModels;
         }
         catch (error) {
-            console.error('Error fetching graphs:', error);
+            console.error('Error fetching graphs as view model:', error);
         }
         return [];
     }

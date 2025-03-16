@@ -27,12 +27,13 @@ export default function ProfileScreen() {
   const [enabledGraphVms, setEnabledGraphVms] = useState<GraphViewModel[]>([]);
   const [allChartVms, setAllChartVms] = useState<GraphViewModel[]>([]);
   const [showAddWidget, setShowAddWidget] = useState(false);
-  const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<string>("");
+  const [selectedGraphDuration, setSelectedGraphDuration] = useState<string>("");
   const [exercises, setExercises] = useState<Array<Exercise>>([]);
   const [graphDurations, setGraphDurations] = useState<Array<GraphDuration>>([]);
   const [exerciseModalVisible, setExerciseModalVisible] = useState(false);
   const [graphDurationModalVisible, setGraphDurationModalVisible] = useState(false);
+  const [graphTypeId, setGraphTypeId] = useState(1);
 
   const screenHeight = Dimensions.get('window').height;
   const widgetHeight = screenHeight / 3;
@@ -96,6 +97,7 @@ export default function ProfileScreen() {
   };
 
   const onOptionPress = (option: number) => {
+    setGraphTypeId(option);
     setExerciseModalVisible(true);
   };
 
@@ -106,12 +108,15 @@ export default function ProfileScreen() {
   };
 
   const handleSelectGraphDuration = (value: string) => {
+    setSelectedGraphDuration(value);
     setGraphDurationModalVisible(false);
     addGraph();
   }
 
-  const addGraph = () => {
-    console.log("Adding graph!");
+  const addGraph = async () => {
+    await Graph.create(graphTypeId, Number(selectedExercise), true, Number(selectedGraphDuration))
+
+    fetchGraphs();
   }
 
   return (
@@ -174,12 +179,12 @@ export default function ProfileScreen() {
         onSelectExercise={handleSelectExercise}
         onRequestClose={() => setExerciseModalVisible(false)}
       />
-      {/* <GraphDurationSelectModal
+      <GraphDurationSelectModal
         visible={graphDurationModalVisible}
         graphDurations={graphDurations}
         onSelectGraphDuration={handleSelectGraphDuration}
         onRequestClose={() => setExerciseModalVisible(false)}
-      /> */}
+      />
     </View>
   );
 }

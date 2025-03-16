@@ -22,7 +22,6 @@ export class ChartDataset {
 
   static async create(exercise: Exercise, graphDuration: GraphDuration, graphType: GraphType): Promise<ChartDataset> {
     var data = new ChartDataset([], [], "");
-
     if (graphType.id == 1) {
       data = await this.getEstimated1RM(exercise.id, Math.round(graphDuration.days / 7));
     }
@@ -105,7 +104,8 @@ export class ChartDataset {
       return new ChartDataset(data, labels, exercise.name);
     }
     catch (error) {
-      console.log(error);
+      console.log("Error creating 1rm dataset: ", error);
+
       return this.getEmptyDataset(exerciseId);
     }
   }
@@ -119,6 +119,7 @@ export class ChartDataset {
       const endDate = new Date();
 
       const computedStartDate = new Date(endDate);
+
       computedStartDate.setDate(endDate.getDate() - weeks * 7);
 
       function getSqlMonday(date: Date): Date {
@@ -131,8 +132,7 @@ export class ChartDataset {
 
       const startMonday = getSqlMonday(computedStartDate);
 
-      const rows = await db.getAllAsync(
-        `
+      const rows = await db.getAllAsync(`
         SELECT strftime('%Y-%m-%d', w.endtime, 'weekday 0', '-6 days') as monday, 
                SUM(es.amount * es.weight) as volume
         FROM exerciseset es
@@ -141,8 +141,7 @@ export class ChartDataset {
         WHERE es.exerciseid = ?
           AND w.endtime >= ?
         GROUP BY monday
-        ORDER BY monday ASC
-        `,
+        ORDER BY monday ASC`,
         [exerciseId, computedStartDate.toISOString()]
       ) as { monday: string; volume: number }[];
 
@@ -189,7 +188,8 @@ export class ChartDataset {
 
       return new ChartDataset(data, labels, exercise.name);
     } catch (error) {
-      console.log(error);
+      console.log("Error creating volume dataset: ", error);
+
       return await this.getEmptyDataset(exerciseId);
     }
   }
