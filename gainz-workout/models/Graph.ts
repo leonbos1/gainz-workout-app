@@ -27,7 +27,6 @@ export class Graph {
 
     static async findAll(): Promise<Graph[]> {
         const db = await Database.getDbConnection();
-        console.log("sxfgv");
 
         const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
         console.log(rows);
@@ -60,7 +59,6 @@ export class Graph {
 
     static async findAllEnabled(): Promise<Graph[]> {
         const db = await Database.getDbConnection();
-        console.log("aaa");
 
         const rows = await db.getAllAsync('SELECT * FROM graph WHERE enabled = 1') as GraphRow[];
         console.log(rows);
@@ -71,10 +69,8 @@ export class Graph {
     static async findAllAsViewModel(): Promise<GraphViewModel[]> {
         try {
             const db = await Database.getDbConnection();
-            console.log("SDGFHDFGH");
 
             const rows = await db.getAllAsync('SELECT * FROM graph') as GraphRow[];
-            console.log("swgrsgsdg:", rows);
 
             const viewModels = await Promise.all(
                 rows.map(row => GraphViewModel.create(row))

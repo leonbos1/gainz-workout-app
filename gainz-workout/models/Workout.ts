@@ -92,6 +92,31 @@ export class Workout {
     }
   }
 
+  static async findAllFinishedWithExercise(limit: number, page: number, exerciseId: string): Promise<Workout[]> {
+    try {
+      const db = await Database.getDbConnection();
+      const offset = (page - 1) * limit;
+
+      const rows = await db.getAllAsync(
+        `SELECT DISTINCT w.*
+         FROM workout w
+         INNER JOIN batch b ON w.id = b.workoutid
+         INNER JOIN exerciseset s ON b.id = s.batchid
+         WHERE w.endtime IS NOT NULL 
+           AND w.endtime != ""
+           AND s.exerciseid = ?
+         ORDER BY w.starttime DESC
+         LIMIT ? OFFSET ?`,
+        [exerciseId, limit, offset]
+      ) as WorkoutRow[];
+
+      return rows.map(row => new Workout(row.id, "", row.starttime, row.endtime));
+    } catch (error) {
+      console.error('Failed to find all finished workouts with exercise:', error);
+      return [];
+    }
+  }
+
   static async delete(id: number) {
     const db = await Database.getDbConnection();
 

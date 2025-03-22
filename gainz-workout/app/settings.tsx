@@ -64,14 +64,15 @@ export default function SettingsScreen() {
   };
 
   const scrubData = async () => {
+    setLoading(true);
     await Set.scrubData();
+    setLoading(false);
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Settings</Text>
       <Text style={styles.description}>
-        Use the button below to import a CSV file from the Strong app.
       </Text>
       <TouchableOpacity style={styles.button} onPress={importCSV} disabled={loading}>
         <Text style={styles.buttonText}>Import CSV</Text>

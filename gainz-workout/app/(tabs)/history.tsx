@@ -29,7 +29,7 @@ export default function HistoryScreen() {
     if (loading) return;
 
     setLoading(true);
-    setError(null); // Reset error before new fetch attempt
+    setError(null);
     try {
       const fetchedWorkouts = await Workout.findAllFinished(10, page);
       if (fetchedWorkouts.length === 0) {

@@ -54,6 +54,7 @@ export class ChartDataset {
         JOIN batch b ON es.batchid = b.id
         JOIN workout w ON b.workoutid = w.id
         WHERE es.exerciseid = ?
+        and es.warmup = 0
         GROUP BY monday
         ORDER BY monday DESC
         LIMIT ?

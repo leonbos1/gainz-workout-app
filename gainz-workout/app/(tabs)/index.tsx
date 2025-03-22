@@ -34,6 +34,7 @@ export default function ProfileScreen() {
   const [exerciseModalVisible, setExerciseModalVisible] = useState(false);
   const [graphDurationModalVisible, setGraphDurationModalVisible] = useState(false);
   const [graphTypeId, setGraphTypeId] = useState(1);
+  const [refreshing, setRefreshing] = useState(false); // New refreshing state
 
   const screenHeight = Dimensions.get('window').height;
   const widgetHeight = screenHeight / 3;
@@ -59,7 +60,7 @@ export default function ProfileScreen() {
       const fetchedDurations = await GraphDuration.findAll();
       setGraphDurations(fetchedDurations);
     } catch (error) {
-      Logger.log_error('Error fetching :', error as string);
+      Logger.log_error('Error fetching graph durations:', error as string);
     }
   };
 
@@ -99,6 +100,7 @@ export default function ProfileScreen() {
   const onOptionPress = (option: number) => {
     setGraphTypeId(option);
     setExerciseModalVisible(true);
+    setShowAddWidget(false);
   };
 
   const handleSelectExercise = (value: string) => {
@@ -110,14 +112,20 @@ export default function ProfileScreen() {
   const handleSelectGraphDuration = (value: string) => {
     setSelectedGraphDuration(value);
     setGraphDurationModalVisible(false);
-    addGraph();
-  }
+    addGraph(value);
+  };
 
-  const addGraph = async () => {
-    await Graph.create(graphTypeId, Number(selectedExercise), true, Number(selectedGraphDuration))
-
+  const addGraph = async (durationValue: string) => {
+    await Graph.create(graphTypeId, Number(selectedExercise), true, Number(durationValue));
     fetchGraphs();
-  }
+  };
+
+  // onRefresh handler for pull-to-refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchGraphs();
+    setRefreshing(false);
+  };
 
   return (
     <View style={styles.screenContainer}>
@@ -135,7 +143,11 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.chartListContainer}>
-        <ChartList enabledGraphVms={enabledGraphVms} />
+        <ChartList 
+          enabledGraphVms={enabledGraphVms} 
+          refreshing={refreshing} 
+          onRefresh={onRefresh} 
+        />
       </View>
 
       {showAddWidget && (

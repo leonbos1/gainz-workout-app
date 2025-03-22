@@ -13,6 +13,11 @@ export type SetRow = {
   warmup: boolean;
 };
 
+export interface SetsPerDay {
+  date: Date;
+  sets: Set[];
+}
+
 export class Set {
   id: number;
   exerciseid: number;
@@ -115,6 +120,47 @@ export class Set {
     }
   }
 
+
+  static async GetSetsPerDay(exerciseId: number): Promise<SetsPerDay[]> {
+    try {
+      const db = await Database.getDbConnection();
+
+      const query = `
+      SELECT s.*, w.starttime
+      FROM exerciseset s
+      INNER JOIN Batch b ON s.batchid = b.id
+      INNER JOIN Workout w ON b.workoutid = w.id
+      WHERE s.exerciseid = ?
+      ORDER BY w.starttime ASC
+    `;
+
+      const rows = await db.getAllAsync(query, [exerciseId]);
+
+      console.log(rows);
+
+      const setsPerDayMap: { [date: string]: Set[] } = {};
+
+      rows.forEach((row: any) => {
+        const dateKey = new Date(row.starttimeDate).toISOString().split('T')[0];
+        if (!setsPerDayMap[dateKey]) {
+          setsPerDayMap[dateKey] = [];
+        }
+        setsPerDayMap[dateKey].push(row);
+      });
+
+      const result: SetsPerDay[] = Object.keys(setsPerDayMap).map((date) => ({
+        date: new Date(date),
+        sets: setsPerDayMap[date],
+      }));
+
+      return result;
+    } catch (error) {
+      console.error('Failed to get sets per day for exerciseId:', exerciseId, error);
+      return [];
+    }
+  }
+
+
   static async scrubData() {
     try {
       const db = await Database.getDbConnection();
@@ -125,10 +171,11 @@ export class Set {
       // Group sets by exerciseid.
       const groups = new Map<number, Set[]>();
       allSets.forEach(set => {
-        if (!groups.has(set.exerciseid)) {
-          groups.set(set.exerciseid, []);
+        const key = set.exerciseid;
+        if (!groups.has(key)) {
+          groups.set(key, []);
         }
-        groups.get(set.exerciseid)!.push(set);
+        groups.get(key)!.push(set);
       });
 
       // Helper function to compute estimated 1RM.
@@ -137,34 +184,50 @@ export class Set {
 
       // Process each group.
       for (const [exerciseid, sets] of groups.entries()) {
-        // Calculate estimated 1RM for each set and then the average.
-        const estimated1RMs = sets.map(s =>
-          computeEstimated1RM(s.weight, s.amount)
-        );
-        const avg1RM =
-          estimated1RMs.reduce((sum, value) => sum + value, 0) /
-          estimated1RMs.length;
+        // Sort sets by id (assuming ascending order gives the chronological order).
+        const sortedSets = sets.slice().sort((a, b) => a.id - b.id);
 
-        // For each set, mark as warmup if its estimated 1RM is less than 60% of the average.
-        for (const set of sets) {
-          const est = computeEstimated1RM(set.weight, set.amount);
-          const isWarmup = est < 0.6 * avg1RM;
+        // Begin transaction for the group.
+        await db.execAsync("BEGIN TRANSACTION");
 
-          // Update the warmup flag in the database.
-          await db.runAsync(
-            `UPDATE exerciseset SET warmup = ? WHERE id = ?`,
-            [isWarmup ? 1 : 0, set.id]
-          );
+        try {
+          for (let i = 0; i < sortedSets.length; i++) {
+            const currentSet = sortedSets[i];
+            const currentEst1RM = computeEstimated1RM(currentSet.weight, currentSet.amount);
+            let isWarmup = false;
 
-          // Optionally update the instance property.
-          set.warmup = isWarmup;
+            // Only compute a rolling average if there are preceding sets.
+            if (i > 0) {
+              // Use up to the last 10 sets.
+              const windowStart = Math.max(0, i - 10);
+              const windowSets = sortedSets.slice(windowStart, i);
+              const windowEst1RMs = windowSets.map(s => computeEstimated1RM(s.weight, s.amount));
+              const windowAvg =
+                windowEst1RMs.reduce((sum, value) => sum + value, 0) / windowEst1RMs.length;
+
+              // If the current estimated 1RM deviates more than 20% (higher or lower) from the average, mark it as warmup.
+              if (currentEst1RM > windowAvg * 1.4 || currentEst1RM < windowAvg * 0.6) {
+                isWarmup = true;
+              }
+            }
+            // Update the set in the database.
+            await db.runAsync(
+              "UPDATE exerciseset SET warmup = ? WHERE id = ?",
+              [isWarmup ? 1 : 0, currentSet.id]
+            );
+            // Optionally update the instance property.
+            currentSet.warmup = isWarmup;
+          }
+          // Commit the transaction if all updates succeed.
+          await db.execAsync("COMMIT");
+        } catch (error) {
+          // Rollback if any update fails.
+          await db.execAsync("ROLLBACK");
+          throw error;
         }
       }
-
-      return true;
     } catch (error) {
-      console.error('Failed to scrub data:', error);
-      return false;
+      console.error("Failed to scrub data:", error);
     }
   }
 }

@@ -1,13 +1,15 @@
 import React from 'react';
-import { FlatList, View, Text } from 'react-native';
+import { FlatList, View, Text, RefreshControl } from 'react-native';
 import { GraphViewModel } from '@/viewmodels/GraphViewModel';
 import { Chart } from './Chart';
 
 type ChartListProps = {
   enabledGraphVms: GraphViewModel[];
+  refreshing: boolean;
+  onRefresh: () => void;
 };
 
-const ChartList: React.FC<ChartListProps> = ({ enabledGraphVms }) => {
+const ChartList: React.FC<ChartListProps> = ({ enabledGraphVms, refreshing, onRefresh }) => {
   const renderItem = ({ item }: { item: GraphViewModel }) => (
     <View key={item.graph.id}>
       <Chart data={item.data} title={item.graphTitle} />
@@ -19,6 +21,9 @@ const ChartList: React.FC<ChartListProps> = ({ enabledGraphVms }) => {
       data={enabledGraphVms}
       renderItem={renderItem}
       keyExtractor={item => item.graph.id.toString()}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     />
   );
 };
