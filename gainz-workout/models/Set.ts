@@ -160,7 +160,6 @@ export class Set {
     }
   }
 
-
   static async scrubData() {
     try {
       const db = await Database.getDbConnection();
